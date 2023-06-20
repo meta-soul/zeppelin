@@ -746,7 +746,8 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
     $scope.originalText = $scope.originalText ? $scope.originalText : '';
     let patch = $scope.diffMatchPatch.patch_make($scope.originalText, $scope.dirtyText).toString();
     $scope.originalText = $scope.dirtyText;
-    return websocketMsgSrv.patchParagraph($scope.paragraph.id, $route.current.pathParams.noteId, patch, $scope.workspace);
+    return websocketMsgSrv.patchParagraph($scope.paragraph.id, $route.current.pathParams.noteId,
+      patch, $scope.workspace);
   };
 
   $scope.aceLoaded = function(_editor) {

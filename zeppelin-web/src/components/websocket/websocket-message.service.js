@@ -67,7 +67,8 @@ function WebsocketMessageService($rootScope, websocketEvents) {
     },
 
     cloneNote: function(noteIdToClone, newNoteName, workspace) {
-      websocketEvents.sendNewEvent({op: 'CLONE_NOTE', data: {id: noteIdToClone, name: newNoteName}, workspace: workspace});
+      websocketEvents.sendNewEvent({op: 'CLONE_NOTE', data: {id: noteIdToClone, name: newNoteName},
+        workspace: workspace});
     },
 
     getNoteList: function(workspace) {
@@ -87,23 +88,28 @@ function WebsocketMessageService($rootScope, websocketEvents) {
     },
 
     updateNote: function(noteId, noteName, noteConfig, workspace) {
-      websocketEvents.sendNewEvent({op: 'NOTE_UPDATE', data: {id: noteId, name: noteName, config: noteConfig}, workspace: workspace});
+      websocketEvents.sendNewEvent({op: 'NOTE_UPDATE', data: {id: noteId, name: noteName, config: noteConfig},
+        workspace: workspace});
     },
 
     updatePersonalizedMode: function(noteId, modeValue, workspace) {
-      websocketEvents.sendNewEvent({op: 'UPDATE_PERSONALIZED_MODE', data: {id: noteId, personalized: modeValue}, workspace: workspace});
+      websocketEvents.sendNewEvent({op: 'UPDATE_PERSONALIZED_MODE', data: {id: noteId, personalized: modeValue},
+        workspace: workspace});
     },
 
     renameNote: function(noteId, noteName, relative, workspace) {
-      websocketEvents.sendNewEvent({op: 'NOTE_RENAME', data: {id: noteId, name: noteName, relative: relative}, workspace: workspace});
+      websocketEvents.sendNewEvent({op: 'NOTE_RENAME', data: {id: noteId, name: noteName, relative: relative},
+        workspace: workspace});
     },
 
     renameFolder: function(folderId, folderPath, workspace) {
-      websocketEvents.sendNewEvent({op: 'FOLDER_RENAME', data: {id: folderId, name: folderPath}, workspace: workspace});
+      websocketEvents.sendNewEvent({op: 'FOLDER_RENAME', data: {id: folderId, name: folderPath},
+        workspace: workspace});
     },
 
     moveParagraph: function(paragraphId, newIndex, workspace) {
-      websocketEvents.sendNewEvent({op: 'MOVE_PARAGRAPH', data: {id: paragraphId, index: newIndex}, workspace: workspace});
+      websocketEvents.sendNewEvent({op: 'MOVE_PARAGRAPH', data: {id: paragraphId, index: newIndex},
+        workspace: workspace});
     },
 
     insertParagraph: function(newIndex, workspace) {
@@ -121,7 +127,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           config: paragraphConfig,
           params: paragraphParams,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -135,7 +141,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           value: value,
           interpreterGroupId: interpreterGroupId,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -148,7 +154,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           value: value,
           paragraphId: paragraphId,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -160,7 +166,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           name: name,
           paragraphId: paragraphId,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -193,7 +199,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           dateStarted: paragraphDateStarted,
           dateFinished: paragraphDateFinished,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -214,7 +220,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           config: paragraphConfig,
           params: paragraphParams,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -234,7 +240,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           paragraphs: JSON.stringify(paragraphs),
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -258,11 +264,12 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           buf: buf,
           cursor: cursor,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
-    commitParagraph: function(paragraphId, paragraphTitle, paragraphData, paragraphConfig, paragraphParams, noteId, workspace) {
+    commitParagraph: function(paragraphId, paragraphTitle, paragraphData, paragraphConfig,
+      paragraphParams, noteId, workspace) {
       return websocketEvents.sendNewEvent({
         op: 'COMMIT_PARAGRAPH',
         data: {
@@ -273,7 +280,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           config: paragraphConfig,
           params: paragraphParams,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -288,7 +295,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           patch: patch,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -298,7 +305,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
         data: {
           note: note,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -309,7 +316,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           noteName: noteName,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -320,7 +327,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           commitMessage: commitMessage,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -331,7 +338,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           revisionId: revisionId,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -341,7 +348,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
         data: {
           noteId: noteId,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -352,7 +359,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           revisionId: revisionId,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -364,7 +371,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           revisionId: revisionId,
           position: position,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -374,8 +381,8 @@ function WebsocketMessageService($rootScope, websocketEvents) {
         data: {
           paragraphId: paragraphId,
           paragraphText: pararaphText,
-        }, 
-        workspace: workspace
+        },
+        workspace: workspace,
       });
     },
 
@@ -420,7 +427,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: note.id,
           noteParams: note.noteParams,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 
@@ -430,7 +437,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: note.id,
           formName: formName,
         },
-        workspace: workspace
+        workspace: workspace,
       });
     },
 

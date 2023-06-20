@@ -20,7 +20,7 @@ function MainCtrl($scope, $rootScope, $window, arrayOrderingSrv) {
   $scope.looknfeel = 'default';
   let url = new URL(window.location.href);
   let workspace = url.searchParams.get('workspace');
-  $scope.workspace = workspace
+  $scope.workspace = workspace;
 
   let init = function() {
     $scope.asIframe = (($window.location.href.indexOf('asIframe') > -1) ? true : false);

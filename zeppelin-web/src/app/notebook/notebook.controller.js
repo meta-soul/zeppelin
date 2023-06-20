@@ -1253,7 +1253,8 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
               $scope.note.config.personalizedMode = 'false';
             }
             $scope.note.config.personalizedMode = personalizedMode === 'true' ? 'false' : 'true';
-            websocketMsgSrv.updatePersonalizedMode($scope.note.id, $scope.note.config.personalizedMode, $scope.workspace);
+            websocketMsgSrv.updatePersonalizedMode($scope.note.id, $scope.note.config.personalizedMode,
+              $scope.workspace);
           }
         },
       });
