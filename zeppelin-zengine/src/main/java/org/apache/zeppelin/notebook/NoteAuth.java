@@ -49,6 +49,12 @@ public class NoteAuth {
     initPermissions(subject);
   }
 
+  public NoteAuth(String noteId, String workspace, AuthenticationInfo subject, ZeppelinConfiguration zconf) {
+    this.noteId = noteId;
+    this.zconf = zconf;
+    initPermissions(workspace, subject);
+  }
+
   /**
    * Creates a NoteAuth from a map loaded from notebook-authorization.json. At this point it is not possible to distinguish
    * between a user and a group string, so checkCaseAndConvert must not be used.
@@ -78,6 +84,21 @@ public class NoteAuth {
         this.readers.add(checkCaseAndConvert(subject.getUser()));
         this.writers.add(checkCaseAndConvert(subject.getUser()));
         this.runners.add(checkCaseAndConvert(subject.getUser()));
+      }
+    }
+  }
+
+  public void initPermissions(String workspace, AuthenticationInfo subject) {
+    if (!AuthenticationInfo.isAnonymous(subject)) {
+      if (zconf.isNotebookPublic()) {
+        // add current user to owners - can be public
+        this.owners.add(checkCaseAndConvert(subject.getUser()));
+      } else {
+        // add current user to owners, readers, runners, writers - private note
+        this.owners.add(checkCaseAndConvert(workspace) + "." + checkCaseAndConvert(subject.getUser()));
+        this.readers.add(checkCaseAndConvert(workspace) + "." + checkCaseAndConvert(subject.getUser()));
+        this.writers.add(checkCaseAndConvert(workspace) + "." + checkCaseAndConvert(subject.getUser()));
+        this.runners.add(checkCaseAndConvert(workspace) + "." + checkCaseAndConvert(subject.getUser()));
       }
     }
   }

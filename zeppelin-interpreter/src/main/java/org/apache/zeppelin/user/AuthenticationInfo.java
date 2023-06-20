@@ -38,6 +38,7 @@ public class AuthenticationInfo implements JsonSerializable {
   private static final Logger LOG = LoggerFactory.getLogger(AuthenticationInfo.class);
   private static final Gson GSON = new Gson();
 
+  String workspace;
   String user;
   Set<String> roles;
   String ticket;
@@ -48,6 +49,11 @@ public class AuthenticationInfo implements JsonSerializable {
   public AuthenticationInfo() {}
 
   public AuthenticationInfo(String user) {
+    this.user = user;
+  }
+
+  public AuthenticationInfo(String workspace, String user) {
+    this.workspace = workspace;
     this.user = user;
   }
 
@@ -72,6 +78,22 @@ public class AuthenticationInfo implements JsonSerializable {
       this.roles = new HashSet<>(rolesList);
     }
   }
+
+  // public AuthenticationInfo(String workspace, String user, String roles, String ticket) {
+  //   this.workspace = workspace;
+  //   this.user = user;
+  //   this.ticket = ticket;
+  //   List<String> rolesList = GSON.fromJson(roles, ArrayList.class);
+  //   if (roles == null) {
+  //     this.roles = new HashSet<>();
+  //   } else {
+  //     this.roles = new HashSet<>(rolesList);
+  //   }
+  // }
+
+  // public String getWorkspace() {
+  //   return workspace;
+  // }
 
   public String getUser() {
     return user;

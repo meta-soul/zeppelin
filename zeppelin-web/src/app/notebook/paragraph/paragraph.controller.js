@@ -82,7 +82,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
         if (filtered.length === 1) {
           let paragraph = filtered[0];
           websocketMsgSrv.runParagraph(paragraph.id, paragraph.title, paragraph.text,
-            paragraph.config, paragraph.settings.params);
+            paragraph.config, paragraph.settings.params, $scope.workspace);
         } else {
           ngToast.danger({
             content: 'Cannot find a paragraph with id \'' + paragraphId + '\'',
@@ -103,7 +103,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
     angularBind: function(varName, value, paragraphId) {
       // Only push to server if there paragraphId is defined
       if (paragraphId) {
-        websocketMsgSrv.clientBindAngularObject($routeParams.noteId, varName, value, paragraphId);
+        websocketMsgSrv.clientBindAngularObject($routeParams.noteId, varName, value, paragraphId, $scope.workspace);
       } else {
         ngToast.danger({
           content: 'Please provide a \'paragraphId\' when calling ' +
@@ -118,7 +118,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
     angularUnbind: function(varName, paragraphId) {
       // Only push to server if paragraphId is defined
       if (paragraphId) {
-        websocketMsgSrv.clientUnbindAngularObject($routeParams.noteId, varName, paragraphId);
+        websocketMsgSrv.clientUnbindAngularObject($routeParams.noteId, varName, paragraphId, $scope.workspace);
       } else {
         ngToast.danger({
           content: 'Please provide a \'paragraphId\' when calling ' +
@@ -277,7 +277,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
 
   $scope.cancelParagraph = function(paragraph) {
     console.log('Cancel %o', paragraph.id);
-    websocketMsgSrv.cancelParagraphRun(paragraph.id);
+    websocketMsgSrv.cancelParagraphRun(paragraph.id, $scope.workspace);
   };
 
   $scope.propagateSpellResult = function(paragraphId, paragraphTitle,
@@ -290,7 +290,8 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
       paragraphText, paragraphResults,
       paragraphStatus, paragraphErrorMessage,
       paragraphConfig, paragraphSettingsParam,
-      paragraphDateStarted, paragraphDateFinished
+      paragraphDateStarted, paragraphDateFinished,
+      $scope.workspace
     );
   };
 
@@ -399,7 +400,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
 
   $scope.runParagraphUsingBackendInterpreter = function(paragraphText) {
     websocketMsgSrv.runParagraph($scope.paragraph.id, $scope.paragraph.title,
-      paragraphText, $scope.paragraph.config, $scope.paragraph.settings.params);
+      paragraphText, $scope.paragraph.config, $scope.paragraph.settings.params, $scope.workspace);
   };
 
   $scope.bindBeforeUnload = function() {
@@ -579,7 +580,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
     config.editorHide = false;
 
     websocketMsgSrv.copyParagraph(newIndex, $scope.paragraph.title, data,
-      config, $scope.paragraph.settings.params);
+      config, $scope.paragraph.settings.params, $scope.workspace);
   };
 
   $scope.removeParagraph = function(paragraph) {
@@ -599,7 +600,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
         callback: function(result) {
           if (result) {
             console.log('Remove paragraph');
-            websocketMsgSrv.removeParagraph(paragraph.id);
+            websocketMsgSrv.removeParagraph(paragraph.id, $scope.workspace);
             $scope.$emit('moveFocusToNextParagraph', $scope.paragraph.id);
           }
         },
@@ -608,7 +609,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
   };
 
   $scope.clearParagraphOutput = function(paragraph) {
-    websocketMsgSrv.clearParagraphOutput(paragraph.id);
+    websocketMsgSrv.clearParagraphOutput(paragraph.id, $scope.workspace);
   };
 
   $scope.toggleEditor = function(paragraph) {
@@ -745,7 +746,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
     $scope.originalText = $scope.originalText ? $scope.originalText : '';
     let patch = $scope.diffMatchPatch.patch_make($scope.originalText, $scope.dirtyText).toString();
     $scope.originalText = $scope.dirtyText;
-    return websocketMsgSrv.patchParagraph($scope.paragraph.id, $route.current.pathParams.noteId, patch);
+    return websocketMsgSrv.patchParagraph($scope.paragraph.id, $route.current.pathParams.noteId, patch, $scope.workspace);
   };
 
   $scope.aceLoaded = function(_editor) {
@@ -799,7 +800,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
 
       $scope.$on('callCompletion', function(event, data) {
         if($scope.paragraphFocused) {
-          websocketMsgSrv.completion($scope.paragraph.id, data.buf, data.pos);
+          websocketMsgSrv.completion($scope.paragraph.id, data.buf, data.pos, $scope.workspace);
         }
       });
 
@@ -1104,7 +1105,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
   let getEditorSetting = function(paragraph, pragraphText) {
     let deferred = $q.defer();
     if (!$scope.revisionView) {
-      websocketMsgSrv.getEditorSetting(paragraph.id, pragraphText);
+      websocketMsgSrv.getEditorSetting(paragraph.id, pragraphText, $scope.workspace);
       $timeout(
         $scope.$on('editorSetting', function(event, data) {
           if (paragraph.id === data.paragraphId) {
@@ -1305,7 +1306,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
     } = paragraph;
 
     return websocketMsgSrv.commitParagraph(id, title, text, config, params,
-      $route.current.pathParams.noteId);
+      $route.current.pathParams.noteId, $scope.workspace);
   };
 
   /** Utility function */
@@ -1387,7 +1388,7 @@ function ParagraphCtrl($scope, $rootScope, $route, $window, $routeParams, $locat
             registry[varName].paragraphId,
             varName,
             newValue,
-            registry[varName].interpreterGroupId);
+            registry[varName].interpreterGroupId, $scope.workspace);
         });
       }
       console.log('angular object (paragraph) created %o', varName);

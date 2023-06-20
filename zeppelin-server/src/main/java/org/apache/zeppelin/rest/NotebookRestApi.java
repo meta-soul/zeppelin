@@ -113,9 +113,9 @@ public class NotebookRestApi extends AbstractRestApi {
   @GET
   @Path("{noteId}/permissions")
   @ZeppelinApi
-  public Response getNotePermissions(@PathParam("noteId") String noteId) {
+  public Response getNotePermissions(@PathParam("noteId") String noteId, @QueryParam("workspace") String workspace) {
     checkIfUserIsAnon(getBlockNotAuthenticatedUserErrorMsg());
-    checkIfUserCanRead(noteId,
+    checkIfUserCanRead(noteId, workspace,
             "Insufficient privileges you cannot get the list of permissions for this note");
     HashMap<String, Set<String>> permissionsMap = new HashMap<>();
     permissionsMap.put("owners", authorizationService.getOwners(noteId));
@@ -166,6 +166,15 @@ public class NotebookRestApi extends AbstractRestApi {
     }
   }
 
+  private void checkIfUserIsOwner(String noteId, String workspace, String errorMsg) {
+    Set<String> userAndRoles = new HashSet<>();
+    userAndRoles.add(workspace + "." +authenticationService.getPrincipal());
+    userAndRoles.addAll(authenticationService.getAssociatedRoles());
+    if (!authorizationService.isOwner(userAndRoles, noteId)) {
+     throw new ForbiddenException(errorMsg);
+    }
+  }
+
   /**
    * Check if the current user is either Owner or Writer for the given note.
    */
@@ -184,6 +193,18 @@ public class NotebookRestApi extends AbstractRestApi {
   private void checkIfUserCanRead(String noteId, String errorMsg) {
     Set<String> userAndRoles = new HashSet<>();
     userAndRoles.add(authenticationService.getPrincipal());
+    userAndRoles.addAll(authenticationService.getAssociatedRoles());
+    if (!authorizationService.hasReadPermission(userAndRoles, noteId)) {
+      throw new ForbiddenException(errorMsg);
+    }
+  }
+
+  /**
+   * Check if the current user can access (at least he have to be reader) the given note.
+   */
+  private void checkIfUserCanRead(String noteId, String Workspace, String errorMsg) {
+    Set<String> userAndRoles = new HashSet<>();
+    userAndRoles.add(Workspace + "." +authenticationService.getPrincipal());
     userAndRoles.addAll(authenticationService.getAssociatedRoles());
     if (!authorizationService.hasReadPermission(userAndRoles, noteId)) {
       throw new ForbiddenException(errorMsg);
@@ -227,17 +248,17 @@ public class NotebookRestApi extends AbstractRestApi {
   @PUT
   @Path("{noteId}/permissions")
   @ZeppelinApi
-  public Response putNotePermissions(@PathParam("noteId") String noteId, String req)
+  public Response putNotePermissions(@PathParam("noteId") String noteId, String req, @QueryParam("workspace") String workspace)
       throws IOException {
 
     String principal = authenticationService.getPrincipal();
     Set<String> roles = authenticationService.getAssociatedRoles();
     HashSet<String> userAndRoles = new HashSet<>();
-    userAndRoles.add(principal);
+    userAndRoles.add(workspace+"."+principal);
     userAndRoles.addAll(roles);
 
     checkIfUserIsAnon(getBlockNotAuthenticatedUserErrorMsg());
-    checkIfUserIsOwner(noteId,
+    checkIfUserIsOwner(noteId, workspace,
             ownerPermissionError(userAndRoles, authorizationService.getOwners(noteId)));
 
     PermissionRequest permMap = GSON.fromJson(req, PermissionRequest.class);
@@ -303,8 +324,8 @@ public class NotebookRestApi extends AbstractRestApi {
    */
   @GET
   @ZeppelinApi
-  public Response getNoteList() throws IOException {
-    List<NoteInfo> notesInfo = notebookService.listNotesInfo(false, getServiceContext(),
+  public Response getNoteList(@QueryParam("workspace") String workspace) throws IOException {
+    List<NoteInfo> notesInfo = notebookService.listNotesInfo(false, getServiceContext(workspace),
             new RestServiceCallback<>());
     return new JsonResponse<>(Status.OK, "", notesInfo).build();
   }
@@ -478,7 +499,7 @@ public class NotebookRestApi extends AbstractRestApi {
    */
   @POST
   @ZeppelinApi
-  public Response createNote(String message) throws IOException {
+  public Response createNote(String message, @QueryParam("workspace") String workspace) throws IOException {
     String user = authenticationService.getPrincipal();
     LOGGER.info("Creating new note by JSON {}", message);
     NewNoteRequest request = GSON.fromJson(message, NewNoteRequest.class);
@@ -490,7 +511,8 @@ public class NotebookRestApi extends AbstractRestApi {
             request.getName(),
             defaultInterpreterGroup,
             request.getAddingEmptyParagraph(),
-            getServiceContext(),
+            workspace,
+            getServiceContext(workspace),
             new RestServiceCallback<>());
     return notebook.processNote(noteId,
       note -> {
@@ -515,10 +537,10 @@ public class NotebookRestApi extends AbstractRestApi {
   @DELETE
   @Path("{noteId}")
   @ZeppelinApi
-  public Response deleteNote(@PathParam("noteId") String noteId) throws IOException {
+  public Response deleteNote(@PathParam("noteId") String noteId, @QueryParam("workspace") String workspace) throws IOException {
     LOGGER.info("Delete note {} ", noteId);
     notebookService.removeNote(noteId,
-            getServiceContext(),
+            getServiceContext(workspace),
             new RestServiceCallback<String>() {
               @Override
               public void onSuccess(String message, ServiceContext context) {
@@ -541,7 +563,7 @@ public class NotebookRestApi extends AbstractRestApi {
   @POST
   @Path("{noteId}")
   @ZeppelinApi
-  public Response cloneNote(@PathParam("noteId") String noteId, String message)
+  public Response cloneNote(@PathParam("noteId") String noteId, String message, @QueryParam("workspace") String workspace)
       throws IOException, IllegalArgumentException {
 
     LOGGER.info("Clone note by JSON {}", message);
@@ -554,7 +576,7 @@ public class NotebookRestApi extends AbstractRestApi {
       revisionId = request.getRevisionId();
     }
     AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
-    String newNoteId = notebookService.cloneNote(noteId, revisionId, newNoteName, getServiceContext(),
+    String newNoteId = notebookService.cloneNote(noteId, revisionId, newNoteName, workspace, getServiceContext(),
             new RestServiceCallback<Note>() {
               @Override
               public void onSuccess(Note newNote, ServiceContext context) throws IOException {

@@ -87,7 +87,7 @@ public class ShiroAuthenticationService implements AuthenticationService {
               break;
             }
           }
-          if (isIniRealmEnabled) {
+          if (!isIniRealmEnabled) {
             throw new Exception(
                 "IniRealm/password based auth mechanisms should be exclusive. "
                     + "Consider removing [users] block from shiro.ini");

@@ -321,6 +321,35 @@ public class Notebook {
   }
 
   /**
+   * Creating new note.
+   *
+   * @param notePath
+   * @param defaultInterpreterGroup
+   * @param workspace
+   * @param subject
+   * @return noteId
+   * @throws IOException
+   */
+  public String createNote(String notePath,
+                         String defaultInterpreterGroup,
+                         String workspace,
+                         AuthenticationInfo subject,
+                         boolean save) throws IOException {
+    Note note =
+            new Note(notePath, defaultInterpreterGroup, replFactory, interpreterSettingManager,
+                    paragraphJobListener, credentials, noteEventListeners);
+    noteManager.addNote(note, subject);
+    // init noteMeta
+    authorizationService.createNoteAuth(note.getId(), workspace, subject);
+    authorizationService.saveNoteAuth();
+    if (save) {
+      noteManager.saveNote(note, subject);
+    }
+    fireNoteCreateEvent(note, subject);
+    return note.getId();
+  }
+
+  /**
    * Export existing note.
    *
    * @param noteId - the note ID to clone
@@ -368,6 +397,26 @@ public class Notebook {
     return newNoteId;
   }
 
+  public String importNote(String sourceJson, String notePath, String workspace, AuthenticationInfo subject)
+      throws IOException {
+    Note oldNote = Note.fromJson(null, sourceJson);
+    if (notePath == null) {
+      notePath = oldNote.getName();
+    }
+    String newNoteId = createNote(notePath, interpreterSettingManager.getDefaultInterpreterSetting().getName(), workspace, 
+    subject, false);
+    processNote(newNoteId,
+      newNote -> {
+        List<Paragraph> paragraphs = oldNote.getParagraphs();
+        for (Paragraph p : paragraphs) {
+          newNote.addCloneParagraph(p, subject);
+        }
+        noteManager.saveNote(newNote, subject);
+        return null;
+      });
+    return newNoteId;
+  }
+
   /**
    * Clone existing note.
    *
@@ -399,6 +448,47 @@ public class Notebook {
           throw new IOException("Source note: " + sourceNoteId + " revisionId " + revisionId + " not found");
         }
         String newNoteId = createNote(newNotePath, subject, false);
+        processNote(newNoteId,
+          newNote -> {
+            List<Paragraph> paragraphs = note.getParagraphs();
+            for (Paragraph p : paragraphs) {
+              newNote.addCloneParagraph(p, subject);
+            }
+
+            newNote.setConfig(new HashMap<>(note.getConfig()));
+            newNote.setInfo(new HashMap<>(note.getInfo()));
+            newNote.setDefaultInterpreterGroup(note.getDefaultInterpreterGroup());
+            newNote.setNoteForms(new HashMap<>(note.getNoteForms()));
+            newNote.setNoteParams(new HashMap<>(note.getNoteParams()));
+            newNote.setRunning(false);
+
+            saveNote(newNote, subject);
+            authorizationService.createNoteAuth(newNote.getId(), subject);
+            return null;
+          });
+
+        return newNoteId;
+      });
+  }
+
+  public String cloneNote(String sourceNoteId, String revisionId, String newNotePath, String workspace, AuthenticationInfo subject)
+      throws IOException {
+    return processNote(sourceNoteId,
+      sourceNote -> {
+        if (sourceNote == null) {
+          throw new IOException("Source note: " + sourceNoteId + " not found");
+        }
+        Note note;
+        if(StringUtils.isNotEmpty(revisionId)) {
+            note = getNoteByRevision(sourceNote.getId(), sourceNote.getPath(), revisionId, subject);
+        } else {
+          note = sourceNote;
+        }
+        if (note == null) {
+          throw new IOException("Source note: " + sourceNoteId + " revisionId " + revisionId + " not found");
+        }
+        String newNoteId = createNote(newNotePath, interpreterSettingManager.getDefaultInterpreterSetting().getName(), workspace, 
+                              subject, false);
         processNote(newNoteId,
           newNote -> {
             List<Paragraph> paragraphs = note.getParagraphs();

@@ -26,7 +26,7 @@ function NoteImportCtrl($scope, $timeout, websocketMsgSrv) {
   $scope.maxLimit = '';
   let limit = 0;
 
-  websocketMsgSrv.listConfigurations();
+  websocketMsgSrv.listConfigurations($scope.workspace);
   $scope.$on('configurationsInfo', function(scope, event) {
     limit = event.configurations['zeppelin.websocket.max.text.message.size'];
     $scope.maxLimit = Math.round(limit / 1048576);
@@ -124,7 +124,7 @@ function NoteImportCtrl($scope, $timeout, websocketMsgSrv) {
       } else {
         result.name = $scope.note.noteImportName;
       }
-      websocketMsgSrv.importNote(result);
+      websocketMsgSrv.importNote(result, $scope.workspace);
       // angular.element('#noteImportModal').modal('hide');
     } else if (result.cells && result.cells.length > 0) {
       // nbviewer notebook format
@@ -132,7 +132,7 @@ function NoteImportCtrl($scope, $timeout, websocketMsgSrv) {
         $scope.note.noteImportName = result.metadata.kernelspec.display_name;
       }
       result.name = $scope.note.noteImportName;
-      websocketMsgSrv.importNote(result);
+      websocketMsgSrv.importNote(result, $scope.workspace);
       // angular.element('#noteImportModal').modal('hide');
     } else {
       $scope.note.errorText = 'Invalid JSON';

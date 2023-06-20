@@ -87,15 +87,15 @@ function NavCtrl($scope, $rootScope, $http, $routeParams, $location,
   }
 
   function listConfigurations() {
-    websocketMsgSrv.listConfigurations();
+    websocketMsgSrv.listConfigurations($scope.workspace);
   }
 
   function loadNotes() {
-    websocketMsgSrv.getNoteList();
+    websocketMsgSrv.getNoteList($scope.workspace);
   }
 
   function getHomeNote() {
-    websocketMsgSrv.getHomeNote();
+    websocketMsgSrv.getHomeNote($scope.workspace);
   }
 
   function logout() {

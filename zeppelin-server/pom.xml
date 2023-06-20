@@ -39,7 +39,7 @@
     <libpam4j.version>1.11</libpam4j.version>
     <jna.version>4.1.0</jna.version>
     <jackson.version>2.12.6.1</jackson.version>
-    <nimbus.version>9.13</nimbus.version>
+    <nimbus.version>8.22.1</nimbus.version>
     <kerberos.version>2.0.0-M15</kerberos.version>
 
     <!--test library versions-->
@@ -389,6 +389,63 @@
         <artifactId>diff-match-patch</artifactId>
         <version>1.1</version>
       </dependency>
+
+      <dependency>
+          <groupId>io.buji</groupId>
+          <artifactId>buji-pac4j</artifactId>
+          <version>5.0.1</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>commons-collections</groupId>
+                  <artifactId>commons-collections</artifactId>
+              </exclusion>
+          <exclusion>
+              <groupId>com.fasterxml.jackson.core</groupId>
+              <artifactId>jackson-databind</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>org.pac4j</groupId>
+              <artifactId>pac4j-core</artifactId>
+          </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.pac4j</groupId>
+          <artifactId>pac4j-core</artifactId>
+          <version>4.5.7</version>
+      </dependency>
+      <dependency>
+          <groupId>org.pac4j</groupId>
+          <artifactId>pac4j-oidc</artifactId>
+          <version>4.5.7</version>
+          <exclusions>
+          <exclusion>
+              <groupId>org.ow2.asm</groupId>
+              <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>com.google.guava</groupId>
+              <artifactId>guava</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>com.fasterxml.jackson.core</groupId>
+              <artifactId>jackson-databind</artifactId>
+          </exclusion>
+              <exclusion>
+                  <groupId>javax.activation</groupId>
+                  <artifactId>activation</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>com.github.stephenc.jcip</groupId>
+                  <artifactId>jcip-annotations</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>com.nimbusds</groupId>
+                  <artifactId>nimbus-jose-jwt</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+
   </dependencies>
   <build>
     <plugins>

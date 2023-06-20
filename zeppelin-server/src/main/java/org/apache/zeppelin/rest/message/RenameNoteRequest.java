@@ -20,10 +20,20 @@ package org.apache.zeppelin.rest.message;
  *  RenameNoteRequest rest api request message
  */
 public class RenameNoteRequest {
+  private String workspace = "default";
   private final String name;
 
   public RenameNoteRequest (String name){
     this.name = name;
+  }
+
+  public RenameNoteRequest (String workspace, String name){
+    this.workspace = workspace;
+    this.name = name;
+  }
+
+  public String getWorkspace() {
+    return workspace;
   }
 
   public String getName() {

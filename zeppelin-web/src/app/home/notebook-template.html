@@ -40,7 +40,7 @@ limitations under the License.
       </a>
       <!-- if note is in trash -->
       <a ng-if="node.isTrash">
-        <i class="fa fa-undo notebook-list-btn" ng-click="restoreNote(node.id)"
+        <i class="fa fa-undo notebook-list-btn" ng-click="restoreNote(node.id, 'default')"
            tooltip-placement="bottom" uib-tooltip="Restore note">
         </i>
       </a>
@@ -79,7 +79,7 @@ limitations under the License.
         </a>
         <!-- if folder is in trash -->
         <a ng-if="node.isTrash">
-          <i class="fa fa-undo notebook-list-btn" ng-click="restoreFolder(node.id)"
+          <i class="fa fa-undo notebook-list-btn" ng-click="restoreFolder(node.id, 'default')"
              tooltip-placement="bottom" uib-tooltip="Restore folder">
           </i>
         </a>
@@ -105,7 +105,7 @@ limitations under the License.
       <span class="note-folder-item-actions">
         <a style="text-decoration: none;">
           <i style="margin-left: 10px"
-             class="fa fa-undo notebook-list-btn" ng-click="restoreAll()"
+             class="fa fa-undo notebook-list-btn" ng-click="restoreAll('default')"
              tooltip-placement="bottom" uib-tooltip="Restore all">
           </i>
           <i style="font-size: 16px;"

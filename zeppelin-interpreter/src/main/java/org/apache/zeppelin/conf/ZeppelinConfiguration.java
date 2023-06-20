@@ -928,7 +928,7 @@ public class ZeppelinConfiguration {
   public enum ConfVars {
     ZEPPELIN_HOME("zeppelin.home", "./"),
     ZEPPELIN_ADDR("zeppelin.server.addr", "127.0.0.1"),
-    ZEPPELIN_PORT("zeppelin.server.port", 8080),
+    ZEPPELIN_PORT("zeppelin.server.port", 8090),
     ZEPPELIN_SERVER_CONTEXT_PATH("zeppelin.server.context.path", "/"),
     ZEPPELIN_SSL("zeppelin.ssl", false),
     ZEPPELIN_SSL_PORT("zeppelin.server.ssl.port", 8443),
@@ -1010,13 +1010,13 @@ public class ZeppelinConfiguration {
         "org.apache.zeppelin.notebook.repo.GitNotebookRepo"),
     ZEPPELIN_NOTEBOOK_ONE_WAY_SYNC("zeppelin.notebook.one.way.sync", false),
     // whether by default note is public or private
-    ZEPPELIN_NOTEBOOK_PUBLIC("zeppelin.notebook.public", true),
+    ZEPPELIN_NOTEBOOK_PUBLIC("zeppelin.notebook.public", false),
     ZEPPELIN_INTERPRETER_REMOTE_RUNNER("zeppelin.interpreter.remoterunner",
         System.getProperty("os.name")
                 .startsWith("Windows") ? "bin/interpreter.cmd" : "bin/interpreter.sh"),
     // Decide when new note is created, interpreter settings will be binded automatically or not.
     ZEPPELIN_NOTEBOOK_AUTO_INTERPRETER_BINDING("zeppelin.notebook.autoInterpreterBinding", true),
-    ZEPPELIN_CONF_DIR("zeppelin.conf.dir", "conf"),
+    ZEPPELIN_CONF_DIR("zeppelin.conf.dir", "/home/ai/Documents/zeppelin/conf"),
     ZEPPELIN_CONFIG_FS_DIR("zeppelin.config.fs.dir", ""),
     ZEPPELIN_CONFIG_STORAGE_CLASS("zeppelin.config.storage.class",
         "org.apache.zeppelin.storage.LocalConfigStorage"),

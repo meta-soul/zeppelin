@@ -221,6 +221,50 @@ public class NotebookService {
   }
 
   /**
+   *
+   * @param notePath
+   * @param defaultInterpreterGroup
+   * @param addingEmptyParagraph
+   * @param workspace
+   * @param context
+   * @param callback
+   * @return noteId
+   * @throws IOException
+   */
+  public String createNote(String notePath,
+                         String defaultInterpreterGroup,
+                         boolean addingEmptyParagraph,
+                         String workspace,
+                         ServiceContext context,
+                         ServiceCallback<Note> callback) throws IOException {
+
+    if (defaultInterpreterGroup == null) {
+      defaultInterpreterGroup = zConf.getString(
+          ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_GROUP_DEFAULT);
+    }
+
+    try {
+      String noteId = notebook.createNote(normalizeNotePath(notePath), defaultInterpreterGroup, workspace,
+          context.getAutheInfo(), false);
+      // it's an empty note. so add one paragraph
+      notebook.processNote(noteId,
+        note -> {
+          if (addingEmptyParagraph) {
+            note.addNewParagraph(context.getAutheInfo());
+          }
+          notebook.saveNote(note, context.getAutheInfo());
+          callback.onSuccess(note, context);
+          return null;
+        });
+
+      return noteId;
+    } catch (IOException e) {
+      callback.onFailure(e, context);
+      return null;
+    }
+  }
+
+  /**
    * normalize both note name and note folder
    *
    * @param notePath
@@ -353,6 +397,36 @@ public class NotebookService {
     }
   }
 
+  public String cloneNote(String noteId,
+                          String revisionId,
+                          String newNotePath,
+                          String workspace,
+                          ServiceContext context,
+                          ServiceCallback<Note> callback) throws IOException {
+    //TODO(zjffdu) move these to Notebook
+    if (StringUtils.isBlank(newNotePath)) {
+      newNotePath = "/Cloned Note_" + noteId;
+      if(StringUtils.isNotEmpty(revisionId)) {
+        // If cloning a revision of the note,
+        // append the short commit id of revision to newNoteName
+        // to distinguish which commit to be copied.
+        newNotePath += "_" + revisionId.substring(0, 7);
+      }
+    }
+    try {
+      String newNoteId = notebook.cloneNote(noteId, revisionId, normalizeNotePath(newNotePath), workspace,
+          context.getAutheInfo());
+      return notebook.processNote(newNoteId,
+        newNote -> {
+          callback.onSuccess(newNote, context);
+          return newNote.getId();
+        });
+    } catch (IOException e) {
+      callback.onFailure(new IOException("Fail to clone note", e), context);
+      return null;
+    }
+  }
+
   /**
    *
    * @param notePath
@@ -370,6 +444,38 @@ public class NotebookService {
       // pass notePath when it is null
       String noteId = notebook.importNote(noteJson, notePath == null ?
               notePath : normalizeNotePath(notePath),
+          context.getAutheInfo());
+      return notebook.processNote(noteId,
+        note -> {
+          callback.onSuccess(note, context);
+          return note.getId();
+        });
+
+    } catch (IOException e) {
+      callback.onFailure(new IOException("Fail to import note: " + e.getMessage(), e), context);
+      return null;
+    }
+  }
+
+  /**
+   *
+   * @param notePath
+   * @param noteJson
+   * @param workspace
+   * @param context
+   * @param callback
+   * @return NoteId of the imported Note
+   * @throws IOException
+   */
+  public String importNote(String notePath,
+                         String noteJson,
+                         String workspace,
+                         ServiceContext context,
+                         ServiceCallback<Note> callback) throws IOException {
+    try {
+      // pass notePath when it is null
+      String noteId = notebook.importNote(noteJson, notePath == null ?
+              notePath : normalizeNotePath(notePath), workspace,
           context.getAutheInfo());
       return notebook.processNote(noteId,
         note -> {

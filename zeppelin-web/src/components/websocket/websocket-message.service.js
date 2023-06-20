@@ -19,98 +19,99 @@ function WebsocketMessageService($rootScope, websocketEvents) {
 
   return {
 
-    getHomeNote: function() {
-      websocketEvents.sendNewEvent({op: 'GET_HOME_NOTE'});
+    getHomeNote: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'GET_HOME_NOTE', workspace: workspace});
     },
 
-    createNotebook: function(noteName, defaultInterpreterGroup) {
+    createNotebook: function(noteName, defaultInterpreterGroup, workspace) {
       websocketEvents.sendNewEvent({
         op: 'NEW_NOTE',
         data: {
           name: noteName,
           defaultInterpreterGroup: defaultInterpreterGroup,
         },
+        workspace: workspace,
       });
     },
 
-    moveNoteToTrash: function(noteId) {
-      websocketEvents.sendNewEvent({op: 'MOVE_NOTE_TO_TRASH', data: {id: noteId}});
+    moveNoteToTrash: function(noteId, workspace) {
+      websocketEvents.sendNewEvent({op: 'MOVE_NOTE_TO_TRASH', data: {id: noteId}, workspace: workspace});
     },
 
-    moveFolderToTrash: function(folderPath) {
-      websocketEvents.sendNewEvent({op: 'MOVE_FOLDER_TO_TRASH', data: {id: folderPath}});
+    moveFolderToTrash: function(folderPath, workspace) {
+      websocketEvents.sendNewEvent({op: 'MOVE_FOLDER_TO_TRASH', data: {id: folderPath}, workspace: workspace});
     },
 
-    restoreNote: function(noteId) {
-      websocketEvents.sendNewEvent({op: 'RESTORE_NOTE', data: {id: noteId}});
+    restoreNote: function(noteId, workspace) {
+      websocketEvents.sendNewEvent({op: 'RESTORE_NOTE', data: {id: noteId}, workspace: workspace});
     },
 
-    restoreFolder: function(folderPath) {
-      websocketEvents.sendNewEvent({op: 'RESTORE_FOLDER', data: {id: folderPath}});
+    restoreFolder: function(folderPath, workspace) {
+      websocketEvents.sendNewEvent({op: 'RESTORE_FOLDER', data: {id: folderPath}, workspace: workspace});
     },
 
-    restoreAll: function() {
-      websocketEvents.sendNewEvent({op: 'RESTORE_ALL'});
+    restoreAll: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'RESTORE_ALL', workspace: workspace});
     },
 
-    deleteNote: function(noteId) {
-      websocketEvents.sendNewEvent({op: 'DEL_NOTE', data: {id: noteId}});
+    deleteNote: function(noteId, workspace) {
+      websocketEvents.sendNewEvent({op: 'DEL_NOTE', data: {id: noteId}, workspace: workspace});
     },
 
-    removeFolder: function(folderPath) {
-      websocketEvents.sendNewEvent({op: 'REMOVE_FOLDER', data: {id: folderPath}});
+    removeFolder: function(folderPath, workspace) {
+      websocketEvents.sendNewEvent({op: 'REMOVE_FOLDER', data: {id: folderPath}, workspace: workspace});
     },
 
-    emptyTrash: function() {
-      websocketEvents.sendNewEvent({op: 'EMPTY_TRASH'});
+    emptyTrash: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'EMPTY_TRASH', workspace: workspace});
     },
 
-    cloneNote: function(noteIdToClone, newNoteName) {
-      websocketEvents.sendNewEvent({op: 'CLONE_NOTE', data: {id: noteIdToClone, name: newNoteName}});
+    cloneNote: function(noteIdToClone, newNoteName, workspace) {
+      websocketEvents.sendNewEvent({op: 'CLONE_NOTE', data: {id: noteIdToClone, name: newNoteName}, workspace: workspace});
     },
 
-    getNoteList: function() {
-      websocketEvents.sendNewEvent({op: 'LIST_NOTES'});
+    getNoteList: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'LIST_NOTES', workspace: workspace});
     },
 
-    reloadAllNotesFromRepo: function() {
-      websocketEvents.sendNewEvent({op: 'RELOAD_NOTES_FROM_REPO'});
+    reloadAllNotesFromRepo: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'RELOAD_NOTES_FROM_REPO', workspace: workspace});
     },
 
-    getNote: function(noteId) {
-      websocketEvents.sendNewEvent({op: 'GET_NOTE', data: {id: noteId}});
+    getNote: function(noteId, workspace) {
+      websocketEvents.sendNewEvent({op: 'GET_NOTE', data: {id: noteId}, workspace: workspace});
     },
 
-    reloadNote: function(noteId) {
-      websocketEvents.sendNewEvent({op: 'RELOAD_NOTE', data: {id: noteId}});
+    reloadNote: function(noteId, workspace) {
+      websocketEvents.sendNewEvent({op: 'RELOAD_NOTE', data: {id: noteId}, workspace: workspace});
     },
 
-    updateNote: function(noteId, noteName, noteConfig) {
-      websocketEvents.sendNewEvent({op: 'NOTE_UPDATE', data: {id: noteId, name: noteName, config: noteConfig}});
+    updateNote: function(noteId, noteName, noteConfig, workspace) {
+      websocketEvents.sendNewEvent({op: 'NOTE_UPDATE', data: {id: noteId, name: noteName, config: noteConfig}, workspace: workspace});
     },
 
-    updatePersonalizedMode: function(noteId, modeValue) {
-      websocketEvents.sendNewEvent({op: 'UPDATE_PERSONALIZED_MODE', data: {id: noteId, personalized: modeValue}});
+    updatePersonalizedMode: function(noteId, modeValue, workspace) {
+      websocketEvents.sendNewEvent({op: 'UPDATE_PERSONALIZED_MODE', data: {id: noteId, personalized: modeValue}, workspace: workspace});
     },
 
-    renameNote: function(noteId, noteName, relative) {
-      websocketEvents.sendNewEvent({op: 'NOTE_RENAME', data: {id: noteId, name: noteName, relative: relative}});
+    renameNote: function(noteId, noteName, relative, workspace) {
+      websocketEvents.sendNewEvent({op: 'NOTE_RENAME', data: {id: noteId, name: noteName, relative: relative}, workspace: workspace});
     },
 
-    renameFolder: function(folderId, folderPath) {
-      websocketEvents.sendNewEvent({op: 'FOLDER_RENAME', data: {id: folderId, name: folderPath}});
+    renameFolder: function(folderId, folderPath, workspace) {
+      websocketEvents.sendNewEvent({op: 'FOLDER_RENAME', data: {id: folderId, name: folderPath}, workspace: workspace});
     },
 
-    moveParagraph: function(paragraphId, newIndex) {
-      websocketEvents.sendNewEvent({op: 'MOVE_PARAGRAPH', data: {id: paragraphId, index: newIndex}});
+    moveParagraph: function(paragraphId, newIndex, workspace) {
+      websocketEvents.sendNewEvent({op: 'MOVE_PARAGRAPH', data: {id: paragraphId, index: newIndex}, workspace: workspace});
     },
 
-    insertParagraph: function(newIndex) {
-      websocketEvents.sendNewEvent({op: 'INSERT_PARAGRAPH', data: {index: newIndex}});
+    insertParagraph: function(newIndex, workspace) {
+      websocketEvents.sendNewEvent({op: 'INSERT_PARAGRAPH', data: {index: newIndex}, workspace: workspace});
     },
 
     copyParagraph: function(newIndex, paragraphTitle, paragraphData,
-                            paragraphConfig, paragraphParams) {
+                            paragraphConfig, paragraphParams, workspace) {
       websocketEvents.sendNewEvent({
         op: 'COPY_PARAGRAPH',
         data: {
@@ -120,10 +121,11 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           config: paragraphConfig,
           params: paragraphParams,
         },
+        workspace: workspace
       });
     },
 
-    updateAngularObject: function(noteId, paragraphId, name, value, interpreterGroupId) {
+    updateAngularObject: function(noteId, paragraphId, name, value, interpreterGroupId, workspace) {
       websocketEvents.sendNewEvent({
         op: 'ANGULAR_OBJECT_UPDATED',
         data: {
@@ -133,10 +135,11 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           value: value,
           interpreterGroupId: interpreterGroupId,
         },
+        workspace: workspace
       });
     },
 
-    clientBindAngularObject: function(noteId, name, value, paragraphId) {
+    clientBindAngularObject: function(noteId, name, value, paragraphId, workspace) {
       websocketEvents.sendNewEvent({
         op: 'ANGULAR_OBJECT_CLIENT_BIND',
         data: {
@@ -145,10 +148,11 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           value: value,
           paragraphId: paragraphId,
         },
+        workspace: workspace
       });
     },
 
-    clientUnbindAngularObject: function(noteId, name, paragraphId) {
+    clientUnbindAngularObject: function(noteId, name, paragraphId, workspace) {
       websocketEvents.sendNewEvent({
         op: 'ANGULAR_OBJECT_CLIENT_UNBIND',
         data: {
@@ -156,18 +160,19 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           name: name,
           paragraphId: paragraphId,
         },
+        workspace: workspace
       });
     },
 
-    cancelParagraphRun: function(paragraphId) {
-      websocketEvents.sendNewEvent({op: 'CANCEL_PARAGRAPH', data: {id: paragraphId}});
+    cancelParagraphRun: function(paragraphId, workspace) {
+      websocketEvents.sendNewEvent({op: 'CANCEL_PARAGRAPH', data: {id: paragraphId}, workspace: workspace});
     },
 
     paragraphExecutedBySpell: function(paragraphId, paragraphTitle,
                                         paragraphText, paragraphResultsMsg,
                                         paragraphStatus, paragraphErrorMessage,
                                         paragraphConfig, paragraphParams,
-                                        paragraphDateStarted, paragraphDateFinished) {
+                                        paragraphDateStarted, paragraphDateFinished, workspace) {
       websocketEvents.sendNewEvent({
         op: 'PARAGRAPH_EXECUTED_BY_SPELL',
         data: {
@@ -188,10 +193,11 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           dateStarted: paragraphDateStarted,
           dateFinished: paragraphDateFinished,
         },
+        workspace: workspace
       });
     },
 
-    runParagraph: function(paragraphId, paragraphTitle, paragraphData, paragraphConfig, paragraphParams) {
+    runParagraph: function(paragraphId, paragraphTitle, paragraphData, paragraphConfig, paragraphParams, workspace) {
       // short circuit update paragraph status for immediate visual feedback without waiting for server response
       $rootScope.$broadcast('updateStatus', {
         id: paragraphId,
@@ -208,10 +214,11 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           config: paragraphConfig,
           params: paragraphParams,
         },
+        workspace: workspace
       });
     },
 
-    runAllParagraphs: function(noteId, paragraphs) {
+    runAllParagraphs: function(noteId, paragraphs, workspace) {
       // short circuit update paragraph status for immediate visual feedback without waiting for server response
       paragraphs.forEach((p) => {
         $rootScope.$broadcast('updateStatus', {
@@ -227,22 +234,23 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           paragraphs: JSON.stringify(paragraphs),
         },
+        workspace: workspace
       });
     },
 
-    removeParagraph: function(paragraphId) {
-      websocketEvents.sendNewEvent({op: 'PARAGRAPH_REMOVE', data: {id: paragraphId}});
+    removeParagraph: function(paragraphId, workspace) {
+      websocketEvents.sendNewEvent({op: 'PARAGRAPH_REMOVE', data: {id: paragraphId}, workspace: workspace});
     },
 
-    clearParagraphOutput: function(paragraphId) {
-      websocketEvents.sendNewEvent({op: 'PARAGRAPH_CLEAR_OUTPUT', data: {id: paragraphId}});
+    clearParagraphOutput: function(paragraphId, workspace) {
+      websocketEvents.sendNewEvent({op: 'PARAGRAPH_CLEAR_OUTPUT', data: {id: paragraphId}, workspace: workspace});
     },
 
-    clearAllParagraphOutput: function(noteId) {
-      websocketEvents.sendNewEvent({op: 'PARAGRAPH_CLEAR_ALL_OUTPUT', data: {id: noteId}});
+    clearAllParagraphOutput: function(noteId, workspace) {
+      websocketEvents.sendNewEvent({op: 'PARAGRAPH_CLEAR_ALL_OUTPUT', data: {id: noteId}, workspace: workspace});
     },
 
-    completion: function(paragraphId, buf, cursor) {
+    completion: function(paragraphId, buf, cursor, workspace) {
       websocketEvents.sendNewEvent({
         op: 'COMPLETION',
         data: {
@@ -250,10 +258,11 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           buf: buf,
           cursor: cursor,
         },
+        workspace: workspace
       });
     },
 
-    commitParagraph: function(paragraphId, paragraphTitle, paragraphData, paragraphConfig, paragraphParams, noteId) {
+    commitParagraph: function(paragraphId, paragraphTitle, paragraphData, paragraphConfig, paragraphParams, noteId, workspace) {
       return websocketEvents.sendNewEvent({
         op: 'COMMIT_PARAGRAPH',
         data: {
@@ -264,10 +273,11 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           config: paragraphConfig,
           params: paragraphParams,
         },
+        workspace: workspace
       });
     },
 
-    patchParagraph: function(paragraphId, noteId, patch) {
+    patchParagraph: function(paragraphId, noteId, patch, workspace) {
       // javascript add "," if change contains several patches
       // but java library requires patch list without ","
       patch = patch.replace(/,@@/g, '@@');
@@ -278,68 +288,75 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           noteId: noteId,
           patch: patch,
         },
+        workspace: workspace
       });
     },
 
-    importNote: function(note) {
+    importNote: function(note, workspace) {
       websocketEvents.sendNewEvent({
         op: 'IMPORT_NOTE',
         data: {
           note: note,
         },
+        workspace: workspace
       });
     },
 
-    convertNote: function(noteId, noteName) {
+    convertNote: function(noteId, noteName, workspace) {
       websocketEvents.sendNewEvent({
         op: 'CONVERT_NOTE_NBFORMAT',
         data: {
           noteId: noteId,
           noteName: noteName,
         },
+        workspace: workspace
       });
     },
 
-    checkpointNote: function(noteId, commitMessage) {
+    checkpointNote: function(noteId, commitMessage, workspace) {
       websocketEvents.sendNewEvent({
         op: 'CHECKPOINT_NOTE',
         data: {
           noteId: noteId,
           commitMessage: commitMessage,
         },
+        workspace: workspace
       });
     },
 
-    setNoteRevision: function(noteId, revisionId) {
+    setNoteRevision: function(noteId, revisionId, workspace) {
       websocketEvents.sendNewEvent({
         op: 'SET_NOTE_REVISION',
         data: {
           noteId: noteId,
           revisionId: revisionId,
         },
+        workspace: workspace
       });
     },
 
-    listRevisionHistory: function(noteId) {
+    listRevisionHistory: function(noteId, workspace) {
       websocketEvents.sendNewEvent({
         op: 'LIST_REVISION_HISTORY',
         data: {
           noteId: noteId,
         },
+        workspace: workspace
       });
     },
 
-    getNoteByRevision: function(noteId, revisionId) {
+    getNoteByRevision: function(noteId, revisionId, workspace) {
       websocketEvents.sendNewEvent({
         op: 'NOTE_REVISION',
         data: {
           noteId: noteId,
           revisionId: revisionId,
         },
+        workspace: workspace
       });
     },
 
-    getNoteByRevisionForCompare: function(noteId, revisionId, position) {
+    getNoteByRevisionForCompare: function(noteId, revisionId, position, workspace) {
       websocketEvents.sendNewEvent({
         op: 'NOTE_REVISION_FOR_COMPARE',
         data: {
@@ -347,16 +364,18 @@ function WebsocketMessageService($rootScope, websocketEvents) {
           revisionId: revisionId,
           position: position,
         },
+        workspace: workspace
       });
     },
 
-    getEditorSetting: function(paragraphId, pararaphText) {
+    getEditorSetting: function(paragraphId, pararaphText, workspace) {
       websocketEvents.sendNewEvent({
         op: 'EDITOR_SETTING',
         data: {
           paragraphId: paragraphId,
           paragraphText: pararaphText,
-        },
+        }, 
+        workspace: workspace
       });
     },
 
@@ -364,52 +383,54 @@ function WebsocketMessageService($rootScope, websocketEvents) {
       return websocketEvents.isConnected();
     },
 
-    getJobs: function() {
-      websocketEvents.sendNewEvent({op: 'LIST_NOTE_JOBS'});
+    getJobs: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'LIST_NOTE_JOBS', workspace: workspace});
     },
 
-    disconnectJobEvent: function() {
-      websocketEvents.sendNewEvent({op: 'UNSUBSCRIBE_UPDATE_NOTE_JOBS'});
+    disconnectJobEvent: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'UNSUBSCRIBE_UPDATE_NOTE_JOBS', workspace: workspace});
     },
 
-    getUpdateNoteJobsList: function(lastUpdateServerUnixTime) {
+    getUpdateNoteJobsList: function(lastUpdateServerUnixTime, workspace) {
       websocketEvents.sendNewEvent(
-        {op: 'LIST_UPDATE_NOTE_JOBS', data: {lastUpdateUnixTime: lastUpdateServerUnixTime * 1}}
+        {op: 'LIST_UPDATE_NOTE_JOBS', data: {lastUpdateUnixTime: lastUpdateServerUnixTime * 1}, workspace: workspace}
       );
     },
 
-    getInterpreterBindings: function(noteId) {
-      websocketEvents.sendNewEvent({op: 'GET_INTERPRETER_BINDINGS', data: {noteId: noteId}});
+    getInterpreterBindings: function(noteId, workspace) {
+      websocketEvents.sendNewEvent({op: 'GET_INTERPRETER_BINDINGS', data: {noteId: noteId}, workspace: workspace});
     },
 
-    saveInterpreterBindings: function(noteId, selectedSettingIds) {
+    saveInterpreterBindings: function(noteId, selectedSettingIds, workspace) {
       websocketEvents.sendNewEvent({op: 'SAVE_INTERPRETER_BINDINGS',
-        data: {noteId: noteId, selectedSettingIds: selectedSettingIds}});
+        data: {noteId: noteId, selectedSettingIds: selectedSettingIds}, workspace: workspace});
     },
 
-    listConfigurations: function() {
-      websocketEvents.sendNewEvent({op: 'LIST_CONFIGURATIONS'});
+    listConfigurations: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'LIST_CONFIGURATIONS', workspace: workspace});
     },
 
-    getInterpreterSettings: function() {
-      websocketEvents.sendNewEvent({op: 'GET_INTERPRETER_SETTINGS'});
+    getInterpreterSettings: function(workspace) {
+      websocketEvents.sendNewEvent({op: 'GET_INTERPRETER_SETTINGS', workspace: workspace});
     },
 
-    saveNoteForms: function(note) {
+    saveNoteForms: function(note, workspace) {
       websocketEvents.sendNewEvent({op: 'SAVE_NOTE_FORMS',
         data: {
           noteId: note.id,
           noteParams: note.noteParams,
         },
+        workspace: workspace
       });
     },
 
-    removeNoteForms: function(note, formName) {
+    removeNoteForms: function(note, formName, workspace) {
       websocketEvents.sendNewEvent({op: 'REMOVE_NOTE_FORMS',
         data: {
           noteId: note.id,
           formName: formName,
         },
+        workspace: workspace
       });
     },
 

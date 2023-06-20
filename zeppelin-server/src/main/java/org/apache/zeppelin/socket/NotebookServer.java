@@ -326,7 +326,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
       if (StringUtils.isEmpty(conn.getUser())) {
         connectionManager.addUserConnection(receivedMessage.principal, conn);
       }
-      ServiceContext context = getServiceContext(ticketEntry);
+      ServiceContext context = getServiceContext(receivedMessage.workspace, ticketEntry);
       // Lets be elegant here
       switch (receivedMessage.op) {
         case LIST_NOTES:
@@ -651,7 +651,17 @@ public class NotebookServer implements AngularObjectRegistryListener,
     broadcastClusterEvent(ClusterEvent.BROADCAST_NOTE, MSG_ID_NOT_DEFINED, note);
   }
 
+  public void broadcastNote(String workspace, Note note) {
+    inlineBroadcastNote(workspace, note);
+    broadcastClusterEvent(ClusterEvent.BROADCAST_NOTE, MSG_ID_NOT_DEFINED, note);
+  }
+
   private void inlineBroadcastNote(Note note) {
+    Message message = new Message(OP.NOTE).put("note", note);
+    connectionManager.broadcast(note.getId(), message);
+  }
+
+  private void inlineBroadcastNote(String workspace, Note note) {
     Message message = new Message(OP.NOTE).put("note", note);
     connectionManager.broadcast(note.getId(), message);
   }
@@ -703,6 +713,10 @@ public class NotebookServer implements AngularObjectRegistryListener,
     broadcastNoteListUpdate();
   }
 
+  private void inlineBroadcastNoteList(String workspace) {
+    broadcastNoteListUpdate(workspace);
+  }
+
   public void broadcastNoteListUpdate() {
     connectionManager.forAllUsers((user, userAndRoles) -> {
       List<NoteInfo> notesInfo = getNotebook().getNotesInfo(
@@ -713,8 +727,23 @@ public class NotebookServer implements AngularObjectRegistryListener,
     });
   }
 
+  public void broadcastNoteListUpdate(String workspace) {
+    connectionManager.forAllUsers((user, userAndRoles) -> {
+      List<NoteInfo> notesInfo = getNotebook().getNotesInfo(
+          noteId -> authorizationService.isReader(noteId, userAndRoles));
+
+      connectionManager.multicastToUser(user,
+          new Message(OP.NOTES_INFO).put("notes", notesInfo));
+    }, workspace);
+  }
+
   public void broadcastNoteList(AuthenticationInfo subject, Set<String> userAndRoles) {
     inlineBroadcastNoteList();
+    broadcastClusterEvent(ClusterEvent.BROADCAST_NOTE_LIST, MSG_ID_NOT_DEFINED, subject, userAndRoles);
+  }
+
+  public void broadcastNoteList(String workspace, AuthenticationInfo subject, Set<String> userAndRoles) {
+    inlineBroadcastNoteList(workspace);
     broadcastClusterEvent(ClusterEvent.BROADCAST_NOTE_LIST, MSG_ID_NOT_DEFINED, subject, userAndRoles);
   }
 
@@ -802,7 +831,8 @@ public class NotebookServer implements AngularObjectRegistryListener,
       case BROADCAST_NOTE_LIST:
         try {
           getNotebook().reloadAllNotes(authenticationInfo);
-          inlineBroadcastNoteList();
+          // inlineBroadcastNoteList();
+          inlineBroadcastNoteList(message.get("workspace"));
         } catch (IOException e) {
           LOG.error(e.getMessage(), e);
         }
@@ -837,6 +867,12 @@ public class NotebookServer implements AngularObjectRegistryListener,
       throws IOException {
     getNotebook().reloadAllNotes(context.getAutheInfo());
     broadcastNoteListUpdate();
+  }
+
+  public void broadcastReloadedNoteList(String Workspace, ServiceContext context)
+      throws IOException {
+    getNotebook().reloadAllNotes(context.getAutheInfo());
+    broadcastNoteListUpdate(Workspace);
   }
 
   void permissionError(NotebookSocket conn, String op, String userName, Set<String> userAndRoles,
@@ -970,7 +1006,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
             connectionManager.broadcast(note.getId(), new Message(OP.NOTE_UPDATED).put("name", name)
                 .put("config", config)
                 .put("info", note.getInfo()));
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1007,8 +1043,8 @@ public class NotebookServer implements AngularObjectRegistryListener,
           @Override
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
-            broadcastNote(note);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNote(fromMessage.workspace, note);
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
 
           @Override
@@ -1032,7 +1068,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
           @Override
           public void onSuccess(List<NoteInfo> result, ServiceContext context) throws IOException {
             super.onSuccess(result, context);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1040,16 +1076,17 @@ public class NotebookServer implements AngularObjectRegistryListener,
   private void createNote(NotebookSocket conn, ServiceContext context, Message message) throws IOException {
 
     String noteName = (String) message.get("name");
+    String workspace = message.workspace;
     String defaultInterpreterGroup = (String) message.get("defaultInterpreterGroup");
 
-    getNotebookService().createNote(noteName, defaultInterpreterGroup, true, context,
+    getNotebookService().createNote(noteName, defaultInterpreterGroup, true, workspace, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             connectionManager.addNoteConnection(note.getId(), conn);
             conn.send(serializeMessage(new Message(OP.NEW_NOTE).put("note", note)));
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(message.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
 
           @Override
@@ -1069,7 +1106,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
           public void onSuccess(String message, ServiceContext context) throws IOException {
             super.onSuccess(message, context);
             connectionManager.removeNoteConnection(noteId);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1086,7 +1123,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
             for (NoteInfo noteInfo : notesInfo) {
               connectionManager.removeNoteConnection(noteInfo.getId());
             }
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1099,7 +1136,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             broadcastNote(note);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1113,7 +1150,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
           @Override
           public void onSuccess(Void result, ServiceContext context) throws IOException {
             super.onSuccess(result, context);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
 
@@ -1127,7 +1164,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             broadcastNote(note);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
 
@@ -1143,7 +1180,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
           @Override
           public void onSuccess(Void result, ServiceContext context) throws IOException {
             super.onSuccess(result, context);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1156,7 +1193,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
           @Override
           public void onSuccess(Void result, ServiceContext context) throws IOException {
             super.onSuccess(result, context);
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1240,7 +1277,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
                          Message fromMessage) throws IOException {
     String noteId = connectionManager.getAssociatedNoteId(conn);
     String name = (String) fromMessage.get("name");
-    getNotebookService().cloneNote(noteId, name, context,
+    getNotebookService().cloneNote(noteId, "", name, fromMessage.workspace, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
           public void onSuccess(Note newNote, ServiceContext context) throws IOException {
@@ -1248,7 +1285,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
             connectionManager.addNoteConnection(newNote.getId(), conn);
             conn.send(serializeMessage(
                 new Message(OP.NEW_NOTE).put("note", newNote)));
-            broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+            broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
           }
         });
   }
@@ -1294,14 +1331,14 @@ public class NotebookServer implements AngularObjectRegistryListener,
       noteJson = new JupyterUtil().getJson(
           gson.toJson(fromMessage.get("note")), IdHashes.generateId(), "%python", "%md");
     }
-    return getNotebookService().importNote(noteName, noteJson, context,
+    return getNotebookService().importNote(noteName, noteJson, fromMessage.workspace, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             try {
               broadcastNote(note);
-              broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
+              broadcastNoteList(fromMessage.workspace, context.getAutheInfo(), context.getUserAndRoles());
             } catch (NullPointerException e) {
               // TODO(zjffdu) remove this try catch. This is only for test of
               // NotebookServerTest#testImportNotebook
@@ -1674,7 +1711,12 @@ public class NotebookServer implements AngularObjectRegistryListener,
           public void onSuccess(Map<String, String> properties, ServiceContext context) throws IOException {
             super.onSuccess(properties, context);
             properties.put("isRevisionSupported", String.valueOf(getNotebook().isRevisionSupported()));
-            conn.send(serializeMessage(new Message(OP.CONFIGURATIONS_INFO).put("configurations", properties)));
+            Message resp = new Message(OP.CONFIGURATIONS_INFO);
+            resp.put("configurations", properties);
+            resp.ticket = message.ticket;
+            resp.principal = message.principal;
+            resp.workspace = message.workspace;
+            conn.send(serializeMessage(resp));
           }
         });
   }
@@ -2246,6 +2288,9 @@ public class NotebookServer implements AngularObjectRegistryListener,
             Message resp = new Message(OP.EDITOR_SETTING);
             resp.put("paragraphId", paragraphId);
             resp.put("editor", settings);
+            resp.ticket = fromMessage.ticket;
+            resp.principal = fromMessage.principal;
+            resp.workspace = fromMessage.workspace;
             conn.send(serializeMessage(resp));
           }
 
@@ -2266,8 +2311,12 @@ public class NotebookServer implements AngularObjectRegistryListener,
         result.add(setting);
       }
     }
-    conn.send(serializeMessage(
-        new Message(OP.INTERPRETER_SETTINGS).put("interpreterSettings", result)));
+    Message resp = new Message(OP.INTERPRETER_SETTINGS);
+    resp.put("interpreterSettings", result);
+    resp.ticket = message.ticket;
+    resp.principal = message.principal;
+    resp.workspace = message.workspace;
+    conn.send(serializeMessage(resp));
   }
 
   @Override
@@ -2391,6 +2440,15 @@ public class NotebookServer implements AngularObjectRegistryListener,
         new AuthenticationInfo(ticketEntry.getPrincipal(), ticketEntry.getRoles(), ticketEntry.getTicket());
     Set<String> userAndRoles = new HashSet<>();
     userAndRoles.add(authInfo.getUser());
+    userAndRoles.addAll(authInfo.getRoles());
+    return new ServiceContext(authInfo, userAndRoles);
+  }
+
+  private ServiceContext getServiceContext(String workspace, TicketContainer.Entry ticketEntry) {
+    AuthenticationInfo authInfo =
+        new AuthenticationInfo(ticketEntry.getPrincipal(), ticketEntry.getRoles(), ticketEntry.getTicket());
+    Set<String> userAndRoles = new HashSet<>();
+    userAndRoles.add(workspace + "." + authInfo.getUser());
     userAndRoles.addAll(authInfo.getRoles());
     return new ServiceContext(authInfo, userAndRoles);
   }

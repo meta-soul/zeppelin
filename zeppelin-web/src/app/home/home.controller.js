@@ -39,12 +39,12 @@ function HomeCtrl($scope, noteListFactory, websocketMsgSrv, $rootScope, arrayOrd
   $scope.query = {q: ''};
 
   $scope.initHome = function() {
-    websocketMsgSrv.getHomeNote();
+    websocketMsgSrv.getHomeNote($scope.workspace);
     vm.noteCustomHome = false;
   };
 
   $scope.reloadNoteList = function() {
-    websocketMsgSrv.reloadAllNotesFromRepo();
+    websocketMsgSrv.reloadAllNotesFromRepo($scope.workspace);
     $scope.isReloadingNotes = true;
   };
 
@@ -91,47 +91,47 @@ function HomeCtrl($scope, noteListFactory, websocketMsgSrv, $rootScope, arrayOrd
   };
 
   $scope.renameNote = function(nodeId, nodePath) {
-    vm.noteActionService.renameNote(nodeId, nodePath);
+    vm.noteActionService.renameNote(nodeId, nodePath, $scope.workspace);
   };
 
   $scope.moveNoteToTrash = function(noteId) {
-    vm.noteActionService.moveNoteToTrash(noteId, false);
+    vm.noteActionService.moveNoteToTrash(noteId, false, $scope.workspace);
   };
 
   $scope.moveFolderToTrash = function(folderId) {
-    vm.noteActionService.moveFolderToTrash(folderId);
+    vm.noteActionService.moveFolderToTrash(folderId, $scope.workspace);
   };
 
   $scope.restoreNote = function(noteId) {
-    websocketMsgSrv.restoreNote(noteId);
+    websocketMsgSrv.restoreNote(noteId, $scope.workspace);
   };
 
   $scope.restoreFolder = function(folderId) {
-    websocketMsgSrv.restoreFolder(folderId);
+    websocketMsgSrv.restoreFolder(folderId, $scope.workspace);
   };
 
   $scope.restoreAll = function() {
-    vm.noteActionService.restoreAll();
+    vm.noteActionService.restoreAll($scope.workspace);
   };
 
   $scope.renameFolder = function(node) {
-    vm.noteActionService.renameFolder(node.id);
+    vm.noteActionService.renameFolder(node.id, $scope.workspace);
   };
 
   $scope.removeNote = function(noteId) {
-    vm.noteActionService.removeNote(noteId, false);
+    vm.noteActionService.removeNote(noteId, false, $scope.workspace);
   };
 
   $scope.removeFolder = function(folderId) {
-    vm.noteActionService.removeFolder(folderId);
+    vm.noteActionService.removeFolder(folderId, $scope.workspace);
   };
 
   $scope.emptyTrash = function() {
-    vm.noteActionService.emptyTrash();
+    vm.noteActionService.emptyTrash($scope.workspace);
   };
 
   $scope.clearAllParagraphOutput = function(noteId) {
-    vm.noteActionService.clearAllParagraphOutput(noteId);
+    vm.noteActionService.clearAllParagraphOutput(noteId, $scope.workspace);
   };
 
   $scope.isFilterNote = function(note) {

@@ -17,7 +17,7 @@ FROM ubuntu:20.04
 
 LABEL maintainer="Apache Software Foundation <dev@zeppelin.apache.org>"
 
-ENV Z_VERSION="0.10.0"
+ENV Z_VERSION="0.11.0-SNAPSHOT"
 
 ENV LOG_TAG="[ZEPPELIN_${Z_VERSION}]:" \
     ZEPPELIN_HOME="/opt/zeppelin" \
@@ -26,7 +26,9 @@ ENV LOG_TAG="[ZEPPELIN_${Z_VERSION}]:" \
     LC_ALL=en_US.UTF-8 \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 \
     ZEPPELIN_ADDR="0.0.0.0"
-
+RUN sed -i "s@http://.*archive.ubuntu.com@http://repo.huaweicloud.com@g" /etc/apt/sources.list && \
+    sed -i "s@http://.*security.ubuntu.com@http://repo.huaweicloud.com@g" /etc/apt/sources.list && \
+    apt-get update
 RUN echo "$LOG_TAG install basic packages" && \
     apt-get -y update && \
     # Switch back to install JRE instead of JDK when moving to JDK9 or later.
@@ -42,9 +44,9 @@ ARG miniconda_version="py37_4.9.2"
 ARG miniconda_sha256="79510c6e7bd9e012856e25dcb21b3e093aa4ac8113d9aa7e82a86987eabe1c31"
 # Install python and R packages via conda
 COPY env_python_3_with_R.yml /env_python_3_with_R.yml
-
+COPY Miniconda3-${miniconda_version}-Linux-x86_64.sh /miniconda.sh
 RUN set -ex && \
-    wget -nv https://repo.anaconda.com/miniconda/Miniconda3-${miniconda_version}-Linux-x86_64.sh -O miniconda.sh && \
+    #wget -nv https://repo.anaconda.com/miniconda/Miniconda3-${miniconda_version}-Linux-x86_64.sh -O miniconda.sh && \
     echo "${miniconda_sha256} miniconda.sh" > anaconda.sha256 && \
     sha256sum --strict -c anaconda.sha256 && \
     bash miniconda.sh -b -p /opt/conda && \
@@ -65,7 +67,8 @@ ENV PATH /opt/conda/envs/python_3_with_R/bin:/opt/conda/bin:$PATH
 
 RUN echo "$LOG_TAG Download Zeppelin binary" && \
     mkdir -p ${ZEPPELIN_HOME} && \
-    wget -nv -O /tmp/zeppelin-${Z_VERSION}-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-${Z_VERSION}/zeppelin-${Z_VERSION}-bin-all.tgz && \
+    # wget -nv -O /tmp/zeppelin-${Z_VERSION}-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-${Z_VERSION}/zeppelin-${Z_VERSION}-bin-all.tgz && \
+    cp ../../../../../zeppelin-distribution/zeppelin-${Z_VERSION}.tar.gz  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
     tar --strip-components=1 -zxvf  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz -C ${ZEPPELIN_HOME} && \
     rm -f /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
     chown -R root:root ${ZEPPELIN_HOME} && \

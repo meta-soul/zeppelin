@@ -356,6 +356,14 @@ public class ConnectionManager {
     }
   }
 
+  public void forAllUsers(UserIterator iterator, String Workspace) {
+    for (String user : userSocketMap.keySet()) {
+      Set<String> userAndRoles = authorizationService.getRoles(user);
+      userAndRoles.add(Workspace + "." + user);
+      iterator.handleUser(user, userAndRoles);
+    }
+  }
+
   public void broadcastNoteListExcept(List<NoteInfo> notesInfo,
                                       AuthenticationInfo subject) {
     Set<String> userAndRoles;

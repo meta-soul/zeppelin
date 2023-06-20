@@ -229,6 +229,7 @@ public class Message implements JsonSerializable {
   public String ticket = "anonymous";
   public String principal = "anonymous";
   public String roles = "";
+  public String workspace = "default";
 
   // Unique id generated from client side. to identify message.
   // When message from server is response to the client request

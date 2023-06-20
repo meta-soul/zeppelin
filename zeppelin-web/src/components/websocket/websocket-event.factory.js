@@ -30,7 +30,7 @@ function WebsocketEventFactory($rootScope, $websocket, $location, baseUrlSrv, sa
     $rootScope.$broadcast('setConnectedStatus', true);
     pingIntervalId = setInterval(function() {
       websocketCalls.sendNewEvent({op: 'PING'});
-    }, 10000);
+    }, 100000000);
   });
 
   websocketCalls.sendNewEvent = function(data) {

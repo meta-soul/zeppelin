@@ -48,4 +48,14 @@
       <secure>true</secure>
     </cookie-config>
   </session-config>
+
+  <filter>
+        <filter-name>ShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+  </filter>
+  <filter-mapping>
+        <url-pattern>/*</url-pattern>
+        <filter-name>ShiroFilter</filter-name>
+  </filter-mapping>
+  
 </web-app>

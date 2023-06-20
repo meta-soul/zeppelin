@@ -173,11 +173,11 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
   const initNotebook = function() {
     noteVarShareService.clear();
     if ($routeParams.revisionId) {
-      websocketMsgSrv.getNoteByRevision($routeParams.noteId, $routeParams.revisionId);
+      websocketMsgSrv.getNoteByRevision($routeParams.noteId, $routeParams.revisionId, $scope.workspace);
     } else {
-      websocketMsgSrv.getNote($routeParams.noteId);
+      websocketMsgSrv.getNote($routeParams.noteId, $scope.workspace);
     }
-    websocketMsgSrv.listRevisionHistory($routeParams.noteId);
+    websocketMsgSrv.listRevisionHistory($routeParams.noteId, $scope.workspace);
     let currentRoute = $route.current;
     if (currentRoute) {
       setTimeout(
@@ -238,7 +238,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
 
   // Move the note to trash and go back to the main page
   $scope.moveNoteToTrash = function(noteId) {
-    noteActionService.moveNoteToTrash(noteId, true);
+    noteActionService.moveNoteToTrash(noteId, true, $scope.workspace);
   };
 
   // Remove the note permanently if it's in the trash
@@ -253,7 +253,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
   // Export notebook
   let limit = 0;
 
-  websocketMsgSrv.listConfigurations();
+  websocketMsgSrv.listConfigurations($scope.workspace);
   $scope.$on('configurationsInfo', function(scope, event) {
     limit = event.configurations['zeppelin.websocket.max.text.message.size'];
   });
@@ -278,12 +278,12 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
 
   // Export nbformat
   $scope.exportNbformat = function() {
-    websocketMsgSrv.convertNote($scope.note.id, $scope.note.name);
+    websocketMsgSrv.convertNote($scope.note.id, $scope.note.name, $scope.workspace);
   };
 
   // Export nbformat
   $scope.reloadNote = function() {
-    websocketMsgSrv.reloadNote($scope.note.id);
+    websocketMsgSrv.reloadNote($scope.note.id, $scope.workspace);
   };
 
   // Clone note
@@ -294,7 +294,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
       message: 'Do you want to clone this note?',
       callback: function(result) {
         if (result) {
-          websocketMsgSrv.cloneNote(noteId);
+          websocketMsgSrv.cloneNote(noteId, $scope.workspace);
           $location.path('/');
         }
       },
@@ -309,7 +309,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
       message: 'Commit note to current repository?',
       callback: function(result) {
         if (result) {
-          websocketMsgSrv.checkpointNote($routeParams.noteId, commitMessage);
+          websocketMsgSrv.checkpointNote($routeParams.noteId, commitMessage, $scope.workspace);
         }
       },
     });
@@ -324,7 +324,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
       message: 'Set notebook head to current revision?',
       callback: function(result) {
         if (result) {
-          websocketMsgSrv.setNoteRevision($routeParams.noteId, $routeParams.revisionId);
+          websocketMsgSrv.setNoteRevision($routeParams.noteId, $routeParams.revisionId, $scope.workspace);
         }
       },
     });
@@ -408,7 +408,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
               params: p.settings.params,
             };
           });
-          websocketMsgSrv.runAllParagraphs(noteId, paragraphs);
+          websocketMsgSrv.runAllParagraphs(noteId, paragraphs, $scope.workspace);
         }
       },
     });
@@ -533,7 +533,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
     if (config) {
       $scope.note.config = config;
     }
-    websocketMsgSrv.updateNote($scope.note.id, $scope.note.name, $scope.note.config);
+    websocketMsgSrv.updateNote($scope.note.id, $scope.note.name, $scope.note.config, $scope.workspace);
   };
 
   /** Update the note name */
@@ -541,7 +541,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
     const trimmedNewName = newName.trim();
     if (trimmedNewName.length > 0 && $scope.note.name !== trimmedNewName) {
       $scope.note.name = trimmedNewName;
-      websocketMsgSrv.renameNote($scope.note.id, $scope.note.name, true);
+      websocketMsgSrv.renameNote($scope.note.id, $scope.note.name, true, $scope.workspace);
     }
   };
 
@@ -639,7 +639,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
   });
 
   let getInterpreterBindings = function() {
-    websocketMsgSrv.getInterpreterBindings($scope.note.id);
+    websocketMsgSrv.getInterpreterBindings($scope.note.id, $scope.workspace);
   };
 
   $scope.$on('interpreterBindings', function(event, data) {
@@ -724,7 +724,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
         }
       }
     }
-    websocketMsgSrv.saveInterpreterBindings($scope.note.id, selectedSettingIds);
+    websocketMsgSrv.saveInterpreterBindings($scope.note.id, selectedSettingIds, $scope.workspace);
     console.log('Interpreter bindings %o saved', selectedSettingIds);
 
     _.forEach($scope.note.paragraphs, function(n, key) {
@@ -766,7 +766,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
   };
 
   let getPermissions = function(callback) {
-    $http.get(baseUrlSrv.getRestApiBase() + '/notebook/' + $scope.note.id + '/permissions')
+    $http.get(baseUrlSrv.getRestApiBase() + '/notebook/' + $scope.note.id + '/permissions?workspace='+$scope.workspace)
     .success(function(data, status, headers, config) {
       $scope.permissions = data.body;
       $scope.permissionsOrig = angular.copy($scope.permissions); // to check dirty
@@ -1137,7 +1137,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
   };
 
   $scope.setPermissions = function() {
-    $http.put(baseUrlSrv.getRestApiBase() + '/notebook/' + $scope.note.id + '/permissions',
+    $http.put(baseUrlSrv.getRestApiBase() + '/notebook/' + $scope.note.id + '/permissions?workspace='+$scope.workspace,
       $scope.permissions, {withCredentials: true})
     .success(function(data, status, headers, config) {
       getPermissions(function() {
@@ -1222,7 +1222,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
     } catch(err) {
       myPermissions = [];
     }
-    myPermissions.push($rootScope.ticket.principal);
+    myPermissions.push($scope.workspace + '.' + $rootScope.ticket.principal);
 
     $scope.isOwner = !($scope.permissions.owners.length > 0 &&
        arrayIntersection(myPermissions, $scope.permissions.owners).length === 0);
@@ -1253,7 +1253,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
               $scope.note.config.personalizedMode = 'false';
             }
             $scope.note.config.personalizedMode = personalizedMode === 'true' ? 'false' : 'true';
-            websocketMsgSrv.updatePersonalizedMode($scope.note.id, $scope.note.config.personalizedMode);
+            websocketMsgSrv.updatePersonalizedMode($scope.note.id, $scope.note.config.personalizedMode, $scope.workspace);
           }
         },
       });
@@ -1320,7 +1320,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
     });
 
     if (!isNeedConfirm) {
-      websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs);
+      websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs, $scope.workspace);
     } else {
       BootstrapDialog.confirm({
         closable: true,
@@ -1328,7 +1328,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
         message: 'Run all above?',
         callback: function(result) {
           if (result) {
-            websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs);
+            websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs, $scope.workspace);
           }
         },
       });
@@ -1372,7 +1372,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
     });
 
     if (!isNeedConfirm) {
-      websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs);
+      websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs, $scope.workspace);
     } else {
       BootstrapDialog.confirm({
         closable: true,
@@ -1380,7 +1380,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
         message: 'Run current and all below?',
         callback: function(result) {
           if (result) {
-            websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs);
+            websocketMsgSrv.runAllParagraphs($scope.note.id, paragraphs, $scope.workspace);
           }
         },
       });
@@ -1419,7 +1419,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
       .element('#' + prevParagraph.id + '_paragraphColumn_main')
       .scope()
       .saveParagraph(prevParagraph);
-    websocketMsgSrv.moveParagraph(paragraph.id, newIndex);
+    websocketMsgSrv.moveParagraph(paragraph.id, newIndex, $scope.workspace);
   });
 
   $scope.$on('moveParagraphDown', function(event, paragraph) {
@@ -1444,7 +1444,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
       .element('#' + nextParagraph.id + '_paragraphColumn_main')
       .scope()
       .saveParagraph(nextParagraph);
-    websocketMsgSrv.moveParagraph(paragraph.id, newIndex);
+    websocketMsgSrv.moveParagraph(paragraph.id, newIndex, $scope.workspace);
   });
 
   $scope.$on('moveFocusToPreviousParagraph', function(event, currentParagraphId) {
@@ -1497,7 +1497,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
     if (newIndex < 0 || newIndex > $scope.note.paragraphs.length) {
       return;
     }
-    websocketMsgSrv.insertParagraph(newIndex);
+    websocketMsgSrv.insertParagraph(newIndex, $scope.workspace);
   });
 
   $scope.$on('setNoteContent', function(event, note) {
@@ -1594,11 +1594,11 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
   };
 
   $scope.saveNoteForms = function() {
-    websocketMsgSrv.saveNoteForms($scope.note);
+    websocketMsgSrv.saveNoteForms($scope.note, $scope.workspace);
   };
 
   $scope.removeNoteForms = function(formName) {
-    websocketMsgSrv.removeNoteForms($scope.note, formName);
+    websocketMsgSrv.removeNoteForms($scope.note, formName, $scope.workspace);
   };
 
   $scope.$on('$destroy', function() {

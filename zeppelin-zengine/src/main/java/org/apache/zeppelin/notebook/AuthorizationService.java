@@ -95,6 +95,18 @@ public class AuthorizationService implements ClusterEventListener {
   }
 
   /**
+   * Create NoteAuth, this method only create NoteAuth in memory, you need to call method
+   * saveNoteAuth to persistent it to storage.
+   * @param noteId
+   * @param subject
+   * @throws IOException
+   */
+  public void createNoteAuth(String noteId, String workspace, AuthenticationInfo subject) {
+    NoteAuth noteAuth = new NoteAuth(noteId, workspace, subject, conf);
+    this.notesAuth.put(noteId, noteAuth);
+  }
+
+  /**
    * Persistent NoteAuth
    *
    * @throws IOException
