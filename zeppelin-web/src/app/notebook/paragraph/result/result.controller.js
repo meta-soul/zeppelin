@@ -772,7 +772,8 @@ function ResultCtrl($scope, $rootScope, $route, $window, $routeParams, $location
 
     if ($scope.revisionView !== true) {
       if (! $scope.viewOnly) {
-        return websocketMsgSrv.commitParagraph(paragraph.id, title, text, newParagraphConfig, params);
+        return websocketMsgSrv.commitParagraph(paragraph.id, title, text, newParagraphConfig, params,
+          $route.current.pathParams.noteId, $scope.workspace);
       }
     }
   };
