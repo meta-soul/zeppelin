@@ -240,6 +240,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   public Interpreter getBindedInterpreter() throws InterpreterNotFoundException {
     ExecutionContext executionContext = note.getExecutionContext();
     executionContext.setUser(user);
+    executionContext.setWorkSpace(getAuthenticationInfo().getWorkspace());
     executionContext.setInterpreterGroupId(interpreterGroupId);
     return this.note.getInterpreterFactory().getInterpreter(intpText, executionContext);
   }
@@ -401,8 +402,8 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
         LOGGER.error("Can not find interpreter name {}", intpText);
         throw new RuntimeException("Can not find interpreter for " + intpText);
       }
-      LOGGER.info("Run paragraph [paragraph_id: {}, interpreter: {}, note_id: {}, user: {}]",
-              getId(), this.interpreter.getClassName(), note.getId(), subject.getUser());
+      LOGGER.info("Run paragraph [paragraph_id: {}, interpreter: {}, note_id: {}, user: {}, workspace:{}]",
+              getId(), this.interpreter.getClassName(), note.getId(), subject.getUser(), subject.getWorkspace());
       InterpreterSetting interpreterSetting = ((ManagedInterpreterGroup)
               interpreter.getInterpreterGroup()).getInterpreterSetting();
       if (interpreterSetting.getStatus() != InterpreterSetting.Status.READY) {

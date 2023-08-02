@@ -52,7 +52,7 @@ public class SparkInterpreterLauncherTest {
       System.clearProperty(confVar.getVarName());
     }
 
-    sparkHome = DownloadUtils.downloadSpark("2.4.7", "2.7");
+    sparkHome = DownloadUtils.downloadSpark("3.3.2", "3");
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
             new File("..").getAbsolutePath());
 
@@ -97,6 +97,7 @@ public class SparkInterpreterLauncherTest {
 
     InterpreterOption option = new InterpreterOption();
     InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null, "user1", "intpGroupId", "groupId", "spark", "spark", 0, "host");
+    context.setWorkSpace("public");
     InterpreterClient client = launcher.launch(context);
     assertTrue( client instanceof ExecRemoteInterpreterProcess);
     ExecRemoteInterpreterProcess interpreterProcess = (ExecRemoteInterpreterProcess) client;

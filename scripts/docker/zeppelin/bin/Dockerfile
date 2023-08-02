@@ -18,6 +18,7 @@ FROM ubuntu:20.04
 LABEL maintainer="Apache Software Foundation <dev@zeppelin.apache.org>"
 
 ENV Z_VERSION="0.11.0-SNAPSHOT"
+ARG PROJECT_DIR
 
 ENV LOG_TAG="[ZEPPELIN_${Z_VERSION}]:" \
     ZEPPELIN_HOME="/opt/zeppelin" \
@@ -68,7 +69,7 @@ ENV PATH /opt/conda/envs/python_3_with_R/bin:/opt/conda/bin:$PATH
 RUN echo "$LOG_TAG Download Zeppelin binary" && \
     mkdir -p ${ZEPPELIN_HOME} && \
     # wget -nv -O /tmp/zeppelin-${Z_VERSION}-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-${Z_VERSION}/zeppelin-${Z_VERSION}-bin-all.tgz && \
-    cp ../../../../../zeppelin-distribution/zeppelin-${Z_VERSION}.tar.gz  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
+    cp ${PROJECT_DIR}/zeppelin-distribution/target/zeppelin-${Z_VERSION}.tar.gz  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
     tar --strip-components=1 -zxvf  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz -C ${ZEPPELIN_HOME} && \
     rm -f /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
     chown -R root:root ${ZEPPELIN_HOME} && \

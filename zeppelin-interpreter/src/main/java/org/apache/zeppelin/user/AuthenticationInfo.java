@@ -123,6 +123,14 @@ public class AuthenticationInfo implements JsonSerializable {
     return usersAndRoles;
   }
 
+  public String getWorkspace() {
+    return workspace;
+  }
+
+  public void setWorkspace(String workspace) {
+    this.workspace = workspace;
+  }
+
   public String getTicket() {
     return ticket;
   }

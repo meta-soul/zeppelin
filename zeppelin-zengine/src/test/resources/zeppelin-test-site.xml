@@ -53,9 +53,9 @@
 <!-- If used S3 to storage the notebooks, it is necessary the following folder structure bucketname/username/notebook/ -->
 <!--
 <property>
-  <name>zeppelin.notebook.s3.user</name>
-  <value>user</value>
-  <description>user name for s3 folder structure</description>
+  <name>zeppelin.notebook.s3.lakeSoulUser</name>
+  <value>lakeSoulUser</value>
+  <description>lakeSoulUser name for s3 folder structure</description>
 </property>
 
 <property>
@@ -152,6 +152,33 @@
   <name>zeppelin.notebook.public</name>
   <value>true</value>
   <description>Make notebook public by default when created, private otherwise</description>
+</property>
+<property>
+  <name>zeppelin.lakesoul_dashboard.pg.url</name>
+  <value>jdbc:postgresql://127.0.0.1:5432/lakesoul_dashboard?stringtype=unspecified</value>
+  <description>Lakesoul Dashboard admin PG user.</description>
+</property>
+<property>
+  <name>zeppelin.lakesoul_dashboard.pg.username</name>
+  <value>lakesoul_test</value>
+  <description>Lakesoul Dashboard admin PG user.</description>
+</property>
+<property>
+  <name>zeppelin.lakesoul_dashboard.pg.password</name>
+  <value>lakesoul_test</value>
+  <description>Lakesoul Dashboard admin PG password.</description>
+</property>
+
+<property>
+  <name>zeppelin.lakesoul.meta.pg.url</name>
+  <value>jdbc:postgresql://127.0.0.1:5432/lakesoul_test?stringtype=unspecified</value>
+  <description>Lakesoul Meta DB URL.</description>
+</property>
+
+<property>
+  <name>zeppelin.lakesoul.meta.pg.driver</name>
+  <value>com.lakesoul.shaded.org.postgresql.Driver</value>
+  <description>Lakesoul Meta DB Driver Class.</description>
 </property>
 
 </configuration>

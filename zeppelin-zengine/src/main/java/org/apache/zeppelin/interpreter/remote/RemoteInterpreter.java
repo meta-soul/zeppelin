@@ -100,7 +100,7 @@ public class RemoteInterpreter extends Interpreter {
       return this.interpreterProcess;
     }
     ManagedInterpreterGroup intpGroup = getInterpreterGroup();
-    this.interpreterProcess = intpGroup.getOrCreateInterpreterProcess(getUserName(), properties);
+    this.interpreterProcess = intpGroup.getOrCreateInterpreterProcess(getUserName(), getWorkSpace(), properties);
     return interpreterProcess;
   }
 
@@ -119,7 +119,7 @@ public class RemoteInterpreter extends Interpreter {
         // depends on other interpreter. e.g. PySparkInterpreter depends on SparkInterpreter.
         // also see method Interpreter.getInterpreterInTheSameSessionByClassName
         for (Interpreter interpreter : getInterpreterGroup()
-                                        .getOrCreateSession(this.getUserName(), sessionId)) {
+                                        .getOrCreateSession(this.getUserName(), this.getWorkSpace(), sessionId)) {
           try {
             if (!(interpreter instanceof ConfInterpreter)) {
               ((RemoteInterpreter) interpreter).internal_create();

@@ -22,18 +22,14 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.recovery.RecoveryStorage;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringJoiner;
-import java.util.Set;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
@@ -60,6 +56,9 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
     envs.put("FLINK_PLUGINS_DIR", flinkHome + "/plugins");
 
     normalizeConfiguration(context);
+    // put Lakesoul PG conf to properties
+    Map<String,String> pgEnvMap = getPostgreEnv(context);
+    setupPropertiesForLakesoulPG(context, pgEnvMap);
 
     String flinkExecutionMode = context.getProperties().getProperty("flink.execution.mode");
     if (!FLINK_EXECUTION_MODES.contains(flinkExecutionMode)) {
@@ -98,6 +97,16 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
     }
 
     return envs;
+  }
+
+
+
+  private void setupPropertiesForLakesoulPG(InterpreterLaunchContext context, Map<String, String> pgEnvMap) {
+    Properties properties = context.getProperties();
+    pgEnvMap.forEach((key, value) -> {
+      properties.put("containerized.master.env." + key, value);
+      properties.put("containerized.taskmanager.env." + key, value);
+    } );
   }
 
   // do mapping between configuration of different execution modes.

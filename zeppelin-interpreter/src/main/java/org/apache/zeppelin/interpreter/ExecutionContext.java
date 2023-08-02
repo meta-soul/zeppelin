@@ -31,6 +31,8 @@ public class ExecutionContext {
   // When is the execution triggered, e.g. when the cron job is triggered or when the rest api is triggered.
   private String startTime;
 
+  private String workSpace = "public";
+
   public ExecutionContext(){
 
   }
@@ -39,6 +41,14 @@ public class ExecutionContext {
     this.user = user;
     this.noteId = noteId;
     this.defaultInterpreterGroup = defaultInterpreterGroup;
+  }
+
+  public String getWorkSpace() {
+    return workSpace;
+  }
+
+  public void setWorkSpace(String workSpace) {
+    this.workSpace = workSpace;
   }
 
   public String getUser() {

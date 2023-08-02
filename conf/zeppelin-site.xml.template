@@ -817,5 +817,33 @@
   <value></value>
   <description>fields to be excluded from being saved in note files, with Paragraph prefix mean the fields in Paragraph, e.g. Paragraph.results</description>
 </property>
+<!--LakeSoul Dashboard PG Settings-->
+<property>
+  <name>zeppelin.lakesoul_dashboard.pg.url</name>
+  <value>jdbc:postgresql://127.0.0.1:5432/lakesoul_dashboard?stringtype=unspecified</value>
+  <description>Lakesoul Dashboard admin PG user.</description>
+</property>
+<property>
+  <name>zeppelin.lakesoul_dashboard.pg.username</name>
+  <value>lakesoul_test</value>
+  <description>Lakesoul Dashboard admin PG user.</description>
+</property>
+<property>
+  <name>zeppelin.lakesoul_dashboard.pg.password</name>
+  <value>lakesoul_test</value>
+  <description>Lakesoul Dashboard admin PG password.</description>
+</property>
+<!--LakeSoul DB Meta PG Settings-->
+<property>
+  <name>zeppelin.lakesoul.meta.pg.url</name>
+  <value>jdbc:postgresql://127.0.0.1:5432/lakesoul_test?stringtype=unspecified</value>
+  <description>Lakesoul Meta DB URL.</description>
+</property>
+
+<property>
+  <name>zeppelin.lakesoul.meta.pg.driver</name>
+  <value>com.lakesoul.shaded.org.postgresql.Driver</value>
+  <description>Lakesoul Meta DB Driver Class.</description>
+</property>
 
 </configuration>

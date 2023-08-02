@@ -45,6 +45,7 @@ import org.apache.zeppelin.interpreter.remote.RemoteAngularObjectRegistry;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcess;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
+import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.plugin.PluginManager;
 import org.slf4j.Logger;
@@ -845,6 +846,35 @@ public class InterpreterSetting {
     return interpreters;
   }
 
+  List<Interpreter> createInterpreters(String user, String workSpace, String interpreterGroupId, String sessionId) {
+    List<Interpreter> interpreters = new ArrayList<>();
+    List<InterpreterInfo> interpreterInfos = getInterpreterInfos();
+    Properties intpProperties = getJavaProperties();
+    for (InterpreterInfo info : interpreterInfos) {
+      Interpreter interpreter = new RemoteInterpreter(intpProperties, sessionId,
+              info.getClassName(), user);
+      interpreter.setWorkSpace(workSpace);
+      if (info.isDefaultInterpreter()) {
+        interpreters.add(0, interpreter);
+      } else {
+        interpreters.add(interpreter);
+      }
+      LOGGER.info("Interpreter {} created for user: {}, sessionId: {}",
+              interpreter.getClassName(), user, sessionId);
+    }
+
+    // TODO(zjffdu) this kind of hardcode is ugly. For now SessionConfInterpreter is used
+    // for livy, we could add new property in interpreter-setting.json when there's new interpreter
+    // require SessionConfInterpreter
+    if (group.equals("livy")) {
+      interpreters.add(
+              new SessionConfInterpreter(intpProperties, sessionId, interpreterGroupId, this));
+    } else {
+      interpreters.add(new ConfInterpreter(intpProperties, sessionId, interpreterGroupId, this));
+    }
+    return interpreters;
+  }
+
   synchronized RemoteInterpreterProcess createInterpreterProcess(String interpreterGroupId,
                                                                  String userName,
                                                                  Properties properties)
@@ -858,6 +888,20 @@ public class InterpreterSetting {
     return process;
   }
 
+  synchronized RemoteInterpreterProcess createInterpreterProcess(String interpreterGroupId,
+                                                                 String userName,
+                                                                 String workSpace,
+                                                                 Properties properties)
+          throws IOException {
+    InterpreterLauncher launcher = createLauncher(properties);
+    InterpreterLaunchContext launchContext = new
+            InterpreterLaunchContext(properties, option, interpreterRunner, userName,
+            interpreterGroupId, id, group, name, interpreterEventServer.getPort(), interpreterEventServer.getHost());
+    launchContext.setWorkSpace(workSpace);
+    RemoteInterpreterProcess process = (RemoteInterpreterProcess) launcher.launch(launchContext);
+    recoveryStorage.onInterpreterClientStart(process);
+    return process;
+  }
   List<Interpreter> getOrCreateSession(String user, String noteId) {
     return getOrCreateSession(getExecutionContext(user, noteId));
   }
@@ -866,7 +910,7 @@ public class InterpreterSetting {
     ManagedInterpreterGroup interpreterGroup = getOrCreateInterpreterGroup(executionContext);
     Preconditions.checkNotNull(interpreterGroup, "No InterpreterGroup existed for {}", executionContext);
     String sessionId = getInterpreterSessionId(executionContext);
-    return interpreterGroup.getOrCreateSession(executionContext.getUser(), sessionId);
+    return interpreterGroup.getOrCreateSession(executionContext.getUser(), executionContext.getWorkSpace(), sessionId);
   }
 
   public Interpreter getDefaultInterpreter(String user, String noteId) {
@@ -1221,4 +1265,5 @@ public class InterpreterSetting {
     }
 
   }
+
 }

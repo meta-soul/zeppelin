@@ -27,11 +27,14 @@ import org.apache.zeppelin.interpreter.recovery.RecoveryStorage;
 import org.apache.zeppelin.interpreter.remote.ExecRemoteInterpreterProcess;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterRunningProcess;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterUtils;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -90,5 +93,27 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
     }
     env.put("INTERPRETER_GROUP_ID", context.getInterpreterGroupId());
     return env;
+  }
+
+  public Map<String, String> getPostgreEnv(InterpreterLaunchContext context) throws IOException {
+    String user = context.getUserName();
+    String password = null;
+    try {
+      password = DBUtils.getPasswordByName(user);
+    } catch (SQLException e) {
+      throw new IOException("Get user lakesoul meta db password Failed :" + e.getMessage() );
+    }
+    String workspace = context.getWorkSpace();
+
+    Map<String, String> envMap = new HashMap<>();
+    String pgUrl = zConf.getLakesoulMetaPGUrl();
+    String pgDrier = zConf.getLakesoulMetaPGDriver();
+    envMap.put("LAKESOUL_PG_URL", pgUrl);
+    envMap.put("LAKESOUL_PG_DRIVER", pgDrier);
+    envMap.put("LAKESOUL_PG_USERNAME", user);
+    envMap.put("LAKESOUL_PG_PASSWORD", password);
+    envMap.put("LAKESOUL_CURRENT_DOMAIN", workspace);
+
+    return envMap;
   }
 }
