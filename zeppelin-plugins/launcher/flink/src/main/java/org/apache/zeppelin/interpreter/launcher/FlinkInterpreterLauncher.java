@@ -102,6 +102,7 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
 
 
   private void setupPropertiesForLakesoulPG(InterpreterLaunchContext context, Map<String, String> pgEnvMap) {
+
     Properties properties = context.getProperties();
     pgEnvMap.forEach((key, value) -> {
       properties.put("containerized.master.env." + key, value);

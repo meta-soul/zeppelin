@@ -641,7 +641,7 @@ public class NotebookRestApi extends AbstractRestApi {
       throws IOException {
 
     String user = authenticationService.getPrincipal();
-    LOGGER.info("Insert paragraph {} {}", noteId, message);
+    LOGGER.info("Insert paragraph {} {} for {}:{}", noteId, message, workspace, user);
     AuthenticationInfo subject = new AuthenticationInfo(workspace, user);
     return notebook.processNote(noteId,
       note -> {
@@ -980,7 +980,7 @@ public class NotebookRestApi extends AbstractRestApi {
       throws IOException, IllegalArgumentException {
 
     LOGGER.info("Run paragraph job asynchronously {} {} {}", noteId, paragraphId, message);
-
+    LOGGER.info("RUN paragraph asynchronously {} {} for {}:{}", noteId, message, workspace, authenticationService.getPrincipal());
     return notebook.processNote(noteId,
       note -> {
         checkIfNoteIsNotNull(note, noteId);
@@ -1019,7 +1019,7 @@ public class NotebookRestApi extends AbstractRestApi {
                                             String message, @QueryParam("workspace") String workspace)
       throws IOException, IllegalArgumentException {
     LOGGER.info("Run paragraph synchronously {} {} {}", noteId, paragraphId, message);
-
+    LOGGER.info("RUN paragraph synchronously {} {} for {}:{}", noteId, message, workspace, authenticationService.getPrincipal());
     return notebook.processNote(noteId,
       note -> {
         checkIfNoteIsNotNull(note, noteId);

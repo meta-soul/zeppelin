@@ -3,10 +3,9 @@ package org.dmetasoul.lakesoul;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.interpreter.launcher.SparkInterpreterLauncher;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +56,7 @@ public class DBUtils {
         // Query the user table and return a list of User objects
         String query = "SELECT pg_password FROM t_user where name = ?";
         Object[] params = {name};
+        LOGGER.info("Start Query User {} Lakesoul Password ....", name);
         String password = queryRunner.query(query, new ScalarHandler<>(),params);
 
         if (password != null) {

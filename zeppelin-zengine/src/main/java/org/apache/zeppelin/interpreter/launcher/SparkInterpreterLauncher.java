@@ -449,6 +449,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
 
 
   private void setupPropertiesForLakesoulPG(Properties sparkProperties, Map<String,String> confMap){
+
     confMap.forEach((key, value) -> sparkProperties.setProperty("spark.yarn.appMasterEnv." + key, value));
   }
   private boolean isYarnMode(InterpreterLaunchContext context) {

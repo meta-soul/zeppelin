@@ -898,6 +898,7 @@ public class InterpreterSetting {
             InterpreterLaunchContext(properties, option, interpreterRunner, userName,
             interpreterGroupId, id, group, name, interpreterEventServer.getPort(), interpreterEventServer.getHost());
     launchContext.setWorkSpace(workSpace);
+    LOGGER.info("Launch Before launchContext user is {}, workspace is {}", userName, workSpace);
     RemoteInterpreterProcess process = (RemoteInterpreterProcess) launcher.launch(launchContext);
     recoveryStorage.onInterpreterClientStart(process);
     return process;

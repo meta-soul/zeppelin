@@ -522,7 +522,7 @@ public class NotebookService {
     if (note == null) {
       return false;
     }
-    LOGGER.info("Start to run paragraph: {} of note: {}", paragraphId, note.getId());
+    LOGGER.info("Start to run paragraph: {} of note: {}, user is {}, workspace is {}", paragraphId, note.getId(), context.getAutheInfo().getUser(), context.getAutheInfo().getWorkspace());
     if (!checkPermission(note.getId(), Permission.RUNNER, Message.OP.RUN_PARAGRAPH, context, callback)) {
       return false;
     }

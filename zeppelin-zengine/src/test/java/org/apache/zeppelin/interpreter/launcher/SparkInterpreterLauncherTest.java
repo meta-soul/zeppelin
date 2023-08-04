@@ -125,7 +125,7 @@ public class SparkInterpreterLauncherTest {
     properties.setProperty("spark.jars", "jar_1");
 
     InterpreterOption option = new InterpreterOption();
-    InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null, "user1", "intpGroupId", "groupId", "spark", "spark", 0, "host");
+    InterpreterLaunchContext context = new InterpreterLaunchContext(properties, option, null, "admin", "intpGroupId", "groupId", "spark", "spark", 0, "host");
     InterpreterClient client = launcher.launch(context);
     assertTrue( client instanceof ExecRemoteInterpreterProcess);
     ExecRemoteInterpreterProcess interpreterProcess = (ExecRemoteInterpreterProcess) client;

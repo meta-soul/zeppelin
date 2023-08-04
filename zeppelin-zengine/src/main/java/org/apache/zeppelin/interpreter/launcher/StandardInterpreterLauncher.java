@@ -18,6 +18,7 @@
 
 package org.apache.zeppelin.interpreter.launcher;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
@@ -100,19 +101,20 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
     String password = null;
     try {
       password = DBUtils.getPasswordByName(user);
-    } catch (SQLException e) {
+    } catch (Exception e) {
       throw new IOException("Get user lakesoul meta db password Failed :" + e.getMessage() );
     }
     String workspace = context.getWorkSpace();
 
     Map<String, String> envMap = new HashMap<>();
     String pgUrl = zConf.getLakesoulMetaPGUrl();
-    String pgDrier = zConf.getLakesoulMetaPGDriver();
-    envMap.put("LAKESOUL_PG_URL", pgUrl);
-    envMap.put("LAKESOUL_PG_DRIVER", pgDrier);
-    envMap.put("LAKESOUL_PG_USERNAME", user);
-    envMap.put("LAKESOUL_PG_PASSWORD", password);
-    envMap.put("LAKESOUL_CURRENT_DOMAIN", workspace);
+    String pgDriver = zConf.getLakesoulMetaPGDriver();
+
+    envMap.put("LAKESOUL_PG_URL", Preconditions.checkNotNull(pgUrl,"pgUrl is null"));
+    envMap.put("LAKESOUL_PG_DRIVER", Preconditions.checkNotNull(pgDriver,"pgDriver is null"));
+    envMap.put("LAKESOUL_PG_USERNAME", Preconditions.checkNotNull(user,"pg user is null"));
+    envMap.put("LAKESOUL_PG_PASSWORD", Preconditions.checkNotNull(password, "pg password is null"));
+    envMap.put("LAKESOUL_CURRENT_DOMAIN", Preconditions.checkNotNull(workspace, "pg domain is null"));
 
     return envMap;
   }

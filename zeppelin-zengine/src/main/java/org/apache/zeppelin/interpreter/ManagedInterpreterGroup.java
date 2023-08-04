@@ -79,7 +79,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
           throws IOException {
     synchronized (interpreterProcessCreationLock) {
       if (remoteInterpreterProcess == null) {
-        LOGGER.info("Create InterpreterProcess for InterpreterGroup: {}", getId());
+        LOGGER.info("Create InterpreterProcess for InterpreterGroup: {}, user is {}, workspace is {}", getId(), userName, workSpace);
         remoteInterpreterProcess = interpreterSetting.createInterpreterProcess(id, userName, workSpace,
                 properties);
         remoteInterpreterProcess.start(userName);
