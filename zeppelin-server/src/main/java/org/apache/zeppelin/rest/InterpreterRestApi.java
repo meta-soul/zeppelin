@@ -52,6 +52,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
@@ -193,8 +194,9 @@ public class InterpreterRestApi extends AbstractRestApi {
   @PUT
   @Path("setting/restart/{settingId}")
   @ZeppelinApi
-  public Response restartSetting(String message, @PathParam("settingId") String settingId) {
-    LOGGER.info("Restart interpreterSetting {}, msg={}, user={}", settingId, message, authenticationService.getPrincipal());
+  public Response restartSetting(String message, @PathParam("settingId") String settingId, 
+                                 @QueryParam("workspace") String workspace) {
+    LOGGER.info("Restart interpreterSetting {}, msg={}, user={}, workspace={}", settingId, message, authenticationService.getPrincipal(), workspace);
 
     InterpreterSetting setting = interpreterSettingManager.get(settingId);
     try {
@@ -205,7 +207,7 @@ public class InterpreterRestApi extends AbstractRestApi {
         interpreterSettingManager.close(settingId);
       } else {
         Set<String> entities = new HashSet<>();
-        entities.add(authenticationService.getPrincipal());
+        entities.add(workspace + "." + authenticationService.getPrincipal());
         entities.addAll(authenticationService.getAssociatedRoles());
         if (authorizationService.hasRunPermission(entities, noteId) ||
                 authorizationService.hasWritePermission(entities, noteId) ||

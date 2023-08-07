@@ -1083,7 +1083,8 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
           thisConfirm.$modalFooter.find('button:contains("OK")')
             .html('<i class="fa fa-circle-o-notch fa-spin"></i> Saving Setting');
 
-          $http.put(baseUrlSrv.getRestApiBase() + '/interpreter/setting/restart/' + interpreter.id, payload)
+          $http.put(baseUrlSrv.getRestApiBase() + '/interpreter/setting/restart/' + interpreter.id
+                    + '?workspace='+$scope.workspace, payload)
             .success(function(data, status, headers, config) {
               let index = _.findIndex($scope.interpreterSettings, {'id': interpreter.id});
               $scope.interpreterSettings[index] = data.body;
