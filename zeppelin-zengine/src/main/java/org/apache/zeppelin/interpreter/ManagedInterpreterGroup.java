@@ -74,6 +74,22 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     }
   }
 
+  public RemoteInterpreterProcess getOrCreateInterpreterProcess(String userName,String workSpace,
+                                                                Properties properties)
+          throws IOException {
+    synchronized (interpreterProcessCreationLock) {
+      if (remoteInterpreterProcess == null) {
+        LOGGER.info("Create InterpreterProcess for InterpreterGroup: {}, user is {}, workspace is {}", getId(), userName, workSpace);
+        remoteInterpreterProcess = interpreterSetting.createInterpreterProcess(id, userName, workSpace,
+                properties);
+        remoteInterpreterProcess.start(userName);
+        remoteInterpreterProcess.init(ZeppelinConfiguration.create());
+        getInterpreterSetting().getRecoveryStorage()
+                .onInterpreterClientStart(remoteInterpreterProcess);
+      }
+      return remoteInterpreterProcess;
+    }
+  }
   public RemoteInterpreterProcess getInterpreterProcess() {
     return remoteInterpreterProcess;
   }
@@ -180,6 +196,23 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
       sessions.put(sessionId, interpreters);
       return interpreters;
     }
+
+
+  }
+  public synchronized List<Interpreter> getOrCreateSession(String user, String workSpace, String sessionId) {
+    if (sessions.containsKey(sessionId)) {
+      return sessions.get(sessionId);
+    } else {
+      List<Interpreter> interpreters = interpreterSetting.createInterpreters(user, workSpace, id, sessionId);
+      for (Interpreter interpreter : interpreters) {
+        interpreter.setInterpreterGroup(this);
+      }
+      LOGGER.info("Create Session: {} in InterpreterGroup: {} for user: {}", sessionId, id, user);
+      sessions.put(sessionId, interpreters);
+      return interpreters;
+    }
+
+
   }
 
   public boolean isEmpty() {

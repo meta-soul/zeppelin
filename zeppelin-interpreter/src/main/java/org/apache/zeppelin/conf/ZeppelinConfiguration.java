@@ -292,6 +292,25 @@ public class ZeppelinConfiguration {
     return getBooleanValue(propertyName, defaultValue);
   }
 
+  public String getLakesoulDashBoardPGUrl() {
+    return getString(ConfVars.ZEPPELIN_LAKESOUL_DASHBOARD_PG_URL);
+  }
+
+  public String getLakesoulMetaPGUrl() {
+    return getString(ConfVars.ZEPPELIN_LAKESOUL_META_PG_URL);
+  }
+
+  public String getLakesoulMetaPGDriver() {
+    return getString(ConfVars.ZEPPELIN_LAKESOUL_META_PG_DRIVER);
+  }
+  public String getLakesoulDashBoardPGUserName() {
+    return getString(ConfVars.ZEPPELIN_LAKESOUL_DASHBOARD_PG_USERNAME);
+  }
+
+  public String getLakesoulDashBoardPGPassword() {
+    return getString(ConfVars.ZEPPELIN_LAKESOUL_DASHBOARD_PG_PASSWORD);
+  }
+
   public String getZeppelinHome() {
     return getString(ConfVars.ZEPPELIN_HOME);
   }
@@ -1119,8 +1138,14 @@ public class ZeppelinConfiguration {
     ZEPPELIN_SPARK_ONLY_YARN_CLUSTER("zeppelin.spark.only_yarn_cluster", false),
     ZEPPELIN_SESSION_CHECK_INTERVAL("zeppelin.session.check_interval", 60 * 10 * 1000),
     ZEPPELIN_NOTE_CACHE_THRESHOLD("zeppelin.note.cache.threshold", 50),
-    ZEPPELIN_NOTE_FILE_EXCLUDE_FIELDS("zeppelin.note.file.exclude.fields", "");
+    ZEPPELIN_NOTE_FILE_EXCLUDE_FIELDS("zeppelin.note.file.exclude.fields", ""),
 
+    ZEPPELIN_LAKESOUL_DASHBOARD_PG_URL("zeppelin.lakesoul_dashboard.pg.url","jdbc:postgresql://127.0.0.1:5432/lakesoul_dashboard?stringtype=unspecified"),
+    ZEPPELIN_LAKESOUL_DASHBOARD_PG_USERNAME("zeppelin.lakesoul_dashboard.pg.username","lakesoul_test"),
+    ZEPPELIN_LAKESOUL_DASHBOARD_PG_PASSWORD("zeppelin.lakesoul_dashboard.pg.password","lakesoul_test"),
+
+    ZEPPELIN_LAKESOUL_META_PG_URL("zeppelin.lakesoul.meta.pg.url","jdbc:postgresql://127.0.0.1:5432/lakesoul_test?stringtype=unspecified"),
+    ZEPPELIN_LAKESOUL_META_PG_DRIVER("zeppelin.lakesoul.meta.pg.driver","com.lakesoul.shaded.org.postgresql.Driver");
     private String varName;
     private Class<?> varClass;
     private String stringValue;

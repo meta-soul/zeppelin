@@ -150,6 +150,8 @@ public abstract class Interpreter {
   protected Properties properties;
   protected String userName;
 
+  protected String workSpace;
+
   @ZeppelinApi
   public Interpreter(Properties properties) {
     this.properties = properties;
@@ -196,6 +198,14 @@ public abstract class Interpreter {
 
   public String getUserName() {
     return this.userName;
+  }
+
+  public String getWorkSpace() {
+    return workSpace;
+  }
+
+  public void setWorkSpace(String workSpace) {
+    this.workSpace = workSpace;
   }
 
   public void setInterpreterGroup(InterpreterGroup interpreterGroup) {

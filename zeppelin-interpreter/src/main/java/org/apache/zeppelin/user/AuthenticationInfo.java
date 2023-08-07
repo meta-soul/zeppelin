@@ -67,7 +67,12 @@ public class AuthenticationInfo implements JsonSerializable {
     this.ticket = ticket;
     this.roles = roles;
   }
-
+  public AuthenticationInfo(String workspace, String user, Set<String> roles, String ticket) {
+    this.workspace = workspace;
+    this.user = user;
+    this.ticket = ticket;
+    this.roles = roles;
+  }
   public AuthenticationInfo(String user, String roles, String ticket) {
     this.user = user;
     this.ticket = ticket;
@@ -121,6 +126,14 @@ public class AuthenticationInfo implements JsonSerializable {
     }
 
     return usersAndRoles;
+  }
+
+  public String getWorkspace() {
+    return workspace;
+  }
+
+  public void setWorkspace(String workspace) {
+    this.workspace = workspace;
   }
 
   public String getTicket() {

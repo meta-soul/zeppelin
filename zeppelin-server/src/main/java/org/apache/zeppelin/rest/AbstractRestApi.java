@@ -20,6 +20,7 @@ package org.apache.zeppelin.rest;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.zeppelin.service.AuthenticationService;
@@ -48,11 +49,11 @@ public class AbstractRestApi {
     return new ServiceContext(authInfo, userAndRoles);
   }
 
-  protected ServiceContext getServiceContext(String workpsace) {
-    AuthenticationInfo authInfo = new AuthenticationInfo(authenticationService.getPrincipal());
+  protected ServiceContext getServiceContext(String workspace) {
+    AuthenticationInfo authInfo = new AuthenticationInfo(workspace, authenticationService.getPrincipal());
     authInfo.setRoles(authenticationService.getAssociatedRoles());
     Set<String> userAndRoles = new HashSet<>();
-    userAndRoles.add(workpsace + "." + authenticationService.getPrincipal());
+    userAndRoles.add(workspace + "." + authenticationService.getPrincipal());
     userAndRoles.addAll(authenticationService.getAssociatedRoles());
     return new ServiceContext(authInfo, userAndRoles);
   }

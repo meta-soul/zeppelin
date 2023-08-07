@@ -18,11 +18,13 @@ package org.apache.zeppelin.conf;
 
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -154,5 +156,19 @@ public class ZeppelinConfigurationTest {
     conf.setProperty(ConfVars.ZEPPELIN_PORT.getVarName(), "12345");
     // then
     assertEquals(12345, conf.getServerPort());
+  }
+
+  @Test
+  public void checkLakesoulPGConf(){
+    ZeppelinConfiguration conf = ZeppelinConfiguration.create("zeppelin-test-site.xml");
+    String username = conf.getLakesoulDashBoardPGUserName();
+    String password = conf.getLakesoulDashBoardPGPassword();
+    String url = conf.getLakesoulDashBoardPGUrl();
+    assertEquals("lakesoul_test",conf.getLakesoulDashBoardPGUserName());
+    try {
+     assertEquals("Dmetasoul@123",DBUtils.getPasswordByName("admin"));
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

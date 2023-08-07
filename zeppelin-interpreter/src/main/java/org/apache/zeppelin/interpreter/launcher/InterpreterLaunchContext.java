@@ -38,6 +38,8 @@ public class InterpreterLaunchContext {
   private int intpEventServerPort;
   private String intpEventServerHost;
 
+  private String workSpace = "public";
+
   public InterpreterLaunchContext(Properties properties,
                                   InterpreterOption option,
                                   InterpreterRunner runner,
@@ -58,6 +60,37 @@ public class InterpreterLaunchContext {
     this.interpreterSettingName = interpreterSettingName;
     this.intpEventServerPort = intpEventServerPort;
     this.intpEventServerHost = intpEventServerHost;
+  }
+
+  public InterpreterLaunchContext(Properties properties,
+                                  InterpreterOption option,
+                                  InterpreterRunner runner,
+                                  String userName,
+                                  String interpreterGroupId,
+                                  String interpreterSettingId,
+                                  String interpreterSettingGroup,
+                                  String interpreterSettingName,
+                                  int intpEventServerPort,
+                                  String intpEventServerHost,
+                                  String workSpace) {
+    this.properties = properties;
+    this.option = option;
+    this.runner = runner;
+    this.userName = userName;
+    this.interpreterGroupId = interpreterGroupId;
+    this.interpreterSettingId = interpreterSettingId;
+    this.interpreterSettingGroup = interpreterSettingGroup;
+    this.interpreterSettingName = interpreterSettingName;
+    this.intpEventServerPort = intpEventServerPort;
+    this.intpEventServerHost = intpEventServerHost;
+    this.workSpace = workSpace;
+  }
+  public String getWorkSpace() {
+    return workSpace;
+  }
+
+  public void setWorkSpace(String workSpace) {
+    this.workSpace = workSpace;
   }
 
   public Properties getProperties() {

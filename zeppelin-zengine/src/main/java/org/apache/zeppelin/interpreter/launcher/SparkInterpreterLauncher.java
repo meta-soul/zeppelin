@@ -27,6 +27,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.recovery.RecoveryStorage;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterUtils;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +96,9 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
 
     setupPropertiesForPySpark(sparkProperties, context);
     setupPropertiesForSparkR(sparkProperties, context);
+    // put Lakesoul PG conf to properties
+    Map<String,String> pgEnvMap = getPostgreEnv(context);
+    setupPropertiesForLakesoulPG(sparkProperties, pgEnvMap);
 
     String condaEnvName = context.getProperties().getProperty("zeppelin.interpreter.conda.env.name");
     if (StringUtils.isNotBlank(condaEnvName)) {
@@ -442,6 +447,11 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     }
   }
 
+
+  private void setupPropertiesForLakesoulPG(Properties sparkProperties, Map<String,String> confMap){
+
+    confMap.forEach((key, value) -> sparkProperties.setProperty("spark.yarn.appMasterEnv." + key, value));
+  }
   private boolean isYarnMode(InterpreterLaunchContext context) {
     return getSparkMaster(context).startsWith("yarn");
   }

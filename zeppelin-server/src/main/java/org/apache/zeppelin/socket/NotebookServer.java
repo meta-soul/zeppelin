@@ -2446,7 +2446,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
 
   private ServiceContext getServiceContext(String workspace, TicketContainer.Entry ticketEntry) {
     AuthenticationInfo authInfo =
-        new AuthenticationInfo(ticketEntry.getPrincipal(), ticketEntry.getRoles(), ticketEntry.getTicket());
+        new AuthenticationInfo(workspace, ticketEntry.getPrincipal(), ticketEntry.getRoles(), ticketEntry.getTicket());
     Set<String> userAndRoles = new HashSet<>();
     userAndRoles.add(workspace + "." + authInfo.getUser());
     userAndRoles.addAll(authInfo.getRoles());
