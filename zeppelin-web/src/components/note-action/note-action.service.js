@@ -121,7 +121,7 @@ function noteActionService(websocketMsgSrv, $location, noteRenameService, noteLi
   this.renameNote = function(noteId, notePath, workspace) {
     noteRenameService.openRenameModal({
       title: 'Rename note',
-      oldName: notePath,
+      oldName: notePath.split('/').slice(2).join('/'),
       callback: function(newName) {
         websocketMsgSrv.renameNote(noteId, newName, false, workspace);
       },
