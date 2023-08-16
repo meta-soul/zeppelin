@@ -427,7 +427,7 @@ function NotebookCtrl($scope, $route, $routeParams, $location, $rootScope,
   };
 
   $scope.clearAllParagraphOutput = function(noteId) {
-    noteActionService.clearAllParagraphOutput(noteId);
+    noteActionService.clearAllParagraphOutput(noteId, $scope.workspace);
   };
 
   $scope.toggleAllEditor = function() {

@@ -123,7 +123,7 @@ function noteActionService(websocketMsgSrv, $location, noteRenameService, noteLi
       title: 'Rename note',
       oldName: notePath,
       callback: function(newName) {
-        websocketMsgSrv.renameNote(noteId, newName, workspace);
+        websocketMsgSrv.renameNote(noteId, newName, false, workspace);
       },
     });
   };

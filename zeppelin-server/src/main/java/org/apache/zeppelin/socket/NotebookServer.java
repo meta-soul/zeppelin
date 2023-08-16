@@ -1033,7 +1033,8 @@ public class NotebookServer implements AngularObjectRegistryListener,
     String name = (String) fromMessage.get("name");
     boolean isRelativePath = false;
     if (fromMessage.get("relative") != null) {
-      isRelativePath = (boolean) fromMessage.get("relative");
+      // isRelativePath = (boolean) fromMessage.get("relative");
+      isRelativePath = true;
     }
     if (noteId == null) {
       return;
