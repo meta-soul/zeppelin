@@ -1,4 +1,4 @@
-FROM swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin-base:v0.0.1
+FROM swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin-base:v0.0.2
 
 ENV Z_VERSION="0.11.0-SNAPSHOT"
 
