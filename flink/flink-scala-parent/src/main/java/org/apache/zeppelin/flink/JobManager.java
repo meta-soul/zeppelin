@@ -17,14 +17,14 @@
 
 package org.apache.zeppelin.flink;
 
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import kong.unirest.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.JobID;
 import org.apache.flink.core.execution.JobClient;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterException;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -227,7 +227,7 @@ public class JobManager {
           int totalTasks = 0;
           int finishedTasks = 0;
           for (int i = 0; i < vertices.length(); ++i) {
-            JSONObject vertex = vertices.getJSONObject(i);
+            kong.unirest.json.JSONObject vertex = vertices.getJSONObject(i);
             totalTasks += vertex.getInt("parallelism");
             finishedTasks += vertex.getJSONObject("tasks").getInt("FINISHED");
           }
@@ -263,9 +263,9 @@ public class JobManager {
           rootNode = Unirest.get(flinkWebUrl + "/jobs/" + jobId.toString() + "/checkpoints")
                   .asJson().getBody();
           if (rootNode.getObject().has("latest")) {
-            JSONObject latestObject = rootNode.getObject().getJSONObject("latest");
+            kong.unirest.json.JSONObject latestObject = rootNode.getObject().getJSONObject("latest");
             if (latestObject.has("completed") && latestObject.get("completed") instanceof JSONObject) {
-              JSONObject completedObject = latestObject.getJSONObject("completed");
+              kong.unirest.json.JSONObject completedObject = latestObject.getJSONObject("completed");
               if (completedObject.has("external_path")) {
                 String checkpointPath = completedObject.getString("external_path");
                 LOGGER.debug("Latest checkpoint path: {}", checkpointPath);

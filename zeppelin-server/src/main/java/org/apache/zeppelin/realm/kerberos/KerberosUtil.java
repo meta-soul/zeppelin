@@ -37,8 +37,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.directory.server.kerberos.shared.keytab.Keytab;
-import org.apache.directory.server.kerberos.shared.keytab.KeytabEntry;
+import org.apache.hadoop.shaded.org.apache.kerby.kerberos.kerb.keytab.Keytab;
+import org.apache.hadoop.shaded.org.apache.kerby.kerberos.kerb.keytab.KeytabEntry;
+import org.apache.hadoop.shaded.org.apache.kerby.kerberos.kerb.type.base.PrincipalName;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
 
@@ -227,11 +228,11 @@ public class KerberosUtil {
    *          If keytab entries cannot be read from the file.
    */
   static final String[] getPrincipalNames(String keytabFileName) throws IOException {
-    Keytab keytab = Keytab.read(new File(keytabFileName));
+    Keytab keytab = Keytab.loadKeytab(new File(keytabFileName));
     Set<String> principals = new HashSet<>();
-    List<KeytabEntry> entries = keytab.getEntries();
+    List<KeytabEntry> entries = keytab.getKeytabEntries(new PrincipalName());
     for (KeytabEntry entry: entries){
-      principals.add(entry.getPrincipalName().replace("\\", "/"));
+      principals.add(entry.getPrincipal().toString().replace("\\", "/"));
     }
     return principals.toArray(new String[0]);
   }
