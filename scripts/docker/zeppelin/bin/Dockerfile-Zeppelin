@@ -29,21 +29,22 @@ COPY log4j.properties ${ZEPPELIN_HOME}/conf/
 COPY log4j_docker.properties ${ZEPPELIN_HOME}/conf/
 COPY log4j2.properties ${ZEPPELIN_HOME}/conf/
 COPY log4j2_docker.properties ${ZEPPELIN_HOME}/conf/
-# remove META-INF
+
 RUN apt-get -y update && apt-get install zip rename -y && \
     cd /opt/zeppelin && \
-    find . -iname '*.jar' -exec bash -c "zip -d {} 'META-INF/maven/*'" \;
-
-# remove python security issuse files
-RUN cd /opt/conda && \
+    # remove META-INF
+    find . -iname '*.jar' -exec bash -c "zip -d {} 'META-INF/maven/*'" \; && \
+    # remove python security issue files
+    cd /opt/conda && \
     find . -type f -name "package.json" -delete && \
     find . -type f -name "package-lock.json" -delete && \
     find . -type f -name "*CMakeLists.txt" -delete && \
-    find . -type f -name "requirements.txt" -delete
-
-# rename jar
-RUN cd /opt/zeppelin/lib && \
+    find . -type f -name "requirements.txt" -delete && \
+    pip uninstall bokeh -y && \
+    # rename jar
+    cd /opt/zeppelin/lib && \
     rename 's/\-\d+(\.\d+)*.*\.jar/.jar/' *.jar
+
 
 USER 1000
 
