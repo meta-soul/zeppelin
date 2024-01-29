@@ -3,6 +3,7 @@ package org.dmetasoul.lakesoul;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Asakiny@dmetasoul.com
@@ -66,6 +69,22 @@ public class DBUtils {
         return null;
 
     }
+
+    public static boolean isUserInWorkSpace(String user, String workspace) throws SQLException {
+        QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
+        String query = "SELECT name,workspace_id FROM t_user_workspace_role LEFT JOIN t_user ON t_user.id = t_user_workspace_role.user_id WHERE workspace_id IN (SELECT id FROM t_workspace WHERE name= ?) and t_user.name = ?";
+        Object[] params = {workspace, user};
+        LOGGER.info("Start Query User {} is in WorkSpace", user, workspace);
+        Object[] result = queryRunner.query(query, new ArrayHandler(), params);
+
+        if (result.length > 0){
+            return true;
+        }else {
+            return false;
+        }
+
+    }
+
 
 
 }
