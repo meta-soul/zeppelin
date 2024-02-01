@@ -1,6 +1,9 @@
 package org.apache.zeppelin.oauth2.casdoor;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
+import org.apache.zeppelin.realm.jwt.WorkspaceFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Asakiny@dmetasoul.com
@@ -9,6 +12,7 @@ import com.github.scribejava.core.builder.api.DefaultApi20;
  * @createTime 2024/1/31 3:27
  */
 public class CasdoorApi extends DefaultApi20 {
+    private static  final Logger LOGGER = LoggerFactory.getLogger(CasdoorApi.class);
 
     public static final String AUTHORIZE_ENDPOINT_URL = "http://172.23.132.36:19091/casdoor/login/oauth/authorize";
 

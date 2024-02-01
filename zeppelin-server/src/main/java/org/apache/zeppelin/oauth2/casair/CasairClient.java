@@ -1,9 +1,9 @@
 package org.apache.zeppelin.oauth2.casair;
 
-import org.apache.zeppelin.oauth2.casdoor.CasdoorApi;
-import org.apache.zeppelin.oauth2.casdoor.CasdoorProfileCreator;
-import org.apache.zeppelin.oauth2.casdoor.CasdoorProfileDefinition;
+
 import org.pac4j.oauth.client.OAuth20Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Asakiny@dmetasoul.com
@@ -12,6 +12,7 @@ import org.pac4j.oauth.client.OAuth20Client;
  * @createTime 2024/1/31 6:00
  */
 public class CasairClient extends OAuth20Client {
+    private static  final Logger LOGGER = LoggerFactory.getLogger(CasairClient.class);
     public CasairClient(){
 
     }
@@ -23,9 +24,9 @@ public class CasairClient extends OAuth20Client {
 
     @Override
     protected void clientInit() {
-
-        configuration.setApi(new CasairApi());
-        configuration.setWithState(true);
+        LOGGER.debug("Casair init Start");
+        configuration.setApi(CasairApi.instance());
+        configuration.setWithState(false);
         configuration.setProfileDefinition(new CasairProfileDefinition());
 
         defaultProfileCreator(new CasairProfileCreator(configuration, this));

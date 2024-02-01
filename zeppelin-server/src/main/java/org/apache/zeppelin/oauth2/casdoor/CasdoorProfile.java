@@ -3,6 +3,7 @@ package org.apache.zeppelin.oauth2.casdoor;
 import org.pac4j.oauth.profile.OAuth20Profile;
 
 import java.net.URI;
+import java.util.Set;
 
 
 /**
@@ -15,7 +16,7 @@ public class CasdoorProfile extends OAuth20Profile {
 
     @Override
     public String getUsername() {
-        return (String) getAttribute(CasdoorProfileDefinition.SUB);
+        return (String) getAttribute(CasdoorProfileDefinition.PREFERRED_USERNAME);
     }
 
     @Override
@@ -25,7 +26,7 @@ public class CasdoorProfile extends OAuth20Profile {
 
     @Override
     public String getDisplayName() {
-        return (String) getAttribute(CasdoorProfileDefinition.NAME);
+        return (String) getAttribute(CasdoorProfileDefinition.PREFERRED_USERNAME);
     }
 
     @Override
@@ -33,4 +34,7 @@ public class CasdoorProfile extends OAuth20Profile {
         return (URI) getAttribute(CasdoorProfileDefinition.PICTURE);
     }
 
+    public Set<String> getGroups(){
+        return (Set<String>) getAttribute(CasdoorProfileDefinition.GROUPS);
+    }
 }

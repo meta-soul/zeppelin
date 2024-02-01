@@ -14,12 +14,17 @@ import java.util.Set;
 public class CasairProfile extends OAuth20Profile {
     @Override
     public String getUsername() {
-        return (String) getAttribute(CasairProfileDefinition.EMPLOYEENUMBER);
+        return (String) getAttribute(CasairProfileDefinition.LOGINNAME);
     }
 
     @Override
     public String getDisplayName() {
-        return (String) getAttribute(CasairProfileDefinition.LOGINNAME);
+        return (String) getAttribute(CasairProfileDefinition.DISPLAYNAME);
+
+    }
+
+    public String getEmployeeNumber(){
+        return (String) getAttribute(CasairProfileDefinition.EMPLOYEENUMBER);
     }
 
     @Override

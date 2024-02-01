@@ -11,6 +11,8 @@ import org.pac4j.core.profile.UserProfile;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.oauth.config.OAuth20Configuration;
 import org.pac4j.oauth.profile.creator.OAuth20ProfileCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -21,6 +23,7 @@ import java.util.Optional;
  * @createTime 2024/1/31 6:01
  */
 public class CasairProfileCreator extends OAuth20ProfileCreator<CasairProfile> {
+    private static  final Logger LOGGER = LoggerFactory.getLogger(CasairProfileCreator.class);
     public CasairProfileCreator(OAuth20Configuration configuration, IndirectClient client) {
         super(configuration, client);
     }
@@ -29,7 +32,7 @@ public class CasairProfileCreator extends OAuth20ProfileCreator<CasairProfile> {
     protected Optional<UserProfile> retrieveUserProfileFromToken(WebContext context, OAuth2AccessToken accessToken) {
         CasairProfileDefinition profileDefinition = (CasairProfileDefinition) configuration.getProfileDefinition();
         final OAuth20Service service = this.configuration.buildService(context, client);
-
+        LOGGER.debug("retriveUserProfile from Token {}", accessToken);
 
         String profileUrl = profileDefinition.getProfileUrl(accessToken, configuration);
 
@@ -40,7 +43,7 @@ public class CasairProfileCreator extends OAuth20ProfileCreator<CasairProfile> {
         }
         final CasairProfile profile = profileDefinition.extractUserProfile(body);
         addAccessTokenToProfile(profile, accessToken);
-
+        LOGGER.debug("retrieveUserProfile is {}", profile.toString());
         return Optional.of(profile);
     }
 }
