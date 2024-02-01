@@ -9,7 +9,6 @@ import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.oauth.AccessTokenRequestParams;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import jdk.jpackage.internal.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
