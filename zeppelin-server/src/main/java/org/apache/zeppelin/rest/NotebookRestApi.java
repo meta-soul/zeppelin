@@ -325,7 +325,8 @@ public class NotebookRestApi extends AbstractRestApi {
   @GET
   @ZeppelinApi
   public Response getNoteList(@QueryParam("workspace") String workspace) throws IOException {
-    List<NoteInfo> notesInfo = notebookService.listNotesInfo(false, getServiceContext(workspace),
+    List<NoteInfo> notesInfo = notebookService.listNotesInfo(false, true,
+            getServiceContext(workspace),
             new RestServiceCallback<>());
     return new JsonResponse<>(Status.OK, "", notesInfo).build();
   }

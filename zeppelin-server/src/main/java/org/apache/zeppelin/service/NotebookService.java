@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,7 @@ import org.apache.zeppelin.rest.exception.ParagraphNotFoundException;
 import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,6 +313,7 @@ public class NotebookService {
   }
 
   public List<NoteInfo> listNotesInfo(boolean needsReload,
+                                      boolean isRestApi,
                                       ServiceContext context,
                                       ServiceCallback<List<NoteInfo>> callback)
       throws IOException {
@@ -321,8 +324,20 @@ public class NotebookService {
         LOGGER.error("Fail to reload notes from repository", e);
       }
     }
-    List<NoteInfo> notesInfo = notebook.getNotesInfo(
-            noteId -> authorizationService.isReader(noteId, context.getUserAndRoles()));
+
+    String userName = context.getAutheInfo().getUser();
+    String workspace = context.getAutheInfo().getWorkspace();
+    List<NoteInfo> notesInfo;
+    if (isRestApi && DBUtils.isAdminInWorkSpace(userName, workspace)) {
+      LOGGER.info("Rest API listing notebook under workspace {} for admin {}", workspace, userName);
+      notesInfo = notebook.getNotesInfo().stream()
+              .filter(noteInfo -> noteInfo.getPath().startsWith(String.format("/%s/", workspace)))
+              .collect(Collectors.toList());
+    } else {
+      LOGGER.info("Listing notebook under workspace {} for user {}", workspace, userName);
+      notesInfo = notebook.getNotesInfo(
+              noteId -> authorizationService.isReader(noteId, context.getUserAndRoles()));
+    }
     callback.onSuccess(notesInfo, context);
     return notesInfo;
   }

@@ -306,6 +306,13 @@ public class Notebook {
                          String defaultInterpreterGroup,
                          AuthenticationInfo subject,
                          boolean save) throws IOException {
+    String userName = subject.getUser();
+    String workspace = subject.getWorkspace();
+    if (!notePath.startsWith(String.format("/%s/%s/", workspace, userName))) {
+        LOGGER.error("Create notebook for path {} rejected for user {} and workspace {}",
+            notePath, userName, workspace);
+        throw new IOException(String.format("You can only create notebook under /%s/%s/", workspace, userName));
+    }
     Note note =
             new Note(notePath, defaultInterpreterGroup, replFactory, interpreterSettingManager,
                     paragraphJobListener, credentials, noteEventListeners);

@@ -853,7 +853,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
   }
 
   public void listNotesInfo(NotebookSocket conn, ServiceContext context) throws IOException {
-    getNotebookService().listNotesInfo(false, context,
+    getNotebookService().listNotesInfo(false, false, context,
         new WebSocketServiceCallback<List<NoteInfo>>(conn) {
           @Override
           public void onSuccess(List<NoteInfo> notesInfo, ServiceContext context) throws IOException {
