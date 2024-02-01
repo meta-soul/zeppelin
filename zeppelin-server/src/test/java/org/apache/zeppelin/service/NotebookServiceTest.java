@@ -180,7 +180,7 @@ class NotebookServiceTest {
 
     // list note
     reset(callback);
-    List<NoteInfo> notesInfo = notebookService.listNotesInfo(false, context, callback);
+    List<NoteInfo> notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(1, notesInfo.size());
     assertEquals(note1Id, notesInfo.get(0).getId());
     assertEquals(note1.getName(), notesInfo.get(0).getNoteName());
@@ -237,7 +237,7 @@ class NotebookServiceTest {
 
     // list note
     reset(callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(2, notesInfo.size());
     verify(callback).onSuccess(notesInfo, context);
 
@@ -248,7 +248,7 @@ class NotebookServiceTest {
 
     // list note again
     reset(callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(1, notesInfo.size());
     verify(callback).onSuccess(notesInfo, context);
 
@@ -258,7 +258,7 @@ class NotebookServiceTest {
 
     // list note again
     reset(callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(0, notesInfo.size());
     verify(callback).onSuccess(notesInfo, context);
 
@@ -289,7 +289,7 @@ class NotebookServiceTest {
 
     // list note
     reset(callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(2, notesInfo.size());
     verify(callback).onSuccess(notesInfo, context);
 
@@ -307,7 +307,7 @@ class NotebookServiceTest {
     notebookService.moveNoteToTrash(corruptedNoteId, context, callback);
 
     reset(callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(3, notesInfo.size());
     verify(callback).onSuccess(notesInfo, context);
     notebookService.removeNote(corruptedNoteId, context, callback);
@@ -315,7 +315,7 @@ class NotebookServiceTest {
     notebookService.moveNoteToTrash(importedNoteId, context, callback);
 
     reset(callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(2, notesInfo.size());
     verify(callback).onSuccess(notesInfo, context);
 
@@ -342,14 +342,14 @@ class NotebookServiceTest {
     reset(callback);
 
     notebookService.removeNote(importedNoteId, context, callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(1, notesInfo.size());
 
     // move folder to Trash
     notebookService.moveFolderToTrash("Backup", context, callback);
 
     reset(callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(1, notesInfo.size());
     verify(callback).onSuccess(notesInfo, context);
     moveToTrash = false;
@@ -377,13 +377,13 @@ class NotebookServiceTest {
     // remove folder from Trash
     reset(callback);
     notebookService.removeFolder("/~Trash/Backup", context, callback);
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(0, notesInfo.size());
 
     // empty trash
     notebookService.emptyTrash(context, callback);
 
-    notesInfo = notebookService.listNotesInfo(false, context, callback);
+    notesInfo = notebookService.listNotesInfo(false, false, context, callback);
     assertEquals(0, notesInfo.size());
   }
 
