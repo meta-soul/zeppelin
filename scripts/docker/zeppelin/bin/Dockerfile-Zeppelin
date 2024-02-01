@@ -1,4 +1,4 @@
-FROM swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin-base:v0.0.1
+FROM swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin-base:v0.0.2
 
 ENV Z_VERSION="0.11.0-SNAPSHOT"
 
@@ -29,6 +29,23 @@ COPY log4j.properties ${ZEPPELIN_HOME}/conf/
 COPY log4j_docker.properties ${ZEPPELIN_HOME}/conf/
 COPY log4j2.properties ${ZEPPELIN_HOME}/conf/
 COPY log4j2_docker.properties ${ZEPPELIN_HOME}/conf/
+
+RUN  \
+    # remove python security issue files
+    cd /opt/conda && \
+    find . -type f -name "package.json" -delete && \
+    find . -type f -name "package-lock.json" -delete && \
+    find . -type f -name "*CMakeLists.txt" -delete && \
+    find . -type f -name "requirements.txt" -delete && \
+    pip uninstall bokeh -y && \
+    rm lib/python3.9/site-packages/IPython/testing/plugin/pytest_ipdoctest.py && \
+    rm lib/python3.9/site-packages/debugpy/_vendored/pydevd/_pydev_runfiles/pydev_runfiles_pytest2.py && \
+    rm lib/python3.9/site-packages/pandas/tests/io/sas/test_sas7bdat.py && \
+    rm lib/python3.9/site-packages/pandas/tests/io/pytables/test_read.py && \
+    rm lib/python3.9/site-packages/pandas/tests/io/excel/test_readers.py && \
+    rm lib/python3.9/site-packages/pandas/tests/io/test_common.py
+
+
 
 USER 1000
 

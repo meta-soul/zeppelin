@@ -3,10 +3,10 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.7
+  - python >=3.9,<3.10
   - pycodestyle
   - scipy
-  - numpy=1.19.5
+  - numpy
   - grpcio
   - protobuf
   - pandasql
@@ -22,13 +22,18 @@ dependencies:
   - altair
   - vega_datasets
   - plotly
+  - pillow==10.0.1
+  - pyarrow==14.0.0
   - pip
-  - r-base=3
-  - r-data.table
-  - r-evaluate
-  - r-base64enc
-  - r-knitr
-  - r-ggplot2
-  - r-irkernel
-  - r-shiny
-  - r-googlevis
+  - pip:
+      # works for regular pip packages
+      - bkzep==0.6.1
+#  - r-base=3
+#  - r-data.table
+#  - r-evaluate
+#  - r-base64enc
+#  - r-knitr
+#  - r-ggplot2
+#  - r-irkernel
+#  - r-shiny
+#  - r-googlevis
