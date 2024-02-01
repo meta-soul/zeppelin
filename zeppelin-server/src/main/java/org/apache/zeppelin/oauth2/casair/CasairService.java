@@ -3,15 +3,19 @@ package org.apache.zeppelin.oauth2.casair;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.httpclient.HttpClient;
 import com.github.scribejava.core.httpclient.HttpClientConfig;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthConstants;
 import com.github.scribejava.core.model.OAuthRequest;
+import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.oauth.AccessTokenRequestParams;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import jdk.jpackage.internal.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Asakiny@dmetasoul.com
@@ -33,7 +37,21 @@ public class CasairService extends OAuth20Service {
         request.addQuerystringParameter(OAuthConstants.CLIENT_ID, getApiKey());
         request.addQuerystringParameter(OAuthConstants.CLIENT_SECRET, getApiSecret());
         LOGGER.debug("GET AccessToken Url is {}", request.getCompleteUrl());
-        LOGGER.debug("Get AccessToken parms : {}", request.getQueryStringParams().getParams().toString());
+        LOGGER.debug("Get AccessToken params : {}", request.getQueryStringParams().getParams().toString());
         return request;
+    }
+
+    @Override
+    protected OAuth2AccessToken sendAccessTokenRequestSync(OAuthRequest request)
+            throws IOException, InterruptedException, ExecutionException {
+        try (Response response = execute(request)) {
+            LOGGER.debug("SendAccessTokenRequest: response status code: {}", response.getCode());
+            final String body = response.getBody();
+            LOGGER.debug("SendAccessTokenRequest: response body: {}", body);
+
+            OAuth2AccessToken token = getApi().getAccessTokenExtractor().extract(response);
+            LOGGER.debug("CasairService extracted token: {}", token.getAccessToken());
+            return token;
+        }
     }
 }
