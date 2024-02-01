@@ -70,11 +70,11 @@ public class DBUtils {
 
     }
 
-    public static boolean isUserInWorkSpace(String user, String workspace) throws SQLException {
+    public static boolean isUserInWorkSpace(String userId, String workspace) throws SQLException {
         QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
-        String query = "SELECT name,workspace_id FROM t_user_workspace_role LEFT JOIN t_user ON t_user.id = t_user_workspace_role.user_id WHERE workspace_id IN (SELECT id FROM t_workspace WHERE name= ?) and t_user.name = ?";
-        Object[] params = {workspace, user};
-        LOGGER.info("Start Query User {} is in WorkSpace", user, workspace);
+        String query = "SELECT uid,workspace_id FROM t_user_workspace_role LEFT JOIN t_user ON t_user.id = t_user_workspace_role.user_id WHERE workspace_id IN (SELECT id FROM t_workspace WHERE name= ?) and t_user.uid = ?";
+        Object[] params = {workspace, userId};
+        LOGGER.info("Start Query User {} is in WorkSpace", userId, workspace);
         Object[] result = queryRunner.query(query, new ArrayHandler(), params);
 
         if (result.length > 0){

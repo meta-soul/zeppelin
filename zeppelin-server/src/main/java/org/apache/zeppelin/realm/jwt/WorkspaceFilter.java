@@ -8,6 +8,7 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
+import org.apache.zeppelin.oauth2.casdoor.CasdoorProfile;
 import org.dmetasoul.lakesoul.DBUtils;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.profile.CommonProfile;
@@ -59,17 +60,21 @@ public class WorkspaceFilter implements Filter {
             JEEContext context = new JEEContext((HttpServletRequest) request, (HttpServletResponse) response);
             ShiroProfileManager profileManager = new ShiroProfileManager(context);
             Optional<CommonProfile> profile = profileManager.get(true);
-            String user = profile.get().getUsername();
-            LOGGER.debug("WorkspaceFilter get workspace is {}", workspace);
+            LOGGER.debug("profile is: {}", profile.get().toString());
+
+            String userId = profile.get().getId();
+            String userName = profile.get().getDisplayName();
+
+            LOGGER.debug("WorkspaceFilter get user {} workspace is {}",userName, workspace);
             try {
-                isInWorkspace = DBUtils.isUserInWorkSpace(user, workspace);
-                LOGGER.info("Current user {} in Workspace {} is {}", user, workspace, isInWorkspace);
+                isInWorkspace = DBUtils.isUserInWorkSpace(userId, workspace);
+                LOGGER.debug("Current user {} in Workspace {} is {}", userName, workspace, isInWorkspace);
                 if(!isInWorkspace) {
                     httpResponse.sendRedirect(httpRequest.getContextPath() + "/404.html");
                     return;
                 }
             } catch (SQLException e) {
-                LOGGER.error("Query User {} in WorkSpace {} in WorkspaceFilter Error", user, workspace);
+                LOGGER.error("Query User {} in WorkSpace {} in WorkspaceFilter Error", userName, workspace);
                 throw new RuntimeException(e);
             }
         }else if (workspace == null && path.equals("/")){
