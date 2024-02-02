@@ -90,7 +90,7 @@ public class DBUtils {
                 "AND tw.name = ?";
         Object[] params = {name, workspace};
         try {
-            int result = queryRunner.query(query, rs -> rs.next() ? rs.getInt(0) : -1, params);
+            int result = queryRunner.query(query, rs -> rs.next() ? rs.getInt(1) : -1, params);
             LOGGER.info("User {}'s role in workspace {} is {}", name, workspace, result);
             return result == 0 || result == 1;
         } catch (SQLException e) {
