@@ -27,7 +27,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
       websocketEvents.sendNewEvent({
         op: 'NEW_NOTE',
         data: {
-          name: $rootScope.ticket.principal + '/' + workspace + '/' + noteName,
+          name: workspace + '/' + $rootScope.ticket.principal + '/' + noteName,
           defaultInterpreterGroup: defaultInterpreterGroup,
         },
         workspace: workspace,
@@ -71,7 +71,7 @@ function WebsocketMessageService($rootScope, websocketEvents) {
         op: 'CLONE_NOTE',
         data: {
           id: noteIdToClone,
-          name: $rootScope.ticket.principal + '/' + workspace + '/' + newNoteName,
+          name: workspace + '/' + $rootScope.ticket.principal + '/' + newNoteName,
         },
         workspace: workspace});
     },
