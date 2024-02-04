@@ -170,7 +170,7 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
     List<File> flinkScalaJars =
             Arrays.stream(flinkInterpreterFolder
                     .listFiles(file -> file.getName().endsWith(".jar")))
-            .filter(file -> file.getName().contains(flinkScalaVersion))
+//            .filter(file -> file.getName().contains(flinkScalaVersion))
             .collect(Collectors.toList());
 
     if (flinkScalaJars.isEmpty()) {

@@ -345,7 +345,7 @@ public class NotebookRestApi extends AbstractRestApi {
   public Response getNote(@PathParam("noteId") String noteId,
                           @QueryParam("reload") boolean reload,
                           @QueryParam("workspace") String workspace) throws IOException {
-    return notebookService.getNote(noteId, reload,  getServiceContext(workspace), new RestServiceCallback<>(),
+    return notebookService.getNote(noteId, reload, true,  getServiceContext(workspace), new RestServiceCallback<>(),
       note -> new JsonResponse<>(Status.OK, "", note).build());
   }
 

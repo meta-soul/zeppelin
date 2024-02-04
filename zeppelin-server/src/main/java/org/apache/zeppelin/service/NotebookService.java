@@ -125,24 +125,44 @@ public class NotebookService {
                       ServiceContext context,
                       ServiceCallback<Note> callback,
                       NoteProcessor<T> noteProcessor) throws IOException {
-    return getNote(noteId, false, context, callback, noteProcessor);
+    return getNote(noteId, false, false, context, callback, noteProcessor);
+  }
+
+  public  <T> T getNote(String noteId,
+                        boolean reload,
+                        ServiceContext context,
+                        ServiceCallback<Note> callback,
+                        NoteProcessor<T> noteProcessor) throws IOException {
+    return getNote(noteId, false, false, context, callback, noteProcessor);
   }
 
   public <T> T getNote(String noteId,
                       boolean reload,
+                      boolean isRestApi,
                       ServiceContext context,
                       ServiceCallback<Note> callback,
                       NoteProcessor<T> noteProcessor) throws IOException {
+    String userName = context.getAutheInfo().getUser();
+    String workspace = context.getAutheInfo().getWorkspace();
     return notebook.processNote(noteId, reload,
       note -> {
         if (note == null) {
           callback.onFailure(new NoteNotFoundException(noteId), context);
           return null;
         }
-        if (!checkPermission(noteId, Permission.READER, Message.OP.GET_NOTE, context,
-          callback)) {
-          return null;
+
+          LOGGER.info("Rest API getting note isRestApi:{}, workspace is {}",isRestApi, workspace);
+
+          //Check Permissions in workspace
+        if(!(isRestApi && DBUtils.isAdminInWorkSpace(userName, workspace))){
+          LOGGER.info("Rest API Getting note is not note's owner, and user {} is not {} Admin", userName, workspace);
+            //Check Permissions with zeppelin roles
+            if (!checkPermission(noteId, Permission.READER, Message.OP.GET_NOTE, context,
+                    callback)) {
+                return null;
+             }
         }
+
         Note newNote = note;
         if (note.isPersonalizedMode()) {
           newNote = note.getUserNote(context.getAutheInfo().getUser());
