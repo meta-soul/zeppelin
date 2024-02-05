@@ -382,17 +382,32 @@ public class PythonCondaInterpreter extends Interpreter {
   }
 
   public static String runCommand(List<String> commands)
-      throws IOException, InterruptedException {
+          throws IOException, InterruptedException {
     logger.info("Starting shell commands: " + StringUtils.join(commands, " "));
-    Process process = Runtime.getRuntime().exec(commands.toArray(new String[0]));
+
+    // 检查命令列表是否为空
+    if (commands == null || commands.isEmpty()) {
+      throw new IllegalArgumentException("Command list is empty");
+    }
+
+    // 使用 ProcessBuilder 替代 Runtime.exec，并将命令列表作为参数传递
+    ProcessBuilder processBuilder = new ProcessBuilder(commands);
+
+    // 启动进程并设置输入、输出流
+    Process process = processBuilder.start();
     StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream());
     StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream());
     errorGobbler.start();
     outputGobbler.start();
+
+    // 等待进程执行完成
     if (process.waitFor() != 0) {
       throw new IOException("Fail to run shell commands: " + StringUtils.join(commands, " "));
     }
+
     logger.info("Complete shell commands: " + StringUtils.join(commands, " "));
+
+    // 返回命令执行结果
     return outputGobbler.getOutput();
   }
 

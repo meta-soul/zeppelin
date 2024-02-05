@@ -170,6 +170,11 @@ public class JupyterKernelInterpreter extends AbstractInterpreter {
    * @return check result of checking kernel prerequisite.
    */
   public String checkKernelPrerequisite(String pythonExec) {
+    // 验证输入，确保pythonExec参数是有效且合法的
+    if (!isValidPythonExecutable(pythonExec)) {
+      LOGGER.warn("Invalid python executable: {}", pythonExec);
+      return "Invalid python executable";
+    }
     LOGGER.info("checkKernelPrerequisite using python executable: {}", pythonExec);
     ProcessBuilder processBuilder = new ProcessBuilder(pythonExec, "-m", "pip", "freeze");
     File stderrFile = null;
@@ -204,6 +209,13 @@ public class JupyterKernelInterpreter extends AbstractInterpreter {
       FileUtils.deleteQuietly(stdoutFile);
     }
     return "";
+  }
+
+  // 验证Python执行文件是否有效
+  private boolean isValidPythonExecutable(String pythonExec) {
+    // 检查文件是否存在并且是否可执行
+    File pythonExecFile = new File(pythonExec);
+    return pythonExecFile.exists() && pythonExecFile.canExecute();
   }
 
   private String activateCondaEnv(String envName) throws IOException {

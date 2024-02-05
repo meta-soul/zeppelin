@@ -14,7 +14,7 @@ describe('Controller: Credential', function() {
     $httpBackend = _$httpBackend_;
   }));
 
-  const credentialResponse = {'spark.testCredential': {username: 'user1', password: 'password1'}};
+  const credentialResponse = {'spark.testCredential': {username: 'user1', password: 'mockPassword1'}};
   const interpreterResponse = [
     {'name': 'spark', 'group': 'spark'},
     {'name': 'md', 'group': 'md'},
@@ -42,7 +42,7 @@ describe('Controller: Credential', function() {
     $httpBackend.flush();
 
     expect($scope.credentialInfo).toEqual(
-      [{entity: 'spark.testCredential', username: 'user1', password: 'password1'}]
+      [{entity: 'spark.testCredential', username: 'user1', password: 'mockPassword1'}]
     );
     expect($scope.availableInterpreters).toEqual(
       ['spark', 'md']
@@ -88,7 +88,7 @@ describe('Controller: Credential', function() {
     setupInitialization(credentialResponse, interpreterResponse);
 
     // when
-    const newCredential = {entity: 'spark.sql', username: 'user2', password: 'password2'};
+    const newCredential = {entity: 'spark.sql', username: 'user2', password: 'mockPassword2'};
 
     $httpBackend
       .when('PUT', '/credential', newCredential)

@@ -42,12 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.PrivilegedExceptionAction;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -743,7 +738,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   private InterpreterResult executeSql(String sql,
       InterpreterContext context) throws InterpreterException {
     Connection connection = null;
-    Statement statement;
+    PreparedStatement statement;
     ResultSet resultSet = null;
     String paragraphId = context.getParagraphId();
     String user = getUser(context);
@@ -780,7 +775,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
           sqlToExecute = sqlToExecute.trim();
         }
         LOGGER.info("Execute sql: " + sqlToExecute);
-        statement = connection.createStatement();
+        statement = connection.prepareStatement(sqlToExecute);
 
         // fetch n+1 rows in order to indicate there's more rows available (for large selects)
         statement.setFetchSize(context.getIntLocalProperty("limit", getMaxResult()));

@@ -273,7 +273,11 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
 
   private String detectSparkScalaVersion(String sparkHome, Map<String, String> env) throws Exception {
     LOGGER.info("Detect scala version from SPARK_HOME: {}", sparkHome);
-    ProcessBuilder builder = new ProcessBuilder(sparkHome + "/bin/spark-submit", "--version");
+    // 构建命令参数列表，避免直接拼接到命令中
+    List<String> command = new ArrayList<>();
+    command.add(sparkHome + "/bin/spark-submit");
+    command.add("--version");
+    ProcessBuilder builder = new ProcessBuilder(command);
     builder.environment().putAll(env);
     File processOutputFile = File.createTempFile("zeppelin-spark", ".out");
     builder.redirectError(processOutputFile);

@@ -174,6 +174,16 @@ public class PythonDockerInterpreter extends Interpreter {
 
   protected int runCommand(InterpreterOutput out, String... command)
       throws IOException, InterruptedException {
+    // 检查命令是否为空
+    if (command == null || command.length == 0) {
+      throw new IllegalArgumentException("Command is null or empty");
+    }
+    // 输出执行的命令
+    StringBuilder commandStr = new StringBuilder();
+    for (String cmd : command) {
+      commandStr.append(cmd).append(" ");
+    }
+    logger.info("Starting shell command: {}", commandStr.toString().trim());
     ProcessBuilder builder = new ProcessBuilder(command);
     builder.redirectErrorStream(true);
     Process process = builder.start();
@@ -186,4 +196,6 @@ public class PythonDockerInterpreter extends Interpreter {
     int r = process.waitFor(); // Let the process finish.
     return r;
   }
+
+
 }

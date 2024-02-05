@@ -359,11 +359,13 @@ public class LdapRealm extends DefaultLdapRealm {
       NamingEnumeration<SearchResult> searchResultEnum = null;
       SearchControls searchControls = getGroupSearchControls();
       try {
+        String escapedUserDn = escapeLDAPSearchFilter(userDn);
+        String groupSearchFilter = String.format("(objectclass=%s)", groupObjectClass);
         if (groupSearchEnableMatchingRuleInChain) {
           searchResultEnum = ldapCtx.search(
               getGroupSearchBase(),
               String.format(
-                  MATCHING_RULE_IN_CHAIN_FORMAT, groupObjectClass, memberAttribute, userDn),
+                  MATCHING_RULE_IN_CHAIN_FORMAT, groupObjectClass, memberAttribute, escapedUserDn),
               searchControls);
           while (searchResultEnum != null && searchResultEnum.hasMore()) {
             // searchResults contains all the groups in search scope
@@ -399,7 +401,7 @@ public class LdapRealm extends DefaultLdapRealm {
             // searchResults contains all the groups in search scope
             numResults++;
             final SearchResult group = searchResultEnum.next();
-            addRoleIfMember(userDn, group, roleNames, groupNames, ldapContextFactory);
+            addRoleIfMember(escapedUserDn, group, roleNames, groupNames, ldapContextFactory);
           }
         }
       } catch (PartialResultException e) {
@@ -718,12 +720,25 @@ public class LdapRealm extends DefaultLdapRealm {
     }
     // search for the filter, substituting base with userDn
     // search for base_dn=userDn, scope=base, filter=filter
-    LdapContext systemLdapCtx;
-    systemLdapCtx = ldapContextFactory.getSystemLdapContext();
+    LdapContext systemLdapCtx = null;
     NamingEnumeration<SearchResult> searchResultEnum = null;
+
+
     try {
-      searchResultEnum = systemLdapCtx.search(userLdapDn, searchFilter,
-                                              "sub".equalsIgnoreCase(searchScope) ? SUBTREE_SCOPE : ONELEVEL_SCOPE);
+      systemLdapCtx = ldapContextFactory.getSystemLdapContext();
+
+      // 构建过滤器，确保输入参数被正确转义
+      String escapedSearchFilter = escapeLDAPSearchFilter(searchFilter);
+      // 使用参数化查询参数执行LDAP查询
+      SearchControls searchControls = new SearchControls();
+      int scope = "sub".equalsIgnoreCase(searchScope) ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE;
+      searchControls.setSearchScope(scope);
+      searchControls.setReturningAttributes(new String[]{"memberOf"});
+      searchControls.setReturningObjFlag(false);
+
+      searchResultEnum = systemLdapCtx.search(userLdapDn, escapedSearchFilter, searchControls);
+
+      // 处理查询结果
       if (searchResultEnum.hasMore()) {
         return true;
       }
@@ -737,6 +752,33 @@ public class LdapRealm extends DefaultLdapRealm {
       }
     }
     return false;
+  }
+
+  public String escapeLDAPSearchFilter(String filter) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < filter.length(); i++) {
+      char currentChar = filter.charAt(i);
+      switch (currentChar) {
+        case '\\':
+          sb.append("\\5c");
+          break;
+        case '*':
+          sb.append("\\2a");
+          break;
+        case '(':
+          sb.append("\\28");
+          break;
+        case ')':
+          sb.append("\\29");
+          break;
+        case '\u0000':
+          sb.append("\\00");
+          break;
+        default:
+          sb.append(currentChar);
+      }
+    }
+    return sb.toString();
   }
 
   public String getPrincipalRegex() {
