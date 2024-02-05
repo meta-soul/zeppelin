@@ -792,7 +792,8 @@ public class JDBCInterpreter extends KerberosInterpreter {
               getProperty(String.format(STATEMENT_PRECODE_KEY_TEMPLATE, DEFAULT_KEY));
 
           if (StringUtils.isNotBlank(statementPrecode)) {
-            statement.execute(statementPrecode);
+            PreparedStatement preparedStatement1 = connection.prepareStatement(statementPrecode);
+            preparedStatement1.execute();
           }
 
           // start hive monitor thread if it is hive jdbc
@@ -804,10 +805,9 @@ public class JDBCInterpreter extends KerberosInterpreter {
             HiveUtils.startHiveMonitorThread(statement, context,
                     Boolean.parseBoolean(getProperty("hive.log.display", "true")), this);
           }
-          boolean isResultSetAvailable = statement.execute(sqlToExecute);
+          resultSet = statement.executeQuery();
           getJDBCConfiguration(user).setConnectionInDBDriverPoolSuccessful();
-          if (isResultSetAvailable) {
-            resultSet = statement.getResultSet();
+          if (resultSet != null) {
 
             // Regards that the command is DDL.
             if (isDDLCommand(statement.getUpdateCount(),

@@ -170,13 +170,16 @@ public class JupyterKernelInterpreter extends AbstractInterpreter {
    * @return check result of checking kernel prerequisite.
    */
   public String checkKernelPrerequisite(String pythonExec) {
+    String pythonCmd = null;
     // 验证输入，确保pythonExec参数是有效且合法的
-    if (!isValidPythonExecutable(pythonExec)) {
+    if (isValidPythonExecutable(pythonExec)) {
+      pythonCmd = pythonExec;
+    }else {
       LOGGER.warn("Invalid python executable: {}", pythonExec);
       return "Invalid python executable";
     }
     LOGGER.info("checkKernelPrerequisite using python executable: {}", pythonExec);
-    ProcessBuilder processBuilder = new ProcessBuilder(pythonExec, "-m", "pip", "freeze");
+    ProcessBuilder processBuilder = new ProcessBuilder(pythonCmd, "-m", "pip", "freeze");
     File stderrFile = null;
     File stdoutFile = null;
     try {
@@ -213,10 +216,31 @@ public class JupyterKernelInterpreter extends AbstractInterpreter {
 
   // 验证Python执行文件是否有效
   private boolean isValidPythonExecutable(String pythonExec) {
-    // 检查文件是否存在并且是否可执行
-    File pythonExecFile = new File(pythonExec);
-    return pythonExecFile.exists() && pythonExecFile.canExecute();
+    File pythonFile = new File(pythonExec);
+
+    // 检查文件是否存在
+    if (!pythonFile.exists()) {
+      return false;
+    }
+
+    // 检查文件是否可执行
+    if (!pythonFile.canExecute()) {
+      return false;
+    }
+
+    // 检查文件是否是有效的 Python 解释器
+    ProcessBuilder processBuilder = new ProcessBuilder(pythonExec, "--version");
+    try {
+      Process process = processBuilder.start();
+      int exitCode = process.waitFor();
+      return exitCode == 0; // 如果 exitCode 为 0，表示执行成功
+    } catch (IOException | InterruptedException e) {
+      LOGGER.error("Exception Stack is {}",e.toString());
+      return false;
+    }
+
   }
+
 
   private String activateCondaEnv(String envName) throws IOException {
     LOGGER.info("Activating conda env: {}", envName);

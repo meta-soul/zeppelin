@@ -270,14 +270,29 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     LOGGER.info("buildEnvFromProperties: {}", env);
     return env;
   }
+  private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[&|;`$]");
 
+  public  boolean containsSpecialCharacters(List<String> commands) {
+    for (String command : commands) {
+      if (SPECIAL_CHAR_PATTERN.matcher(command).find()) {
+        return true; // 如果命令中包含特殊字符，返回 true
+      }
+    }
+    return false; // 如果所有命令都不包含特殊字符，返回 false
+  }
   private String detectSparkScalaVersion(String sparkHome, Map<String, String> env) throws Exception {
     LOGGER.info("Detect scala version from SPARK_HOME: {}", sparkHome);
     // 构建命令参数列表，避免直接拼接到命令中
+    List<String> exeCmd = null;
     List<String> command = new ArrayList<>();
     command.add(sparkHome + "/bin/spark-submit");
     command.add("--version");
-    ProcessBuilder builder = new ProcessBuilder(command);
+    if(containsSpecialCharacters(command)){
+      throw new IllegalArgumentException("Command contains SpecialCharacters");
+    }else {
+      exeCmd = command;
+    }
+    ProcessBuilder builder = new ProcessBuilder(exeCmd);
     builder.environment().putAll(env);
     File processOutputFile = File.createTempFile("zeppelin-spark", ".out");
     builder.redirectError(processOutputFile);

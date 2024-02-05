@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
  */
 public class PythonCondaInterpreter extends Interpreter {
   private static Logger logger = LoggerFactory.getLogger(PythonCondaInterpreter.class);
+  private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[&|;`$]");
   public static final String ZEPPELIN_PYTHON = "zeppelin.python";
   public static final String CONDA_PYTHON_PATH = "/bin/python";
   public static final String DEFAULT_ZEPPELIN_PYTHON = "python";
@@ -381,17 +382,33 @@ public class PythonCondaInterpreter extends Interpreter {
     }
   }
 
+  public static boolean containsSpecialCharacters(List<String> commands) {
+    for (String command : commands) {
+      if (SPECIAL_CHAR_PATTERN.matcher(command).find()) {
+        return true; // 如果命令中包含特殊字符，返回 true
+      }
+    }
+    return false; // 如果所有命令都不包含特殊字符，返回 false
+  }
+
   public static String runCommand(List<String> commands)
           throws IOException, InterruptedException {
     logger.info("Starting shell commands: " + StringUtils.join(commands, " "));
+    List<String> execCmd = null;
 
     // 检查命令列表是否为空
     if (commands == null || commands.isEmpty()) {
       throw new IllegalArgumentException("Command list is empty");
     }
 
+    if(containsSpecialCharacters(commands)){
+      throw new IOException("Fail to run shell commands: " + StringUtils.join(commands, " "));
+    }else {
+      execCmd = commands;
+    }
+
     // 使用 ProcessBuilder 替代 Runtime.exec，并将命令列表作为参数传递
-    ProcessBuilder processBuilder = new ProcessBuilder(commands);
+    ProcessBuilder processBuilder = new ProcessBuilder(execCmd);
 
     // 启动进程并设置输入、输出流
     Process process = processBuilder.start();

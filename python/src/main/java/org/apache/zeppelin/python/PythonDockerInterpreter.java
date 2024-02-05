@@ -31,14 +31,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 /**
  * Helps run python interpreter on a docker container
  */
 public class PythonDockerInterpreter extends Interpreter {
+  private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[&|;`$]");;
   Logger logger = LoggerFactory.getLogger(PythonDockerInterpreter.class);
   Pattern activatePattern = Pattern.compile("activate\\s*(.*)");
   Pattern deactivatePattern = Pattern.compile("deactivate");
@@ -171,7 +175,14 @@ public class PythonDockerInterpreter extends Interpreter {
     }
     return exit == 0;
   }
-
+  public  boolean containsSpecialCharacters(String ...commands) {
+    for (String command : commands) {
+      if (SPECIAL_CHAR_PATTERN.matcher(command).find()) {
+        return true; // 如果命令中包含特殊字符，返回 true
+      }
+    }
+    return false; // 如果所有命令都不包含特殊字符，返回 false
+  }
   protected int runCommand(InterpreterOutput out, String... command)
       throws IOException, InterruptedException {
     // 检查命令是否为空
@@ -184,7 +195,16 @@ public class PythonDockerInterpreter extends Interpreter {
       commandStr.append(cmd).append(" ");
     }
     logger.info("Starting shell command: {}", commandStr.toString().trim());
-    ProcessBuilder builder = new ProcessBuilder(command);
+
+
+    List<String> exeCmd = null;
+
+    if(containsSpecialCharacters(command)){
+      throw new IllegalArgumentException("Command contains SpecialCharacters");
+    }else {
+      exeCmd =  Arrays.asList(command);
+    }
+    ProcessBuilder builder = new ProcessBuilder(exeCmd);
     builder.redirectErrorStream(true);
     Process process = builder.start();
     InputStream stdout = process.getInputStream();

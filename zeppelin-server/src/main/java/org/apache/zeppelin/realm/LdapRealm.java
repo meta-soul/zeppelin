@@ -364,8 +364,8 @@ public class LdapRealm extends DefaultLdapRealm {
         if (groupSearchEnableMatchingRuleInChain) {
           searchResultEnum = ldapCtx.search(
               getGroupSearchBase(),
-              String.format(
-                  MATCHING_RULE_IN_CHAIN_FORMAT, groupObjectClass, memberAttribute, escapedUserDn),
+              escapeLDAPSearchFilter(String.format(
+                      MATCHING_RULE_IN_CHAIN_FORMAT, groupObjectClass, memberAttribute, userDn)),
               searchControls);
           while (searchResultEnum != null && searchResultEnum.hasMore()) {
             // searchResults contains all the groups in search scope
@@ -395,7 +395,7 @@ public class LdapRealm extends DefaultLdapRealm {
               getGroupSearchBase(), searchFilter, groupSearchScope);
           searchResultEnum = ldapCtx.search(
               getGroupSearchBase(),
-              searchFilter,
+              escapeLDAPSearchFilter(searchFilter),
               searchControls);
           while (searchResultEnum != null && searchResultEnum.hasMore()) {
             // searchResults contains all the groups in search scope
@@ -774,12 +774,54 @@ public class LdapRealm extends DefaultLdapRealm {
         case '\u0000':
           sb.append("\\00");
           break;
+        case '&':
+          sb.append("\\26");
+          break;
+        case '!':
+          sb.append("\\21");
+          break;
+        case '|':
+          sb.append("\\7c");
+          break;
+        case '=':
+          sb.append("\\3d");
+          break;
+        case '<':
+          sb.append("\\3c");
+          break;
+        case '>':
+          sb.append("\\3e");
+          break;
+        case ',':
+          sb.append("\\2c");
+          break;
+        case '+':
+          sb.append("\\2b");
+          break;
+        case '"':
+          sb.append("\\22");
+          break;
+        case '\'':
+          sb.append("\\27");
+          break;
+        case ';':
+          sb.append("\\3b");
+          break;
         default:
-          sb.append(currentChar);
+          if (currentChar < ' ' || currentChar > '~') {
+            // 将非可见ASCII字符转义为相应的ASCII码值
+            String hexValue = Integer.toHexString(currentChar);
+            sb.append("\\");
+            sb.append(hexValue.length() < 2 ? "0" : "");
+            sb.append(hexValue);
+          } else {
+            sb.append(currentChar);
+          }
       }
     }
     return sb.toString();
   }
+
 
   public String getPrincipalRegex() {
     return principalRegex;
