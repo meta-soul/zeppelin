@@ -727,8 +727,6 @@ public class LdapRealm extends DefaultLdapRealm {
     try {
       systemLdapCtx = ldapContextFactory.getSystemLdapContext();
 
-      // 构建过滤器，确保输入参数被正确转义
-      String escapedSearchFilter = escapeLDAPSearchFilter(searchFilter);
       // 使用参数化查询参数执行LDAP查询
       SearchControls searchControls = new SearchControls();
       int scope = "sub".equalsIgnoreCase(searchScope) ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE;
@@ -736,7 +734,7 @@ public class LdapRealm extends DefaultLdapRealm {
       searchControls.setReturningAttributes(new String[]{"memberOf"});
       searchControls.setReturningObjFlag(false);
 
-      searchResultEnum = systemLdapCtx.search(userLdapDn, escapedSearchFilter, searchControls);
+      searchResultEnum = systemLdapCtx.search(userLdapDn, escapeLDAPSearchFilter(searchFilter), searchControls);
 
       // 处理查询结果
       if (searchResultEnum.hasMore()) {

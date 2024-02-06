@@ -227,18 +227,11 @@ public class JupyterKernelInterpreter extends AbstractInterpreter {
     if (!pythonFile.canExecute()) {
       return false;
     }
-
-    // 检查文件是否是有效的 Python 解释器
-    ProcessBuilder processBuilder = new ProcessBuilder(pythonExec, "--version");
-    try {
-      Process process = processBuilder.start();
-      int exitCode = process.waitFor();
-      return exitCode == 0; // 如果 exitCode 为 0，表示执行成功
-    } catch (IOException | InterruptedException e) {
-      LOGGER.error("Exception Stack is {}",e.toString());
+    if(!(pythonExec.endsWith("python") || pythonExec.endsWith("python3"))){
       return false;
     }
 
+      return true;
   }
 
 
