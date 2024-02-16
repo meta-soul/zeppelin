@@ -53,6 +53,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,6 +107,9 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     schedulerService = new QuartzSchedulerService(conf, notebook);
     notebook.initNotebook();
     notebook.waitForFinishInit(1, TimeUnit.MINUTES);
+
+    // create empty shiro.ini file under confDir
+    Files.createFile(new File(confDir, "shiro.ini").toPath());
   }
 
   @Override
