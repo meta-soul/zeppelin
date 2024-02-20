@@ -311,6 +311,10 @@ public class ZeppelinConfiguration {
     return getString(ConfVars.ZEPPELIN_LAKESOUL_DASHBOARD_PG_PASSWORD);
   }
 
+  public String getLakesoulMetaPGSecret(){
+    return getString(ConfVars.ZEPPELIN_LAKESOUL_META_PG_SECRET);
+  }
+
   public String getZeppelinHome() {
     return getString(ConfVars.ZEPPELIN_HOME);
   }
@@ -1145,7 +1149,9 @@ public class ZeppelinConfiguration {
     ZEPPELIN_LAKESOUL_DASHBOARD_PG_PASSWORD("zeppelin.lakesoul_dashboard.pg.password","lakesoul_test"),
 
     ZEPPELIN_LAKESOUL_META_PG_URL("zeppelin.lakesoul.meta.pg.url","jdbc:postgresql://127.0.0.1:5432/lakesoul_test?stringtype=unspecified"),
-    ZEPPELIN_LAKESOUL_META_PG_DRIVER("zeppelin.lakesoul.meta.pg.driver","com.lakesoul.shaded.org.postgresql.Driver");
+    ZEPPELIN_LAKESOUL_META_PG_DRIVER("zeppelin.lakesoul.meta.pg.driver","com.lakesoul.shaded.org.postgresql.Driver"),
+
+    ZEPPELIN_LAKESOUL_META_PG_SECRET("zeppelin.lakesoul.meta.pg.secret", "d32cef9e6ca74c10b4a93edb5be94d60");
     private String varName;
     private Class<?> varClass;
     private String stringValue;

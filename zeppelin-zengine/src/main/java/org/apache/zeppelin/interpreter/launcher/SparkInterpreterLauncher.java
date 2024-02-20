@@ -201,7 +201,8 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     StringJoiner sparkConfSJ = new StringJoiner("|");
     if (context.getOption().isUserImpersonate() && zConf.getZeppelinImpersonateSparkProxyUser()) {
       sparkConfSJ.add("--proxy-user");
-      sparkConfSJ.add(context.getUserName());
+      String realName = DBUtils.getRealNameByName(context.getUserName());
+      sparkConfSJ.add(realName);
       sparkProperties.remove("spark.yarn.keytab");
       sparkProperties.remove("spark.yarn.principal");
     }
@@ -263,8 +264,9 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
               .getProperties()
               .getProperty("zeppelin.spark.run.asLoginUser", "true"));
       String userName = context.getUserName();
+      String realName = DBUtils.getRealNameByName(userName);
       if (runAsLoginUser && !"anonymous".equals(userName)) {
-        env.put("HADOOP_USER_NAME", userName);
+        env.put("HADOOP_USER_NAME", realName);
       }
     }
     LOGGER.info("buildEnvFromProperties: {}", env);

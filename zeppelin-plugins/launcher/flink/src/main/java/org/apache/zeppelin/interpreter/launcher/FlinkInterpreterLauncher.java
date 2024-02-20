@@ -93,8 +93,9 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
               .getProperties()
               .getProperty("zeppelin.flink.run.asLoginUser", "true"));
       String userName = context.getUserName();
+      String realName = DBUtils.getRealNameByName(userName);
       if (runAsLoginUser && !"anonymous".equals(userName)) {
-        envs.put("HADOOP_USER_NAME", userName);
+        envs.put("HADOOP_USER_NAME", realName);
       }
     }
 

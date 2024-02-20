@@ -24,9 +24,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.zeppelin.interpreter.YarnAppMonitor;
 import org.apache.zeppelin.interpreter.util.ProcessLauncher;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,12 @@ public class ExecRemoteInterpreterProcess extends RemoteInterpreterManagedProces
     cmdLine.addArgument(getInterpreterGroupId(), false);
     if (isUserImpersonated() && !userName.equals("anonymous")) {
       cmdLine.addArgument("-u", false);
-      cmdLine.addArgument(userName, false);
+      String realName = DBUtils.getRealNameByName(userName);
+      if(StringUtils.isNotBlank(realName)){
+        cmdLine.addArgument(realName, false);
+      }else {
+        cmdLine.addArgument(userName,false);
+      }
     }
     cmdLine.addArgument("-l", false);
     cmdLine.addArgument(getLocalRepoDir(), false);

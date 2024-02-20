@@ -1,15 +1,20 @@
 package org.dmetasoul.lakesoul;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.postgresql.util.PGobject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -25,6 +30,7 @@ public class DBUtils {
 
     private ZeppelinConfiguration zconf;
 
+
      private DBUtils() {
         zconf = ZeppelinConfiguration.create();
         config.setJdbcUrl(zconf.getLakesoulDashBoardPGUrl());
@@ -32,7 +38,6 @@ public class DBUtils {
         config.setPassword(zconf.getLakesoulDashBoardPGPassword());
         config.setMaximumPoolSize(5);
         ds = new HikariDataSource(config);
-
     }
 
     public static DBUtils getInstance(){
@@ -42,6 +47,7 @@ public class DBUtils {
     public static HikariDataSource getDs(){
          return DBUtilHolder.instance.ds;
     }
+
 
     /**
      * 内部类实现单例懒加载
@@ -67,7 +73,35 @@ public class DBUtils {
         return null;
 
     }
+    public static String getRealNameByName(String name) throws IOException {
+        QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
+        // Query the user table and return a list of User objects
+        String query = "SELECT extra FROM t_user where name = ?";
+        Object[] params = {name};
+        LOGGER.info("Start Query Lakesoul Real UserName {} ....", name);
+        String extra = null;
+        try {
+            extra = queryRunner.query(query, rs -> {
+                if (rs.next()) {
+                    // 获取 PGobject 对象
+                    PGobject pgObject = (PGobject) rs.getObject("extra");
+                    // 将 PGobject 转换为字符串形式
+                    return pgObject.getValue();
+                }
+                return null;
+            },params);
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
 
+        if (extra != null) {
+            String realName = new JsonParser().parse(extra).getAsJsonObject().get("real_name").getAsString();
+            LOGGER.info("Query Lakesoul {} Real UserName Success,realName is {}", name, realName);
+            return realName;
+        }
+        return null;
+
+    }
     public static boolean isUserInWorkSpace(String userId, String workspace) throws SQLException {
         QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
         String query = "SELECT uid,workspace_id FROM t_user_workspace_role LEFT JOIN t_user ON t_user.id = t_user_workspace_role.user_id WHERE workspace_id IN (SELECT id FROM t_workspace WHERE name= ?) and t_user.uid = ?";

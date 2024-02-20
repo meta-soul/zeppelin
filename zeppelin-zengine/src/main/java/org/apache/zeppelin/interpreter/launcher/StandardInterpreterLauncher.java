@@ -28,6 +28,7 @@ import org.apache.zeppelin.interpreter.recovery.RecoveryStorage;
 import org.apache.zeppelin.interpreter.remote.ExecRemoteInterpreterProcess;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterRunningProcess;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterUtils;
+import org.dmetasoul.lakesoul.AESEncryptUtil;
 import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,8 +100,11 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
   public Map<String, String> getPostgreEnv(InterpreterLaunchContext context) throws IOException {
     String user = context.getUserName();
     String password = null;
+    String realName = null;
     try {
-      password = DBUtils.getPasswordByName(user);
+      String encryptPassword = DBUtils.getPasswordByName(user);
+      realName = DBUtils.getRealNameByName(user);
+      password = AESEncryptUtil.decryptAES(encryptPassword);
     } catch (Exception e) {
       throw new IOException("Get user lakesoul meta db password Failed :" + e.getMessage() );
     }
@@ -112,7 +116,7 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
 
     envMap.put("LAKESOUL_PG_URL", Preconditions.checkNotNull(pgUrl,"pgUrl is null"));
     envMap.put("LAKESOUL_PG_DRIVER", Preconditions.checkNotNull(pgDriver,"pgDriver is null"));
-    envMap.put("LAKESOUL_PG_USERNAME", Preconditions.checkNotNull(user,"pg user is null"));
+    envMap.put("LAKESOUL_PG_USERNAME", Preconditions.checkNotNull(realName,"pg user is null"));
     envMap.put("LAKESOUL_PG_PASSWORD", Preconditions.checkNotNull(password, "pg password is null"));
     envMap.put("LAKESOUL_CURRENT_DOMAIN", Preconditions.checkNotNull(workspace, "pg domain is null"));
 

@@ -12,6 +12,6 @@ cd ../
 rm zeppelin*.tar.gz
 tar -zcvf zeppelin-0.11.0-SNAPSHOT.tar.gz zeppelin-0.11.0-SNAPSHOT
 
-docker build -t swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin:0.11.0-SNAPSHOT-workspace-v12 -f Dockerfile-Zeppelin --no-cache .
+docker build -t swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin:0.11.0-SNAPSHOT-workspace-v15 -f Dockerfile-Zeppelin --no-cache .
 
 rm -rf zeppelin-0.11.0-SNAPSHOT*

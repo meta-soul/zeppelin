@@ -180,6 +180,11 @@
   <value>com.lakesoul.shaded.org.postgresql.Driver</value>
   <description>Lakesoul Meta DB Driver Class.</description>
 </property>
+<property>
+  <name>zeppelin.lakesoul.meta.pg.secret</name>
+  <value></value>
+  <description>Lakesoul Meta DB Driver Class.</description>
+</property>
 
 </configuration>
 
