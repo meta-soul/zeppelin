@@ -52,7 +52,7 @@ public class CasdoorProfileDefinition extends OAuth20ProfileDefinition<CasdoorPr
 
     @Override
     public String getProfileUrl(OAuth2AccessToken oAuth2AccessToken, OAuth20Configuration oAuth20Configuration) {
-        return "http://172.23.132.36:8000/api/userinfo";
+        return "http://192.168.25.34:8000/api/userinfo";
     }
 
 

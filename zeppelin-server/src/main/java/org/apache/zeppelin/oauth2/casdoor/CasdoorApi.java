@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 public class CasdoorApi extends DefaultApi20 {
     private static  final Logger LOGGER = LoggerFactory.getLogger(CasdoorApi.class);
 
-    public static final String AUTHORIZE_ENDPOINT_URL = "http://172.23.132.36:19091/casdoor/login/oauth/authorize";
+    public static final String AUTHORIZE_ENDPOINT_URL = "http://139.9.155.52:19091/casdoor/login/oauth/authorize";
 
-    public static final String TOKEN_ENDPOINT_URL = "http://172.23.132.36:8000/api/login/oauth/access_token";
+    public static final String TOKEN_ENDPOINT_URL = "http://192.168.25.34:8000/api/login/oauth/access_token";
 
     private static class InstanceHolder {
         private static final CasdoorApi INSTANCE = new CasdoorApi();
