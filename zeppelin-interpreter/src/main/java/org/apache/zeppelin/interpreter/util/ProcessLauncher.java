@@ -190,6 +190,11 @@ public abstract class ProcessLauncher implements ExecuteResultHandler {
     protected void processLine(String s, int i) {
       // print Interpreter launch command for diagnose purpose
       if (s.startsWith("[INFO]")) {
+        // 检测字符串中是否包含 PASSWORD= 并替换为 PASSWORD=******
+        if (s.contains("LAKESOUL_PG_PASSWORD=")) {
+          s = s.replaceAll("(?<=LAKESOUL_PG_PASSWORD=)[^\\s]+", "******");
+        }
+
         LOGGER.info(s);
       } else {
         LOGGER.debug("Process Output: {}", s);

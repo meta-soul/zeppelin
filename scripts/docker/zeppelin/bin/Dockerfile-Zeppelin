@@ -45,9 +45,17 @@ RUN  \
     rm lib/python3.9/site-packages/pandas/tests/io/excel/test_readers.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/test_common.py
 
+RUN \
+    groupadd -g 60000 lakesoul && useradd -u 60000 -g lakesoul -G sudo -m -s /bin/bash lakesoul && \
+    sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers -re 's/^#includedir.*/## **Removed the include directive** ##"/g' && \
+    echo "lakesoul ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    echo "Customized the sudoers file for passwordless access to the lakesoul user!" && \
+    sudo chmod -R 775 /opt/zeppelin && \
+    sudo chown -R lakesoul:lakesoul /opt/zeppelin
 
-
-USER 1000
+USER lakesoul
 
 EXPOSE 8080
 
