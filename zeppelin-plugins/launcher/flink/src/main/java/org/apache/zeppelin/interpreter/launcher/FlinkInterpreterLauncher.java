@@ -39,6 +39,7 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
           "local", "remote", "yarn", "yarn-application", "kubernetes-application");
   private static final String YARN_SHIP_FILES = "yarn.ship-files";
   private static final String FLINK_YARN_APPNAME = "flink.yarn.appName";
+  private static final String YARN_PROVIDED_USRLIB_DIR = "yarn.provided.usrlib.dir";
 
   public FlinkInterpreterLauncher(ZeppelinConfiguration zConf, RecoveryStorage recoveryStorage) {
     super(zConf, recoveryStorage);
@@ -249,13 +250,20 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
       flinkConfStringJoiner.add("-D");
       flinkConfStringJoiner.add("yarn.application.name=" + yarnAppName);
     }
+    
+    String udfPath = context.getProperties().getProperty("yarn.provided.usrlib.dir");
+    if (StringUtils.isNotBlank(udfPath)) {
+      String workspace = context.getWorkSpace();
+      flinkConfStringJoiner.add("-D");
+      flinkConfStringJoiner.add("yarn.provided.usrlib.dir=" + udfPath + workspace + "/usrlib/");
+    }
 
     // add other configuration for both k8s and yarn
     for (Map.Entry<Object, Object> entry : context.getProperties().entrySet()) {
       String key = entry.getKey().toString();
       String value = entry.getValue().toString();
       if (!key.equalsIgnoreCase(YARN_SHIP_FILES) &&
-              !key.equalsIgnoreCase(FLINK_YARN_APPNAME)) {
+              !key.equalsIgnoreCase(FLINK_YARN_APPNAME) && !key.equalsIgnoreCase(YARN_PROVIDED_USRLIB_DIR)) {
         if (CharMatcher.whitespace().matchesAnyOf(value)) {
           LOGGER.warn("flink configuration key {} is skipped because it contains white space",
                   key);
