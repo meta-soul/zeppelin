@@ -60,28 +60,28 @@ limitations under the License.
           </ul>
         </li>
         <!-- menu: Job -->
-        <li>
-          <a class="navbar-menu navbar-menu-job" href="#/jobmanager">
-            <span>Job</span>
-          </a>
-        </li>
+<!--        <li>-->
+<!--          <a class="navbar-menu navbar-menu-job" href="#/jobmanager">-->
+<!--            <span>Job</span>-->
+<!--          </a>-->
+<!--        </li>-->
       </ul>
 
       <ul class="nav navbar-nav navbar-right" style="margin-right:5px;">
         <li class="nav-component" ng-if="ticket">
 
-          <form role="search" data-ng-model="navbar.searchForm"
-                style="display: inline-block; margin: 0px"
-                class="navbar-form"
-                ng-submit="navbar.search(navbar.searchForm.searchTerm)">
-            <input
-              type="text"
-              ng-model="navbar.searchForm.searchTerm"
-              ng-disabled="!navbar.connected"
-              id="navbar-search"
-              class="form-control navbar-search"
-              placeholder="&#xf002 Search" />
-          </form>
+<!--          <form role="search" data-ng-model="navbar.searchForm"-->
+<!--                style="display: inline-block; margin: 0px"-->
+<!--                class="navbar-form"-->
+<!--                ng-submit="navbar.search(navbar.searchForm.searchTerm)">-->
+<!--            <input-->
+<!--              type="text"-->
+<!--              ng-model="navbar.searchForm.searchTerm"-->
+<!--              ng-disabled="!navbar.connected"-->
+<!--              id="navbar-search"-->
+<!--              class="form-control navbar-search"-->
+<!--              placeholder="&#xf002 Search" />-->
+<!--          </form>-->
         </li>
         <li style="margin-left: 10px;">
           <div class="dropdown">
@@ -98,15 +98,15 @@ limitations under the License.
               <li><a href="" data-toggle="modal" data-target="#aboutModal">About Zeppelin</a></li>
               <li role="separator" style="margin: 5px 0;" class="divider"></li>
               <li><a href="#/interpreter">Interpreter</a></li>
-              <li><a href="#/notebookRepos">Notebook Repos</a></li>
-              <li><a href="#/credential">Credential</a></li>
-              <li><a href="#/helium">Helium</a></li>
+<!--              <li><a href="#/notebookRepos">Notebook Repos</a></li>-->
+<!--              <li><a href="#/credential">Credential</a></li>-->
+<!--              <li><a href="#/helium">Helium</a></li>-->
               <li><a href="#/configuration">Configuration</a></li>
               <li ng-if="clusterAddr !== ''"><a href="#/cluster">Cluster</a> </li>
               <li ng-if="ticket.principal && ticket.principal !== 'anonymous'" role="separator" style="margin: 5px 0;" class="divider"></li>
               <li ng-if="ticket.principal && ticket.principal !== 'anonymous'"><a ng-click="navbar.logout()">Logout</a></li>
               <li role="separator" style="margin: 5px 0;" class="divider"></li>
-              <li><a href="/next">Try the new Zeppelin</a></li>
+<!--              <li><a href="/next">Try the new Zeppelin</a></li>-->
             </ul>
           </div>
         </li>

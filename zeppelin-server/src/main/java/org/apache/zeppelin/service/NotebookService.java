@@ -234,9 +234,10 @@ public class NotebookService {
           callback.onSuccess(note, context);
           return null;
         });
-
+      LOGGER.info("Create note: {}, path is {}", noteId, notePath);
       return noteId;
     } catch (IOException e) {
+      LOGGER.warn("Create note Failed! path is {}", notePath);
       callback.onFailure(e, context);
       return null;
     }
@@ -278,9 +279,10 @@ public class NotebookService {
           callback.onSuccess(note, context);
           return null;
         });
-
+      LOGGER.info("Create note: {}, path is {}", noteId, notePath);
       return noteId;
     } catch (IOException e) {
+      LOGGER.warn("Create note Failed! path is {}", notePath);
       callback.onFailure(e, context);
       return null;
     }
@@ -387,6 +389,7 @@ public class NotebookService {
         try {
           notebook.moveNote(noteId, newNotePathReal, context.getAutheInfo());
           callback.onSuccess(readNote, context);
+          LOGGER.info("Rename note ,note id is {}, new path is {}", noteId, newNotePathReal);
         } catch (NotePathAlreadyExistsException e) {
           callback.onFailure(e, context);
         }
@@ -421,6 +424,7 @@ public class NotebookService {
     try {
       String newNoteId = notebook.cloneNote(noteId, revisionId, normalizeNotePath(newNotePath),
           context.getAutheInfo());
+      LOGGER.info("Clone note from nodeId {}, new noteId is {}, new path is {}", noteId, newNoteId, newNotePath);
       return notebook.processNote(newNoteId,
         newNote -> {
           callback.onSuccess(newNote, context);
@@ -451,6 +455,7 @@ public class NotebookService {
     try {
       String newNoteId = notebook.cloneNote(noteId, revisionId, normalizeNotePath(newNotePath), workspace,
           context.getAutheInfo());
+      LOGGER.info("Clone note from nodeId {}, new noteId is {}, new path is {}", noteId, newNoteId, newNotePath);
       return notebook.processNote(newNoteId,
         newNote -> {
           callback.onSuccess(newNote, context);
@@ -815,6 +820,7 @@ public class NotebookService {
         try {
           String destNotePath = note.getPath().replace("/" + NoteManager.TRASH_FOLDER, "");
           notebook.moveNote(noteId, destNotePath, context.getAutheInfo());
+          LOGGER.info("Restore note from trash, noteId is {}, note path is {}", noteId, note.getPath());
           callback.onSuccess(note, context);
         } catch (IOException e) {
           callback.onFailure(new IOException("Fail to restore note: " + noteId, e), context);
@@ -1320,6 +1326,7 @@ public class NotebookService {
             return null;
           }
           notebook.moveNote(noteId, finalDestNotePath, context.getAutheInfo());
+          LOGGER.info("Move note to trash, nodeId is {}, path is {}", noteId, finalDestNotePath);
           callback.onSuccess(note, context);
           return null;
         });
@@ -1344,6 +1351,7 @@ public class NotebookService {
     }
 
     notebook.moveFolder("/" + folderPath, destFolderPath, context.getAutheInfo());
+    LOGGER.info("Move Folder {} to trash {}", folderPath, destFolderPath);
     callback.onSuccess(null, context);
   }
 
@@ -1385,6 +1393,7 @@ public class NotebookService {
               normalizeNotePath(newFolderPath), context.getAutheInfo());
       List<NoteInfo> notesInfo = notebook.getNotesInfo(
               noteId -> authorizationService.isReader(noteId, context.getUserAndRoles()));
+      LOGGER.info("Rename folder path from {} to {}", folderPath, newFolderPath);
       callback.onSuccess(notesInfo, context);
       return notesInfo;
     } catch (IOException e) {
