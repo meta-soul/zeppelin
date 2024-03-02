@@ -15,6 +15,38 @@
     <h2>Revisions comparator</h2>
   </div>
   <nz-divider></nz-divider>
-  <div>
+  <div class="revision-wrap">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>提交时间</th>
+            <th>提交人员</th>
+            <th>审批状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of tableData" [ngClass]="{'selected': item.selected}" (click)="onRowClick(item)">
+            <td><input type="checkbox" [checked]="item.selected" (click)="$event.stopPropagation()"></td>
+            <td>{{ item.date }}</td>
+            <td>{{ item.owner }}</td>
+            <td>{{ item.status }}</td>
+            <td>
+              <button *ngIf="item.status === '未审批'" (click)="approve(item)" [disabled]="item.selected">去审批</button>
+              <button *ngIf="item.status !== '未审批'" (click)="modifyStatus(item)" [disabled]="item.selected">修改状态</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p *ngIf="selectedVersions.length > 2">最多只能对比当前两个版本</p>
+    </div>
+    <div class="diff-wrap">
+      <zeppelin-revision-diff 
+        [diffValue]="diffValue" 
+        [language]="'sql'">
+      </zeppelin-revision-diff>
+    </div>
   </div>
 </div>

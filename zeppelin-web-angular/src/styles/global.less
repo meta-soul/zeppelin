@@ -114,7 +114,25 @@
     }
   }
 }
-
+.monaco-diff-editor[style]{
+  .editor{
+    overflow: hidden;
+    .overflow-guard{
+      .margin{
+        height:100% !important;
+        top:0;
+        .margin-view-overlays{
+          top:0;
+          height:100% !important;
+          .line-numbers{
+            position: absolute;
+            top:0;
+          }
+        }
+      }
+    }
+  }
+}
 //.view-lines {
 //  .view-line {
 //    &:first-child {
