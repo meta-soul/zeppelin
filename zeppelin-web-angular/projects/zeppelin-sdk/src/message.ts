@@ -63,6 +63,12 @@ export class Message {
     });
   }
 
+  getCurWorkSpace():string{
+    let url = new URL(window.location.href);
+    let workspace = url.searchParams.get('workspace');
+    return workspace
+  }
+
   bootstrap(ticket: Ticket, wsUrl: string) {
     this.setTicket(ticket);
     this.setWsUrl(wsUrl);
@@ -144,7 +150,8 @@ export class Message {
       op,
       msgId: `${this.uniqueClientId}-${++this.lastMsgIdSeqSent}`,
       data: data as MixMessageDataTypeMap[K],
-      ...this.ticket
+      ...this.ticket,
+      workspace:this.getCurWorkSpace(),
     };
     console.log('Send:', message);
 
@@ -197,7 +204,7 @@ export class Message {
 
   newNote(noteName: string, defaultInterpreterGroup: string): void {
     this.send<OP.NEW_NOTE>(OP.NEW_NOTE, {
-      name: noteName,
+      name: this.getCurWorkSpace() + '/' + noteName,
       defaultInterpreterGroup
     });
   }

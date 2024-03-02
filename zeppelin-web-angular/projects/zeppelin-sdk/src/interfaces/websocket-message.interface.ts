@@ -19,4 +19,5 @@ export interface WebSocketMessage<K extends keyof MixMessageDataTypeMap> {
   principal?: string; // default 'anonymous'
   roles?: string; // default '[]'
   msgId?: string;
+  workspace?:string;
 }

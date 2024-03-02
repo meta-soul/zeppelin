@@ -45,6 +45,7 @@ import { NotebookParagraphComponent } from './paragraph/paragraph.component';
 import { NotebookParagraphProgressComponent } from './paragraph/progress/progress.component';
 import { NotebookPermissionsComponent } from './permissions/permissions.component';
 import { NotebookRevisionsComparatorComponent } from './revisions-comparator/revisions-comparator.component';
+import { RevisionDiffComponent } from './revisions-diff/revision-diff.component';
 
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { WorkspaceShareModule } from '../../workspace/share/share.module';
@@ -62,6 +63,7 @@ import { NotebookSidebarComponent } from './sidebar/sidebar.component';
     NotebookInterpreterBindingComponent,
     NotebookPermissionsComponent,
     NotebookRevisionsComparatorComponent,
+    RevisionDiffComponent,
     NotebookParagraphComponent,
     NotebookAddParagraphComponent,
     NotebookParagraphCodeEditorComponent,

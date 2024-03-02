@@ -30,6 +30,12 @@ export class AppHttpInterceptor implements HttpInterceptor {
     if (environment.production) {
       httpRequestUpdated = httpRequest.clone({ setHeaders: { 'X-Requested-With': 'XMLHttpRequest' } });
     }
+    // 添加workspace参数
+    let url = new URL(window.location.href);
+    let workspace = url.searchParams.get('workspace');
+    const paramsWithWorkspace = httpRequestUpdated.params.append('workspace', workspace);
+    httpRequestUpdated = httpRequestUpdated.clone({ params: paramsWithWorkspace });
+
     return next.handle(httpRequestUpdated).pipe(
       map(event => {
         if (event instanceof HttpResponse) {

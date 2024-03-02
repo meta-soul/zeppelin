@@ -74,6 +74,12 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
     return false;
   };
 
+  getCurWorkSpace():string{
+    let url = new URL(window.location.href);
+    let workspace = url.searchParams.get('workspace');
+    return workspace
+  }
+
   processImportJson(data) {
     let result = data;
     if (typeof result !== 'object') {
@@ -86,9 +92,9 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
     }
     if (result.paragraphs && result.paragraphs.length > 0) {
       if (!this.noteImportName) {
-        this.noteImportName = result.name;
+        this.noteImportName = this.getCurWorkSpace() + '/' +result.name;
       } else {
-        result.name = this.noteImportName;
+        result.name = this.getCurWorkSpace() + '/' + this.noteImportName;
       }
       this.messageService.importNote(result);
     } else {
