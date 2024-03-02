@@ -18,6 +18,7 @@
 package org.apache.zeppelin.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -461,6 +462,45 @@ public class NotebookRestApi extends AbstractRestApi {
     String notePath = request.getNotePath();
     return notebookService.getNoteByPath(notePath, reload, getServiceContext(workspace), new RestServiceCallback<>(),
             note -> new JsonResponse<>(Status.OK, "", note).build());
+  }
+
+  /**
+   * Get all paragraphs text of a note.
+   *
+   * @param noteId
+   * @param revisionId
+   * @param reload
+   * @return
+   * @throws IOException
+   */
+  @GET
+  @Path("{noteId}/getByRevisionId/{revisionId}")
+  @ZeppelinApi
+  public Response getNoteContentByRevison(@PathParam("noteId") String noteId,
+                                          @PathParam("revisionId") String revisionId,
+                                          @QueryParam("reload") boolean reload,
+                                          @QueryParam("workspace") String workspace) throws IOException {
+    LOGGER.info("Get note {} by the revision {}", noteId, revisionId);
+    Note noteRevision = notebookService.getNotebyRevision(noteId, revisionId, getServiceContext(workspace), new RestServiceCallback<>());
+    List<String> sqlSet = new ArrayList<>();
+    sqlSet.add("%flink.bsql\n");
+    sqlSet.add("%flink.ssql\n");
+    sqlSet.add("%flink.sql\n");
+    sqlSet.add("%spark.sql\n");
+    sqlSet.add("%spark.ssql\n");
+    sqlSet.add("%sql\n");
+    StringBuilder combinedText = new StringBuilder();
+    for (Paragraph p : noteRevision.getParagraphs()){
+      String text = p.getText();
+      LOGGER.info("Get note gragraph text is: {}", text);
+      for (String sql : sqlSet) {
+        if (text.contains(sql)) {
+            text = text.replace(sql, "");
+        }
+      }
+      combinedText.append(text).append("\n");
+    }
+    return new JsonResponse<>(Status.OK, "", combinedText.toString()).build();
   }
 
 
