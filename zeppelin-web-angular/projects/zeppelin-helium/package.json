@@ -2,11 +2,11 @@
   "name": "@zeppelin/helium",
   "version": "0.0.0",
   "peerDependencies": {
-    "@angular/common": "~8.2.8",
-    "@angular/core": "~8.2.8",
-    "@angular/forms": "~8.2.7",
-    "@angular/router": "~8.2.7",
+    "@angular/common": "~14.3.0",
+    "@angular/core": "~14.3.0",
+    "@angular/forms": "~14.3.0",
+    "@angular/router": "~14.3.0",
     "rxjs": "~6.5.3",
-    "ng-zorro-antd": "^8.3.0"
+    "ng-zorro-antd": "^14.3.0"
   }
 }

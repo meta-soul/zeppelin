@@ -193,7 +193,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/zeppelin-helium/tsconfig.lib.json",
             "project": "projects/zeppelin-helium/ng-package.json"
@@ -228,7 +228,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/helium-vis-example/tsconfig.lib.json",
             "project": "projects/helium-vis-example/ng-package.json"
@@ -263,7 +263,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/zeppelin-visualization/tsconfig.lib.json",
             "project": "projects/zeppelin-visualization/ng-package.json"
@@ -298,7 +298,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/zeppelin-sdk/tsconfig.lib.json",
             "project": "projects/zeppelin-sdk/ng-package.json"
@@ -327,5 +327,7 @@
       }
     }
   },
-  "defaultProject": "zeppelin"
+  "cli": {
+    "analytics": false
+  }
 }
