@@ -1,13 +1,9 @@
-import { 
-    Component, 
-    ElementRef, 
-    Input, 
-    OnChanges, 
-    SimpleChanges, 
-    ViewChild } from '@angular/core';
-// import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import * as monaco from 'monaco-editor'
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+// import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+// Import the specific module for SQL language support
 import 'monaco-editor/esm/vs/basic-languages/sql/sql.contribution';
+
 monaco.languages.register({
   id: 'sql',
   extensions: ['.sql'],
@@ -23,14 +19,16 @@ monaco.languages.register({
 export class RevisionDiffComponent implements OnChanges {
   @ViewChild('revisionDiffRef', { static: true }) revisionDiffRef!: ElementRef;
   @Input() focus = false;
-  @Input() opts: monaco.editor.IEditorConstructionOptions = {
+  @Input() opts: monaco.editor.IDiffEditorConstructionOptions = {
     theme: 'vs-dark',
-		automaticLayout: true,
-    // renderLineHighlight:'line',
+    automaticLayout: true,
+    renderIndicators: true,
+    ignoreTrimWhitespace: true,
+    renderSideBySide: true
     // autoIndent: true,
     // readOnly: true,
   };
-  @Input() diffValue: { preVersion: string, curVersion: string } = { preVersion: '', curVersion: '' };
+  @Input() diffValue: { preVersion: string; curVersion: string } = { preVersion: '', curVersion: '' };
   @Input() language = '';
   @Input() cursorPosition: monaco.Position | undefined;
   private editor: monaco.editor.IStandaloneDiffEditor | undefined;
@@ -55,10 +53,13 @@ export class RevisionDiffComponent implements OnChanges {
     const language = this.language || 'text/plain';
     const originalModel = monaco.editor.createModel(this.diffValue.preVersion, language);
     const modifiedModel = monaco.editor.createModel(this.diffValue.curVersion, language);
-    this.editor  = monaco.editor.createDiffEditor(this.revisionDiffRef.nativeElement, this.opts);
+    if (this.editor) {
+      this.editor.dispose(); // Dispose previous editor instance
+    }
+    this.editor = monaco.editor.createDiffEditor(this.revisionDiffRef.nativeElement, this.opts);
     this.editor.setModel({
       original: originalModel,
-      modified: modifiedModel,
+      modified: modifiedModel
     });
     // this.initEditorFocus();
   }

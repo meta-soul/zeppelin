@@ -9,53 +9,88 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { MessageListener, MessageListenersManager } from '@zeppelin/core';
+import { RevisionListItem } from '@zeppelin/sdk';
+import { MessageService, RevisionService } from '@zeppelin/services';
 @Component({
   selector: 'zeppelin-notebook-revisions-comparator',
   templateUrl: './revisions-comparator.component.html',
   styleUrls: ['./revisions-comparator.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NotebookRevisionsComparatorComponent implements OnInit {
+export class NotebookRevisionsComparatorComponent extends MessageListenersManager implements OnInit {
+  @Input() noteRevisions: RevisionListItem[] = [];
+  noteId: string;
+  revisionId: string;
+  preRevisionOption: string;
+  curRevisionOption: string;
+  opts: {
+    theme: 'vs-dark';
+    automaticLayout: true;
+    renderIndicators: true;
+    ignoreTrimWhitespace: true;
+    renderSideBySide: true;
+  };
+  constructor(
+    public messageService: MessageService,
+    private activatedRoute: ActivatedRoute,
+    private revisionService: RevisionService,
+    private cdr: ChangeDetectorRef
+  ) {
+    super(messageService);
+    this.activatedRoute.params.subscribe(params => {
+      this.noteId = params.noteId;
+    });
+  }
   diffValue = {
     preVersion: 'show databases;\nshow tables from test_cdc;\nselect * from test_cdc.video_game_sales;',
-    curVersion: 'show databasess;\nshow tables from;\nshow databases;'
-  } 
-  tableData: any[] = [
-    { date: '2024-01-01', owner: 'John Doe', status: '未审批', selected: false },
-    { date: '2024-02-01', owner: 'Jane Doe', status: '已审批', selected: false },
-    { date: '2024-03-01', owner: 'Alice', status: '已审批', selected: false }
-  ];
-
-  selectedVersions: any[] = [];
-
-  // constructor() {}
-
-  onRowClick(item: any): void {
-    if (this.selectedVersions.length < 2) {
-      item.selected = !item.selected;
-      if (item.selected) {
-        this.selectedVersions.push(item);
-      } else {
-        this.selectedVersions = this.selectedVersions.filter(v => v !== item);
+    curVersion: 'show databasess;\nshow tables from;\nshow databases;\nlalallaa'
+  };
+  onOptionChange(val: string, version: string) {
+    this.revisionService.getRevisionNote(this.noteId, val).subscribe(
+      res => {
+        this.diffValue = {
+          ...this.diffValue,
+          [version === 'pre' ? 'preVersion' : 'curVersion']: res
+        };
+        this.cdr.detectChanges();
+      },
+      error => {
+        console.log('error', error);
       }
-    } else {
-      if (item.selected) {
-        item.selected = !item.selected;
-        this.selectedVersions = this.selectedVersions.filter(v => v !== item);
-      } else {
-        alert('最多只能对比当前两个版本');
-      }
-    }
+    );
   }
+  formatRevisionDate = function(unixTime) {
+    const date = new Date(unixTime * 1000); // 将 UNIX 时间戳转换为毫秒
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    let hours = date.getHours();
+    const minutes = ('0' + date.getMinutes()).slice(-2); // 保证分钟数为两位数
+    const seconds = ('0' + date.getSeconds()).slice(-2); // 保证秒数为两位数
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 处理午夜 12 点的情况
 
-  approve(item: any): void {
-    // Logic for approving item
+    return `${month} ${day} ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
+  };
+  ngOnInit() {
+    // this.messageService.listRevisionHistory(this.noteId);
   }
-
-  modifyStatus(item: any): void {
-    // Logic for modifying status of item
-  } 
-  ngOnInit() {}
 }

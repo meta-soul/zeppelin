@@ -44,7 +44,8 @@
                                       [noteId]="note.id"
                                       [(activatedExtension)]="activatedExtension"
                                       [permissions]="permissions"></zeppelin-notebook-permissions>
-        <zeppelin-notebook-revisions-comparator></zeppelin-notebook-revisions-comparator>
+        <zeppelin-notebook-revisions-comparator *ngSwitchCase="'revisions'"
+                                    [noteRevisions]="noteRevisions"></zeppelin-notebook-revisions-comparator>
       </div>
       <div class="paragraph-area">
         <zeppelin-note-form-block *ngIf="isShowNoteForms"

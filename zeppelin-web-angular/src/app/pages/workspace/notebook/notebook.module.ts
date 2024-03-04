@@ -48,6 +48,7 @@ import { NotebookRevisionsComparatorComponent } from './revisions-comparator/rev
 import { RevisionDiffComponent } from './revisions-diff/revision-diff.component';
 
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzTableModule } from 'ng-zorro-antd/table';
 import { WorkspaceShareModule } from '../../workspace/share/share.module';
 import { NotebookActionBarComponent } from './action-bar/action-bar.component';
 import { NoteFormBlockComponent } from './note-form-block/note-form-block.component';
@@ -100,7 +101,8 @@ import { NotebookSidebarComponent } from './sidebar/sidebar.component';
     DragDropModule,
     NzCodeEditorModule,
     NzCheckboxModule,
-    NzResizableModule
+    NzResizableModule,
+    NzTableModule
   ]
 })
 export class NotebookModule {}
