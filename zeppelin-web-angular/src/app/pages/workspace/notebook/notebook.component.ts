@@ -216,7 +216,7 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
     this.noteRevisions = data.revisionList;
     if (this.noteRevisions) {
       if (this.noteRevisions.length === 0 || this.noteRevisions[0].id !== 'Head') {
-        this.noteRevisions.splice(0, 0, { id: 'Head', message: 'Head' });
+        this.noteRevisions.splice(0, 0, { id: 'Head', message: 'Head', time: this.noteRevisions[0].time });
       }
       const { revisionId } = this.activatedRoute.snapshot.params;
       if (revisionId) {
@@ -376,14 +376,9 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
         this.onParagraphSelect(id);
         this.onParagraphScrolled(id);
       });
-    this.activatedRoute.params
-      .pipe(
-        takeUntil(this.destroy$),
-        distinctUntilKeyChanged('noteId')
-      )
-      .subscribe(() => {
-        this.noteVarShareService.clear();
-      });
+    this.activatedRoute.params.pipe(takeUntil(this.destroy$), distinctUntilKeyChanged('noteId')).subscribe(() => {
+      this.noteVarShareService.clear();
+    });
     this.activatedRoute.params.pipe(takeUntil(this.destroy$)).subscribe(param => {
       const { noteId, revisionId } = param;
       if (revisionId) {

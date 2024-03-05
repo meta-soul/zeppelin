@@ -5,39 +5,45 @@
   <nz-divider></nz-divider>
   <div class="revision-wrap">
     <div class="table-wrap">
-      <nz-table #basicTable 
+      <nz-table 
         [nzData]="noteRevisions"
-        [nzShowPagination]="false">
+        [nzShowPagination]="false"
+        [nzScroll]="{y: '600px' }">
         <thead>
           <tr>
             <th nzLeft>Revision name</th>
-            <th [nzWidth]="150">Date</th>
-            <th nzRight [nzWidth]="100">操作</th>
+            <th nzWidth="150px">Date</th>
+            <th nzRight nzWidth="100px">Operate</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let revision of noteRevisions" (click)="onRowClick(item)">
+          <tr *ngFor="let revision of noteRevisions">
             <td>{{revision.message}}</td>
             <td>{{formatRevisionDate(revision.time)}}</td>
             <td>
-              <button (click)="getRevisionCompare(revision)">提交审批</button>
+              <button 
+                nz-button 
+                nzType="primary" 
+                [nzSize]="'small'" 
+                (click)="getApproval(revision)"
+                >提交审批</button>
             </td>
           </tr>
         </tbody>
       </nz-table>
     </div>
     <div class="diff-wrap">
-      <p class="text-diff">
-        <nz-select [(ngModel)]="preRevisionOption" (change)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'pre revision'" [nzSize]="'small'" class="self-select">
+      <div class="select-wrap">
+        <nz-select [(ngModel)]="preRevisionOption" (ngModelChange)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'pre revision'" [nzSize]="'small'" class="self-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select> -->
-        <nz-select [(ngModel)]="curRevisionOption" (change)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'cur revision'" [nzSize]="'small'" class="self-select">
+        <nz-select [(ngModel)]="curRevisionOption" (ngModelChange)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'cur revision'" [nzSize]="'small'" class="self-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select>
+      </div>
       <zeppelin-revision-diff 
         [diffValue]="diffValue" 
         [language]="'sql'"
-        [opts]="opts"
         style="flex:1">
       </zeppelin-revision-diff>
     </div>

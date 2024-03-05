@@ -13,14 +13,11 @@
  @import "theme-mixin";
 .revision-wrap{
     display:flex;
-    height:600px;
+    min-height:600px;
     .table-wrap{
-        // min-width:280px;
         width:30%;
-        overflow: auto;
         margin-right:10px;
         border:2px #5089b5 solid;
-        padding:15px;
         overflow: auto;
     }
     .diff-wrap{
@@ -33,6 +30,9 @@
             span:nth-child(1){
                 color:grey;
             }
+        }
+        .select-wrap{
+            margin-bottom:10px;
         }
     }
     .self-select{
