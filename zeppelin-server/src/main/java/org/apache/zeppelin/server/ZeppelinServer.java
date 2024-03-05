@@ -133,7 +133,7 @@ import org.slf4j.LoggerFactory;
 /** Main class of Zeppelin. */
 public class ZeppelinServer extends ResourceConfig {
   private static final Logger LOG = LoggerFactory.getLogger(ZeppelinServer.class);
-  private static final String WEB_APP_CONTEXT_NEXT = "/next";
+  // private static final String WEB_APP_CONTEXT_NEXT = "/next";
 
   public static final String SERVICE_LOCATOR_NAME= "shared-locator";
 
@@ -223,11 +223,11 @@ public class ZeppelinServer extends ResourceConfig {
         });
 
     // Multiple Web UI
-    final WebAppContext defaultWebApp = setupWebAppContext(contexts, conf, conf.getString(ConfVars.ZEPPELIN_WAR), conf.getServerContextPath());
-    // final WebAppContext nextWebApp = setupWebAppContext(contexts, conf, conf.getString(ConfVars.ZEPPELIN_ANGULAR_WAR), WEB_APP_CONTEXT_NEXT);
+    // final WebAppContext defaultWebApp = setupWebAppContext(contexts, conf, conf.getString(ConfVars.ZEPPELIN_WAR), conf.getServerContextPath());
+    final WebAppContext nextWebApp = setupWebAppContext(contexts, conf, conf.getString(ConfVars.ZEPPELIN_ANGULAR_WAR), conf.getServerContextPath());
 
-    initWebApp(defaultWebApp, conf, sharedServiceLocator, promMetricRegistry);
-    // initWebApp(nextWebApp, conf, sharedServiceLocator, promMetricRegistry);
+    // initWebApp(defaultWebApp, conf, sharedServiceLocator, promMetricRegistry);
+    initWebApp(nextWebApp, conf, sharedServiceLocator, promMetricRegistry);
     // Cluster Manager Server
     setupClusterManagerServer(sharedServiceLocator, conf);
 
