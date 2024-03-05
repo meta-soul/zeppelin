@@ -491,14 +491,20 @@ public class NotebookRestApi extends AbstractRestApi {
     sqlSet.add("%sql\n");
     StringBuilder combinedText = new StringBuilder();
     for (Paragraph p : noteRevision.getParagraphs()){
-      String text = p.getText();
-      LOGGER.info("Get note gragraph text is: {}", text);
-      for (String sql : sqlSet) {
-        if (text.contains(sql)) {
-            text = text.replace(sql, "");
+      Map<String, Object> editorSetting = (Map<String, Object>) p.getConfig().get("editorSetting");
+      if (editorSetting != null && editorSetting.containsKey("language")) {
+        Object languageObject = editorSetting.get("language");
+        if (languageObject != null && languageObject.equals("sql")) {
+          String text = p.getText();
+          LOGGER.info("Get note gragraph text is: {}", text);
+          for (String sql : sqlSet) {
+            if (text.contains(sql)) {
+                text = text.replace(sql, "");
+            }
+          }
+          combinedText.append(text).append("\n");
         }
       }
-      combinedText.append(text).append("\n");
     }
     return new JsonResponse<>(Status.OK, "", combinedText.toString()).build();
   }

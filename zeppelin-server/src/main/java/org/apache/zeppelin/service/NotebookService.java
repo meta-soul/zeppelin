@@ -1192,8 +1192,13 @@ public class NotebookService {
             callback)) {
           return null;
         }
-        Note revisionNote = notebook.getNoteByRevision(noteId, note.getPath(), revisionId,
-            context.getAutheInfo());
+        Note revisionNote;
+        if (revisionId.equals("Head")) {
+          revisionNote = note;
+        } else {
+          revisionNote = notebook.getNoteByRevision(noteId, note.getPath(), revisionId,
+              context.getAutheInfo());
+        }
         callback.onSuccess(revisionNote, context);
         return revisionNote;
       });
