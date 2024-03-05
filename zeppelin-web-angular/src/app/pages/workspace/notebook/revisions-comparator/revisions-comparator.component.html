@@ -28,10 +28,10 @@
     </div>
     <div class="diff-wrap">
       <p class="text-diff">
-        <nz-select [(ngModel)]="preRevisionOption" (change)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'pre revision'" [nzSize]="small" class="self-select">
+        <nz-select [(ngModel)]="preRevisionOption" (change)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'pre revision'" [nzSize]="'small'" class="self-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select> -->
-        <nz-select [(ngModel)]="curRevisionOption" (change)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'cur revision'" [nzSize]="small" class="self-select">
+        <nz-select [(ngModel)]="curRevisionOption" (change)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'cur revision'" [nzSize]="'small'" class="self-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select>
       <zeppelin-revision-diff 
