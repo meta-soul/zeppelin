@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -36,6 +33,7 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +63,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 /**
  * Backend for storing Notebooks on S3
  */
-public class S3NotebookRepo implements NotebookRepo {
+public class S3NotebookRepo implements NotebookRepoWithVersionControl {
   private static final Logger LOGGER = LoggerFactory.getLogger(S3NotebookRepo.class);
 
   // Use a credential provider chain so that instance profiles can be utilized
@@ -98,7 +96,8 @@ public class S3NotebookRepo implements NotebookRepo {
     this.conf = conf;
     bucketName = conf.getS3BucketName();
     user = conf.getS3User();
-    rootFolder = user + "/notebook";
+//    rootFolder = user + "/notebook";
+    rootFolder = conf.getNotebookDir();
     useServerSideEncryption = conf.isS3ServerSideEncryption();
     if (StringUtils.isNotBlank(conf.getS3CannedAcl())) {
         objectCannedAcl = CannedAccessControlList.valueOf(conf.getS3CannedAcl());
@@ -186,7 +185,7 @@ public class S3NotebookRepo implements NotebookRepo {
     try {
       ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
               .withBucketName(bucketName)
-              .withPrefix(user + "/" + "notebook");
+              .withPrefix(rootFolder);
       ObjectListing objectListing;
       do {
         objectListing = s3client.listObjects(listObjectsRequest);
@@ -228,6 +227,21 @@ public class S3NotebookRepo implements NotebookRepo {
     }
   }
 
+  public Note getByPath(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
+    S3Object s3object;
+    try {
+      s3object = s3client.getObject(new GetObjectRequest(bucketName,
+              rootFolder + "/" + notePath));
+    }
+    catch (AmazonClientException ace) {
+      throw new IOException("Fail to get note: " + notePath + " from S3", ace);
+    }
+    try (InputStream ins = s3object.getObjectContent()) {
+      String json = IOUtils.toString(ins, conf.getString(ConfVars.ZEPPELIN_ENCODING));
+      return Note.fromJson(noteId, json);
+    }
+  }
+
   @Override
   public void save(Note note, AuthenticationInfo subject) throws IOException {
     String json = note.toJson();
@@ -251,6 +265,33 @@ public class S3NotebookRepo implements NotebookRepo {
     }
     catch (AmazonClientException ace) {
       throw new IOException("Fail to store note: " + note.getPath() + " in S3", ace);
+    }
+    finally {
+      FileUtils.deleteQuietly(file);
+    }
+  }
+
+  public void saveByPath(String noteFilePath, String noteContent, AuthenticationInfo subject) throws IOException {
+    String key = rootFolder + "/" + noteFilePath;
+    File file = File.createTempFile("note", "zpln");
+    try {
+      Writer writer = new OutputStreamWriter(new FileOutputStream(file));
+      writer.write(noteContent);
+      writer.close();
+      PutObjectRequest putRequest = new PutObjectRequest(bucketName, key, file);
+      if (useServerSideEncryption) {
+        // Request server-side encryption.
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+        putRequest.setMetadata(objectMetadata);
+      }
+      if (objectCannedAcl != null) {
+        putRequest.withCannedAcl(objectCannedAcl);
+      }
+      s3client.putObject(putRequest);
+    }
+    catch (AmazonClientException ace) {
+      throw new IOException("Fail to store note: " + noteFilePath + " in S3", ace);
     }
     finally {
       FileUtils.deleteQuietly(file);
@@ -335,4 +376,51 @@ public class S3NotebookRepo implements NotebookRepo {
     LOGGER.warn("Method not implemented");
   }
 
+  @Override
+  public Revision checkpoint(String noteId, String notePath, String checkpointMsg, AuthenticationInfo subject) throws IOException {
+    Note note = get(noteId, notePath, subject);
+
+    //1 Write note content to revision file
+    String revisionId = UUID.randomUUID().toString().replace("-", "");
+    String noteContent = note.toJson();
+    saveByPath(buildRevisionsFileAbsolutePath(noteId, notePath, revisionId), noteContent, subject);
+    DBUtils.saveNoteInfo(buildRevisionsFileAbsolutePath(noteId, notePath, revisionId), noteId, revisionId, checkpointMsg);
+    //2 Append revision info
+    Revision revision = new Revision(revisionId, checkpointMsg, (int) (System.currentTimeMillis() / 1000L));
+    return revision;
+  }
+
+  @Override
+  public Note get(String noteId, String notePath, String revId, AuthenticationInfo subject) throws IOException {
+    Note note = getByPath(noteId, buildRevisionsFileAbsolutePath(noteId, notePath, revId), subject);
+    if (note != null) {
+      note.setPath(notePath);
+    }
+    return note;
+  }
+
+  @Override
+  public List<Revision> revisionHistory(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
+    return DBUtils.listHistoryNoteInfo(noteId, notePath);
+  }
+
+  @Override
+  public Note setNoteRevision(String noteId, String notePath, String revId, AuthenticationInfo subject) throws IOException {
+    Note revisionNote = get(noteId, notePath, revId, subject);
+    if (revisionNote != null) {
+      save(revisionNote, subject);
+    }
+    return revisionNote;
+  }
+
+  private String buildRevisionsFileAbsolutePath(String noteId, String notePath, String revisionId) throws IOException {
+    return buildRevisionsDirName(noteId, notePath) + "/" + revisionId;
+  }
+
+  private static String buildRevisionsDirName(String noteId, String notePath) throws IOException {
+    if (!notePath.startsWith("/")) {
+      throw new IOException("Invalid notePath: " + notePath);
+    }
+    return ".checkpoint/" + (notePath + "_" + noteId).substring(1);
+  }
 }

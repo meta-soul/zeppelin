@@ -9,6 +9,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl;
 import org.postgresql.util.PGobject;
 
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Asakiny@dmetasoul.com
@@ -127,6 +130,49 @@ public class DBUtils {
             int result = queryRunner.query(query, rs -> rs.next() ? rs.getInt(1) : -1, params);
             LOGGER.info("User {}'s role in workspace {} is {}", name, workspace, result);
             return result == 0 || result == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Query user role in workspace failed", e);
+        }
+    }
+
+    public static boolean saveNoteInfo(String notePath, String noteId, String noteVersion,
+                                       String noteMessage) {
+        QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
+        String query = "INSERT INTO note_info (`note_path`, `note_id`, `note_version`, `note_message`) VALUES " +
+                "(? ,?, ? ,?)";
+
+        Object[] params = {notePath, noteId, noteVersion, noteMessage};
+        try {
+            int result = queryRunner.insert(query, rs -> rs.next() ? rs.getInt(1) : -1, params);
+            LOGGER.info("Insert into note_info table info note_path:{}, note_id:{}, note_version:{}, note_message:{} result id {}",
+                    notePath, noteId, noteVersion, noteMessage, result);
+            return result == 0 || result == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Query user role in workspace failed", e);
+        }
+    }
+
+    public static List<NotebookRepoWithVersionControl.Revision> listHistoryNoteInfo(String notePath, String noteId) {
+        QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
+        List<NotebookRepoWithVersionControl.Revision> revisions = new ArrayList<>();
+        String query = "SELECT note_version, note_message, note_update_time from note_info WHERE note_path = ? AND note_id = ? ";
+
+        Object[] params = {notePath, noteId};
+
+        try {
+            queryRunner.query(query, rs -> {
+                if (rs.next()) {
+                    // 获取 PGobject 对象
+                    String noteVersion = rs.getString("note_version");
+                    String noteMessage = rs.getString("note_message");
+                    int noteUpdateTime = rs.getInt("note_update_time");
+                    NotebookRepoWithVersionControl.Revision revision = new NotebookRepoWithVersionControl.Revision(noteVersion, noteMessage, noteUpdateTime);
+                    revisions.add(revision);
+                }
+                return revisions;
+            }, params);
+            LOGGER.info("Select from note_info note_path:{}, note_id:{}, result size is {}", notePath, noteId);
+            return revisions;
         } catch (SQLException e) {
             throw new RuntimeException("Query user role in workspace failed", e);
         }
