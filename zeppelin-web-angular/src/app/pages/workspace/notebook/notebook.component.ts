@@ -215,8 +215,8 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
   listRevisionHistory(data: MessageReceiveDataTypeMap[OP.LIST_REVISION_HISTORY]) {
     this.noteRevisions = data.revisionList;
     if (this.noteRevisions) {
-      if (this.noteRevisions.length === 0 || this.noteRevisions[0].id !== 'Head') {
-        this.noteRevisions.splice(0, 0, { id: 'Head', message: 'Head', time: this.noteRevisions[0].time });
+      if (this.noteRevisions.length === 0 || this.noteRevisions[0].id != 'Head') {
+        this.noteRevisions.splice(0, 0, { id: 'Head', message: 'Head', time: null });
       }
       const { revisionId } = this.activatedRoute.snapshot.params;
       if (revisionId) {

@@ -64,9 +64,18 @@ export class Message {
   }
 
   getCurWorkSpace():string{
-    let url = new URL(window.location.href);
-    let workspace = url.searchParams.get('workspace');
-    return workspace
+    // let url = new URL(window.location.href);
+    // let workspace = url.searchParams.get('workspace');
+    // return workspace
+    const hash = window.location.hash;
+    const parts = hash.split('?');
+    if (parts.length > 1) {
+        const paramString = parts[1];
+        const params = new URLSearchParams(paramString);
+        const workspace = params.get('workspace');
+        return workspace
+    }
+    return ''
   }
 
   bootstrap(ticket: Ticket, wsUrl: string) {

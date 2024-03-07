@@ -31,9 +31,21 @@ export class AppHttpInterceptor implements HttpInterceptor {
       httpRequestUpdated = httpRequest.clone({ setHeaders: { 'X-Requested-With': 'XMLHttpRequest' } });
     }
     // 添加workspace参数
-    let url = new URL(window.location.href);
-    let workspace = url.searchParams.get('workspace');
-    const paramsWithWorkspace = httpRequestUpdated.params.append('workspace', workspace);
+    const getCurWorkSpace = () => {
+      // let url = new URL(window.location.href);
+      // let workspace = url.searchParams.get('workspace');
+      // return workspace
+      const hash = window.location.hash;
+      const parts = hash.split('?');
+      if (parts.length > 1) {
+        const paramString = parts[1];
+        const params = new URLSearchParams(paramString);
+        const workspace = params.get('workspace');
+        return workspace;
+      }
+      return '';
+    };
+    const paramsWithWorkspace = httpRequestUpdated.params.append('workspace', getCurWorkSpace());
     httpRequestUpdated = httpRequestUpdated.clone({ params: paramsWithWorkspace });
 
     return next.handle(httpRequestUpdated).pipe(
