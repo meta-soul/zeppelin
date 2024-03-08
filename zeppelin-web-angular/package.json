@@ -5,7 +5,7 @@
     "postinstall": "npm run build:projects",
     "ng": "./node_modules/.bin/ng",
     "start": "ng serve --proxy-config proxy.conf.js --extra-webpack-config webpack.partial.js",
-    "build": "ng build --prod --extra-webpack-config webpack.partial.js --base-href /",
+    "build": "ng build --prod --extra-webpack-config webpack.partial.js --base-href /zeppelin/",
     "build:projects": "npm run build-project:sdk && npm run build-project:vis && npm run build-project:helium",
     "build-helium-vis-example": " ng build --project helium-vis-example",
     "build-project:sdk": " ng build --project zeppelin-sdk",
@@ -56,7 +56,7 @@
     "@types/highlight.js": "^9.12.3",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/lodash": "^4.14.124",
+    "@types/lodash": "ts2.5",
     "@types/mathjax": "^0.0.35",
     "@types/node": "~8.9.4",
     "@types/parse5": "^5.0.2",
@@ -97,5 +97,6 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  }
+  },
+  "__npminstall_done": false
 }
