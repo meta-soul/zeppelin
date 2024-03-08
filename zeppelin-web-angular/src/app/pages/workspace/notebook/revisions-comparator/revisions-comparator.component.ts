@@ -45,8 +45,8 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     });
   }
   diffValue = {
-    preVersion: 'show databases;\nshow tables from test_cdc;\nselect * from test_cdc.video_game_sales;',
-    curVersion: 'show databasess;\nshow tables from;\nshow databases;\nlalallaa'
+    preVersion: '',
+    curVersion: ''
   };
   onOptionChange(val: string, version: string) {
     this.revisionService.getRevisionNote(this.noteId, val).subscribe(

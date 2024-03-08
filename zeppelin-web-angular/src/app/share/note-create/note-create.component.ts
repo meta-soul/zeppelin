@@ -16,9 +16,9 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 
 import { MessageListener, MessageListenersManager } from '@zeppelin/core';
 import { InterpreterItem, MessageReceiveDataTypeMap, Note, OP } from '@zeppelin/sdk';
+import { TicketService } from '@zeppelin/services';
 import { MessageService } from '@zeppelin/services/message.service';
 import { NoteListService } from '@zeppelin/services/note-list.service';
-import { TicketService } from '@zeppelin/services';
 import { getCurWorkSpace } from '../../utility/workspace';
 @Component({
   selector: 'zeppelin-note-create',

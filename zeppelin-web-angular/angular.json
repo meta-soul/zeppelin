@@ -43,6 +43,7 @@
         "build": {
           "builder": "ngx-build-plus:browser",
           "options": {
+            "publicPath": "zeppelin",
             "outputPath": "dist/zeppelin",
             "index": "src/index.html",
             "main": "src/main.ts",

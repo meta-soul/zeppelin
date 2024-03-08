@@ -34,10 +34,10 @@
     </div>
     <div class="diff-wrap">
       <div class="select-wrap">
-        <nz-select [(ngModel)]="preRevisionOption" (ngModelChange)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'pre revision'" [nzSize]="'small'" class="self-select">
+        <nz-select [(ngModel)]="preRevisionOption" (ngModelChange)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'pre revision'" class="self-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select> -->
-        <nz-select [(ngModel)]="curRevisionOption" (ngModelChange)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'cur revision'" [nzSize]="'small'" class="self-select">
+        <nz-select [(ngModel)]="curRevisionOption" (ngModelChange)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'cur revision'" class="self-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select>
       </div>

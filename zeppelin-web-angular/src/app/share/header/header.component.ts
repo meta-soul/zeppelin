@@ -34,6 +34,7 @@ export class HeaderComponent extends MessageListenersManager implements OnInit, 
   connectStatus = 'error';
   noteListVisible = false;
   queryStr: string | null = null;
+  zeppelinWorkspace: string = localStorage.getItem('zeppelinWorkspace') || ''
 
   about() {
     this.nzModalService.create({
