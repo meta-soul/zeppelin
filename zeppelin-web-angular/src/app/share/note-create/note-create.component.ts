@@ -18,7 +18,8 @@ import { MessageListener, MessageListenersManager } from '@zeppelin/core';
 import { InterpreterItem, MessageReceiveDataTypeMap, Note, OP } from '@zeppelin/sdk';
 import { MessageService } from '@zeppelin/services/message.service';
 import { NoteListService } from '@zeppelin/services/note-list.service';
-
+import { TicketService } from '@zeppelin/services';
+import { getCurWorkSpace } from '../../utility/workspace';
 @Component({
   selector: 'zeppelin-note-create',
   templateUrl: './note-create.component.html',
@@ -84,12 +85,14 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
   }
 
   createNote() {
+    const newNoteName = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + this.noteName;
     this.cloneNote
-      ? this.messageService.cloneNote(this.cloneNote.id, this.noteName)
-      : this.messageService.newNote(this.noteName, this.defaultInterpreter);
+      ? this.messageService.cloneNote(this.cloneNote.id, newNoteName)
+      : this.messageService.newNote(newNoteName, this.defaultInterpreter);
   }
 
   constructor(
+    public ticketService: TicketService,
     public messageService: MessageService,
     private cdr: ChangeDetectorRef,
     private noteListService: NoteListService,

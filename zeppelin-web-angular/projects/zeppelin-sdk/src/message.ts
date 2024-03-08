@@ -13,7 +13,6 @@
 import {interval, Observable, Subject, Subscription} from 'rxjs';
 import {delay, filter, map, mergeMap, retryWhen, take} from 'rxjs/operators';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-
 import {Ticket} from './interfaces/message-common.interface';
 import {
   MessageReceiveDataTypeMap,
@@ -24,7 +23,7 @@ import {NoteConfig, PersonalizedMode, SendNote} from './interfaces/message-noteb
 import {OP} from './interfaces/message-operator.interface';
 import {ParagraphConfig, ParagraphParams, SendParagraph} from './interfaces/message-paragraph.interface';
 import {WebSocketMessage} from './interfaces/websocket-message.interface';
-
+import {getCurWorkSpace} from '../../../src/app/utility/workspace'
 export type ArgumentsType<T> = T extends (...args: infer U) => void ? U : never;
 
 export type SendArgumentsType<K extends keyof MessageSendDataTypeMap> = MessageSendDataTypeMap[K] extends undefined
@@ -61,21 +60,6 @@ export class Message {
       this.connectedStatus$.next(this.connectedStatus);
       this.pingIntervalSubscription.unsubscribe();
     });
-  }
-
-  getCurWorkSpace():string{
-    // let url = new URL(window.location.href);
-    // let workspace = url.searchParams.get('workspace');
-    // return workspace
-    const hash = window.location.hash;
-    const parts = hash.split('?');
-    if (parts.length > 1) {
-        const paramString = parts[1];
-        const params = new URLSearchParams(paramString);
-        const workspace = params.get('workspace');
-        return workspace
-    }
-    return ''
   }
 
   bootstrap(ticket: Ticket, wsUrl: string) {
@@ -160,7 +144,7 @@ export class Message {
       msgId: `${this.uniqueClientId}-${++this.lastMsgIdSeqSent}`,
       data: data as MixMessageDataTypeMap[K],
       ...this.ticket,
-      workspace:this.getCurWorkSpace(),
+      workspace:getCurWorkSpace(),
     };
     console.log('Send:', message);
 
@@ -213,7 +197,7 @@ export class Message {
 
   newNote(noteName: string, defaultInterpreterGroup: string): void {
     this.send<OP.NEW_NOTE>(OP.NEW_NOTE, {
-      name: this.getCurWorkSpace() + '/' + noteName,
+      name:noteName,
       defaultInterpreterGroup
     });
   }

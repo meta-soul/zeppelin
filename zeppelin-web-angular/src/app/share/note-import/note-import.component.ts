@@ -21,7 +21,7 @@ import { MessageListener, MessageListenersManager } from '@zeppelin/core';
 import { OP } from '@zeppelin/sdk';
 import { MessageService } from '@zeppelin/services/message.service';
 import { TicketService } from '@zeppelin/services/ticket.service';
-
+import { getCurWorkSpace } from '../../utility/workspace';
 @Component({
   selector: 'zeppelin-note-import',
   templateUrl: './note-import.component.html',
@@ -74,21 +74,6 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
     return false;
   };
 
-  getCurWorkSpace(): string {
-    // let url = new URL(window.location.href);
-    // let workspace = url.searchParams.get('workspace');
-    // return workspace
-    const hash = window.location.hash;
-    const parts = hash.split('?');
-    if (parts.length > 1) {
-      const paramString = parts[1];
-      const params = new URLSearchParams(paramString);
-      const workspace = params.get('workspace');
-      return workspace;
-    }
-    return '';
-  }
-
   processImportJson(data) {
     let result = data;
     if (typeof result !== 'object') {
@@ -101,9 +86,9 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
     }
     if (result.paragraphs && result.paragraphs.length > 0) {
       if (!this.noteImportName) {
-        this.noteImportName = this.getCurWorkSpace() + '/' + result.name;
+        this.noteImportName = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + result.name;
       } else {
-        result.name = this.getCurWorkSpace() + '/' + this.noteImportName;
+        result.name = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + this.noteImportName;
       }
       this.messageService.importNote(result);
     } else {

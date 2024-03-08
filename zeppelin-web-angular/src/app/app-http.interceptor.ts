@@ -19,7 +19,7 @@ import { isNil } from 'lodash';
 
 import { environment } from '@zeppelin/environment';
 import { TicketService } from '@zeppelin/services';
-
+import { getCurWorkSpace } from './utility/workspace';
 @Injectable()
 export class AppHttpInterceptor implements HttpInterceptor {
   constructor(private ticketService: TicketService) {}
@@ -30,21 +30,6 @@ export class AppHttpInterceptor implements HttpInterceptor {
     if (environment.production) {
       httpRequestUpdated = httpRequest.clone({ setHeaders: { 'X-Requested-With': 'XMLHttpRequest' } });
     }
-    // 添加workspace参数
-    const getCurWorkSpace = () => {
-      // let url = new URL(window.location.href);
-      // let workspace = url.searchParams.get('workspace');
-      // return workspace
-      const hash = window.location.hash;
-      const parts = hash.split('?');
-      if (parts.length > 1) {
-        const paramString = parts[1];
-        const params = new URLSearchParams(paramString);
-        const workspace = params.get('workspace');
-        return workspace;
-      }
-      return '';
-    };
     const paramsWithWorkspace = httpRequestUpdated.params.append('workspace', getCurWorkSpace());
     httpRequestUpdated = httpRequestUpdated.clone({ params: paramsWithWorkspace });
 
