@@ -58,11 +58,11 @@ export class NoteActionService {
     });
   }
 
-  createNote(path?: string) {
+  createNote(path?: string, type?: string) {
     this.nzModalService.create({
       nzTitle: 'Create New Note',
       nzContent: NoteCreateComponent,
-      nzComponentParams: { path },
+      nzComponentParams: { path, type },
       nzWidth: '800px',
       nzFooter: null
     });

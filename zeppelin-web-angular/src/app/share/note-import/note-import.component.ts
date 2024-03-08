@@ -84,20 +84,22 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
         return;
       }
     }
-    const basePath = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/'
+    const basePath = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/';
     if (result.paragraphs && result.paragraphs.length > 0) {
       if (!this.noteImportName) {
         this.noteImportName = basePath + result.name;
       } else {
-        result.name = basePath + this.noteImportName;
+        result.name = this.noteImportName;
       }
+      result.name = this.noteImportName;
       this.messageService.importNote(result);
     } else if (result.cells && result.cells.length > 0) {
       // nbviewer notebook format
-      if (this.noteImportName) {
-        this.noteImportName = basePath + result.metadata.kernelspec.display_name;
+      if (!this.noteImportName) {
+        // this.noteImportName = basePath + result.metadata.kernelspec.display_name;
+        this.noteImportName = basePath + result.metadata.kernelspec.name;
       }
-      result.name = basePath + this.noteImportName;
+      result.name = this.noteImportName;
       this.messageService.importNote(result);
     } else {
       this.errorText = 'Invalid JSON';

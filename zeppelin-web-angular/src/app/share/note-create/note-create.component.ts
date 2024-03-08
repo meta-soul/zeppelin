@@ -28,6 +28,7 @@ import { getCurWorkSpace } from '../../utility/workspace';
 })
 export class NoteCreateComponent extends MessageListenersManager implements OnInit {
   @Input() path: string;
+  @Input() type: string;
   @Input() cloneNote: Note['note'];
   noteName: string;
   defaultInterpreter: string;
@@ -101,8 +102,19 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
     super(messageService);
   }
 
+  deletePathIfChildFile() {
+    if (this.type === 'child') {
+      this.path = '';
+      let parts = this.noteName.split('/');
+      if (parts.length > 2) {
+        this.noteName = parts.slice(2).join('/');
+      }
+    }
+  }
+
   ngOnInit() {
     this.messageService.getInterpreterSettings();
     this.noteName = this.cloneNote ? this.cloneNoteName() : this.newNoteName(this.path);
+    this.deletePathIfChildFile();
   }
 }

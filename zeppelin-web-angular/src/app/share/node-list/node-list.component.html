@@ -43,7 +43,7 @@
           <span class="operation">
             <ng-container *ngIf="!node.origin.isTrash;else trashFolderTpl">
               <a nz-tooltip nzTitle="Create new note">
-                <i nz-icon nzType="file-add" (click)="createNote(node.origin.id)"></i>
+                <i nz-icon nzType="file-add" (click)="createChildNote(node.origin.id)"></i>
               </a>
               <a nz-tooltip nzTitle="Rename folder">
                 <i nz-icon nzType="edit" (click)="renameFolder(node.origin.id)"></i>

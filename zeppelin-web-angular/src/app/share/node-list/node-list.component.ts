@@ -93,7 +93,9 @@ export class NodeListComponent extends MessageListenersManager implements OnInit
   createNote(path?: string) {
     this.noteActionService.createNote(path);
   }
-
+  createChildNote(path?: string) {
+    this.noteActionService.createNote(path, 'child');
+  }
   @MessageListener(OP.NOTES_INFO)
   getNotes(data: MessageReceiveDataTypeMap[OP.NOTES_INFO]) {
     this.noteListService.setNotes(data.notes);
