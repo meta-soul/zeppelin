@@ -63,7 +63,8 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     );
   }
   getApproval(val) {
-    window.open(`${window.location.origin}/?noteId=${this.noteId}#/home/taskPublishing`, '_blank');
+    window.opener.location.href = `${window.location.origin}/?noteId=${this.noteId}#/home/taskPublishing`;
+    window.opener.focus();
   }
   formatRevisionDate = function(unixTime) {
     const date = new Date(unixTime * 1000); // 将 UNIX 时间戳转换为毫秒
