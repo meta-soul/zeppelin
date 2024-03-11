@@ -59,6 +59,9 @@ export class NoteActionService {
   }
 
   createNote(path?: string, type?: string) {
+    if (!type) {
+      type = 'normal';
+    }
     this.nzModalService.create({
       nzTitle: 'Create New Note',
       nzContent: NoteCreateComponent,

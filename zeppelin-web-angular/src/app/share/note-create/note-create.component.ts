@@ -86,7 +86,12 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
   }
 
   createNote() {
-    const newNoteName = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + this.noteName;
+    let newNoteName = this.noteName
+    if(this.type === 'normal'){
+      newNoteName = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + this.noteName;
+    }else if(this.type === 'child'){
+      newNoteName = this.path + '/' + this.noteName
+    }
     this.cloneNote
       ? this.messageService.cloneNote(this.cloneNote.id, newNoteName)
       : this.messageService.newNote(newNoteName, this.defaultInterpreter);
@@ -102,19 +107,19 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
     super(messageService);
   }
 
-  deletePathIfChildFile() {
-    if (this.type === 'child') {
-      this.path = '';
-      let parts = this.noteName.split('/');
-      if (parts.length > 2) {
-        this.noteName = parts.slice(2).join('/');
-      }
+  extractLastSegment(path) {
+    const lastIndex = path.lastIndexOf('/');
+    if (lastIndex !== -1) {
+        return path.slice(lastIndex + 1);
     }
+    return path;
   }
 
   ngOnInit() {
     this.messageService.getInterpreterSettings();
     this.noteName = this.cloneNote ? this.cloneNoteName() : this.newNoteName(this.path);
-    this.deletePathIfChildFile();
+    if (this.type === 'child') {
+      this.noteName = this.extractLastSegment(this.noteName)
+    } 
   }
 }
