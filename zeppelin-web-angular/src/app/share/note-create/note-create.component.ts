@@ -87,10 +87,10 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
 
   createNote() {
     let newNoteName = this.noteName
-    if(this.type === 'normal'){
-      newNoteName = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + this.noteName;
-    }else if(this.type === 'child'){
+    if(this.type === 'child'){
       newNoteName = this.path + '/' + this.noteName
+    }else{
+      newNoteName = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + this.noteName;
     }
     this.cloneNote
       ? this.messageService.cloneNote(this.cloneNote.id, newNoteName)
