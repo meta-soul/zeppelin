@@ -63,7 +63,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     );
   }
   getApproval(val) {
-    window.opener.location.href = `${window.location.origin}/?noteId=${this.noteId}#/home/taskPublishing`;
+    window.opener.location.href = `${window.location.origin}/#/home/taskPublishing?noteId=${this.noteId}`;
     window.opener.focus();
   }
   formatRevisionDate = function(unixTime) {
