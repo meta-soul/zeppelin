@@ -15,7 +15,7 @@ import { conf as ScalaConf, language as ScalaLanguage } from './scala';
 
 export const loadMonacoBefore = () => {
   editor.defineTheme('zeppelin-theme', {
-    base: 'vs',
+    base: 'vs-dark',
     inherit: true,
     rules: [],
     colors: {
