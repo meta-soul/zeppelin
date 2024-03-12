@@ -12,8 +12,11 @@ import { BaseUrlService } from './base-url.service';
 export class RevisionService {
   getRevisionNote(noteId: string, revisionId: string) {
     return this.httpClient
-      .get(`${this.baseUrlService.getRestApiBase()}/notebook/${noteId}/getByRevisionId/${revisionId}`)
-      .pipe(
+      .post(`${this.baseUrlService.getRestApiBase()}/notebook/getByRevisionId/`,
+      {
+        noteId:noteId,
+        revisionId:revisionId
+      }).pipe(
         tap(
           data => {
             return data;
