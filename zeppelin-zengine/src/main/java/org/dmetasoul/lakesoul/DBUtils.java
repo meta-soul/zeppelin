@@ -153,7 +153,7 @@ public class DBUtils {
     public static List<NotebookRepoWithVersionControl.Revision> listHistoryNoteInfo(String notePath, String noteId) {
         QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
         List<NotebookRepoWithVersionControl.Revision> revisions = new ArrayList<>();
-        String query = "SELECT note_version, note_message, note_update_time from t_note_info WHERE note_path = ? AND note_id = ? ";
+        String query = "SELECT note_version, note_message, note_update_time from t_note_info WHERE note_path = ? AND note_id = ? order by note_update_time desc";
 
         Object[] params = {notePath, noteId};
 
