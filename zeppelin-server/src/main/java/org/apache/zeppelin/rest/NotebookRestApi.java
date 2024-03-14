@@ -469,7 +469,7 @@ public class NotebookRestApi extends AbstractRestApi {
    *
    * @param noteId
    * @param revisionId
-   * @param reload
+   * @param workspace
    * @return
    * @throws IOException
    */
@@ -478,7 +478,6 @@ public class NotebookRestApi extends AbstractRestApi {
   @ZeppelinApi
   public Response getNoteContentByRevison(@PathParam("noteId") String noteId,
                                           @PathParam("revisionId") String revisionId,
-                                          @QueryParam("reload") boolean reload,
                                           @QueryParam("workspace") String workspace) throws IOException {
     LOGGER.info("Get note {} by the revision {}", noteId, revisionId);
     Note noteRevision = notebookService.getNotebyRevision(noteId, revisionId, getServiceContext(workspace), new RestServiceCallback<>());
@@ -508,7 +507,6 @@ public class NotebookRestApi extends AbstractRestApi {
     }
     return new JsonResponse<>(Status.OK, "", combinedText.toString()).build();
   }
-
 
   /**
    * Export note REST API.
