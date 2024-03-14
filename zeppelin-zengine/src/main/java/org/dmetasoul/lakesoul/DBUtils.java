@@ -1,7 +1,5 @@
 package org.dmetasoul.lakesoul;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -9,6 +7,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl;
 import org.postgresql.util.PGobject;
 
 import org.slf4j.Logger;
@@ -16,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Asakiny@dmetasoul.com
@@ -31,7 +32,7 @@ public class DBUtils {
     private ZeppelinConfiguration zconf;
 
 
-     private DBUtils() {
+    private DBUtils() {
         zconf = ZeppelinConfiguration.create();
         config.setJdbcUrl(zconf.getLakesoulDashBoardPGUrl());
         config.setUsername(zconf.getLakesoulDashBoardPGUserName());
@@ -45,7 +46,7 @@ public class DBUtils {
     }
 
     public static HikariDataSource getDs(){
-         return DBUtilHolder.instance.ds;
+        return DBUtilHolder.instance.ds;
     }
 
 
@@ -127,6 +128,49 @@ public class DBUtils {
             int result = queryRunner.query(query, rs -> rs.next() ? rs.getInt(1) : -1, params);
             LOGGER.info("User {}'s role in workspace {} is {}", name, workspace, result);
             return result == 0 || result == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Query user role in workspace failed", e);
+        }
+    }
+
+    public static boolean saveNoteInfo(String noteRealPath, String notePath, String noteId, String noteVersion,
+                                       String noteMessage, int time) {
+        QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
+        String query = "INSERT INTO t_note_info (note_real_path, note_path, note_id, note_version, note_message, note_update_time) VALUES " +
+                "(?, ?, ?, ? ,?, ?)";
+
+        Object[] params = {noteRealPath, notePath, noteId, noteVersion, noteMessage, time};
+        try {
+            String result = queryRunner.insert(query, rs -> rs.next() ? rs.getString(1) : null, params);
+            LOGGER.info("Insert into t_note_info table info note_path:{}, note_id:{}, note_version:{}, note_message:{} result id {}",
+                    notePath, noteId, noteVersion, noteMessage, result);
+            return result.equalsIgnoreCase(noteRealPath);
+        } catch (SQLException e) {
+            throw new RuntimeException("Query user role in workspace failed", e);
+        }
+    }
+
+    public static List<NotebookRepoWithVersionControl.Revision> listHistoryNoteInfo(String notePath, String noteId) {
+        QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
+        List<NotebookRepoWithVersionControl.Revision> revisions = new ArrayList<>();
+        String query = "SELECT note_version, note_message, note_update_time from t_note_info WHERE note_path = ? AND note_id = ? ";
+
+        Object[] params = {notePath, noteId};
+
+        try {
+            queryRunner.query(query, rs -> {
+                while (rs.next()) {
+                    // 获取 PGobject 对象
+                    String noteVersion = rs.getString("note_version");
+                    String noteMessage = rs.getString("note_message");
+                    int noteUpdateTime = rs.getInt("note_update_time");
+                    NotebookRepoWithVersionControl.Revision revision = new NotebookRepoWithVersionControl.Revision(noteVersion, noteMessage, noteUpdateTime);
+                    revisions.add(revision);
+                }
+                return revisions;
+            }, params);
+            LOGGER.info("Select from t_note_info note_path:{}, note_id:{}, result size is {}", notePath, noteId, revisions.size());
+            return revisions;
         } catch (SQLException e) {
             throw new RuntimeException("Query user role in workspace failed", e);
         }

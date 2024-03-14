@@ -23,6 +23,7 @@ import org.apache.zeppelin.notebook.FileSystemStorage;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.dmetasoul.lakesoul.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +32,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * NotebookRepos for hdfs.
  *
  */
-public class FileSystemNotebookRepo implements NotebookRepo {
+public class FileSystemNotebookRepo implements NotebookRepoWithVersionControl {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemNotebookRepo.class);
 
   private FileSystemStorage fs;
@@ -78,11 +80,23 @@ public class FileSystemNotebookRepo implements NotebookRepo {
     return Note.fromJson(noteId, content);
   }
 
+  public Note getByPath(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
+    String content = this.fs.readFile(
+            new Path(notebookDir, notePath));
+    return Note.fromJson(noteId, content);
+  }
+
   @Override
   public void save(Note note, AuthenticationInfo subject) throws IOException {
     this.fs.writeFile(note.toJson(),
         new Path(notebookDir, buildNoteFileName(note.getId(), note.getPath())),
         true);
+  }
+
+  public void saveByPath(String noteFilePath, String noteContent, AuthenticationInfo subject) throws IOException {
+    this.fs.writeFile(noteContent,
+            new Path(notebookDir, noteFilePath),
+            true);
   }
 
   @Override
@@ -137,4 +151,50 @@ public class FileSystemNotebookRepo implements NotebookRepo {
     LOGGER.warn("updateSettings is not implemented for FileSystemNotebookRepo");
   }
 
+  @Override
+  public Revision checkpoint(String noteId, String notePath, String checkpointMsg, AuthenticationInfo subject) throws IOException {
+    Note note = get(noteId, notePath, subject);
+
+    //1 Write note content to revision file
+    String revisionId = UUID.randomUUID().toString().replace("-", "");
+    String noteContent = note.toJson();
+    saveByPath(buildRevisionsFileAbsolutePath(noteId, notePath, revisionId), noteContent, subject);
+    Revision revision = new Revision(revisionId, checkpointMsg, (int) (System.currentTimeMillis() / 1000L));
+    DBUtils.saveNoteInfo(buildRevisionsFileAbsolutePath(noteId, notePath, revisionId), notePath, noteId, revisionId, checkpointMsg, revision.time);
+    return revision;
+  }
+
+  @Override
+  public Note get(String noteId, String notePath, String revId, AuthenticationInfo subject) throws IOException {
+    Note note = getByPath(noteId, buildRevisionsFileAbsolutePath(noteId, notePath, revId), subject);
+    if (note != null) {
+      note.setPath(notePath);
+    }
+    return note;
+  }
+
+  @Override
+  public List<Revision> revisionHistory(String noteId, String notePath, AuthenticationInfo subject) throws IOException {
+    return DBUtils.listHistoryNoteInfo(notePath, noteId);
+  }
+
+  @Override
+  public Note setNoteRevision(String noteId, String notePath, String revId, AuthenticationInfo subject) throws IOException {
+    Note revisionNote = get(noteId, notePath, revId, subject);
+    if (revisionNote != null) {
+      save(revisionNote, subject);
+    }
+    return revisionNote;
+  }
+
+  private String buildRevisionsFileAbsolutePath(String noteId, String notePath, String revisionId) throws IOException {
+    return buildRevisionsDirName(noteId, notePath) + "/" + revisionId;
+  }
+
+  private static String buildRevisionsDirName(String noteId, String notePath) throws IOException {
+    if (!notePath.startsWith("/")) {
+      throw new IOException("Invalid notePath: " + notePath);
+    }
+    return ".checkpoint/" + (notePath + "_" + noteId).substring(1);
+  }
 }
