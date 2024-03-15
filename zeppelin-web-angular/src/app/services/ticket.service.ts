@@ -63,6 +63,7 @@ export class TicketService {
     this.originTicket = ticket;
     this.ticket = { ...ticket, screenUsername, ...{ init: true } };
     this.ticket$.next(this.ticket);
+    window.location.href = window.location.origin + '/zeppelin/#/'
   }
 
   clearTicket() {
