@@ -18,25 +18,18 @@
 
 package org.apache.zeppelin.flink
 
-import java.io.{File, IOException}
-import java.net.{URL, URLClassLoader}
-import java.nio.file.Files
-import java.util.Properties
-import java.util.concurrent.TimeUnit
-import java.util.jar.JarFile
-
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.flink.api.common.JobExecutionResult
+import org.apache.flink.api.java.{ExecutionEnvironmentFactory, ExecutionEnvironment => JExecutionEnvironment}
 import org.apache.flink.api.scala.ExecutionEnvironment
 import org.apache.flink.client.program.ClusterClient
 import org.apache.flink.configuration._
 import org.apache.flink.core.execution.{JobClient, JobListener}
-import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.environment.{StreamExecutionEnvironmentFactory, StreamExecutionEnvironment => JStreamExecutionEnvironment}
-import org.apache.flink.api.java.{ExecutionEnvironmentFactory, ExecutionEnvironment => JExecutionEnvironment}
 import org.apache.flink.runtime.jobgraph.SavepointConfigOptions
 import org.apache.flink.runtime.util.EnvironmentInformation
+import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.environment.{StreamExecutionEnvironmentFactory, StreamExecutionEnvironment => JStreamExecutionEnvironment}
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.config.ExecutionConfigOptions
 import org.apache.flink.table.api.{EnvironmentSettings, TableConfig, TableEnvironment}
@@ -45,19 +38,24 @@ import org.apache.flink.table.functions.{AggregateFunction, ScalarFunction, Tabl
 import org.apache.flink.table.module.hive.HiveModule
 import org.apache.flink.yarn.cli.FlinkYarnSessionCli
 import org.apache.zeppelin.dep.DependencyResolver
-import org.apache.zeppelin.flink.internal.FlinkShell
-import org.apache.zeppelin.flink.internal.FlinkShell._
 import org.apache.zeppelin.flink.internal.FlinkILoop
+import org.apache.zeppelin.flink.internal.FlinkShell._
 import org.apache.zeppelin.interpreter.Interpreter.FormType
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
 import org.apache.zeppelin.interpreter.{InterpreterContext, InterpreterException, InterpreterHookRegistry, InterpreterResult}
 import org.slf4j.{Logger, LoggerFactory}
 
+import java.io.{File, IOException}
+import java.net.{URL, URLClassLoader}
+import java.nio.file.Files
+import java.util.Properties
+import java.util.concurrent.TimeUnit
+import java.util.jar.JarFile
 import scala.collection.JavaConversions
 import scala.collection.JavaConverters._
 import scala.tools.nsc.Settings
-import scala.tools.nsc.interpreter.{Completion, IMain, IR, JPrintWriter, Results, SimpleReader}
+import scala.tools.nsc.interpreter.{Completion, IMain, IR, JPrintWriter, SimpleReader}
 
 /**
  * It instantiate flink scala shell and create env, senv, btenv, stenv.
@@ -431,7 +429,11 @@ abstract class FlinkScalaInterpreter(val properties: Properties,
       tableConfig.getConfiguration.addAll(configuration)
 
       this.tblEnvFactory = new TableEnvFactory(this.flinkVersion, this.flinkShims,
-        this.benv, this.senv, tableConfig, this.userJars.map(new URL(_)).asJava)
+        this.benv,
+        this.senv,
+        tableConfig,
+        this.userJars.map(jar => new URL("file", "", jar)).asJava
+      )
 
       // blink planner
       val btEnvSetting = this.flinkShims.createBlinkPlannerEnvSettingBuilder()

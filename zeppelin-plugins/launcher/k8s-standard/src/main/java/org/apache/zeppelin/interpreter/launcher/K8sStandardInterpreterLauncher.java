@@ -32,6 +32,9 @@ import org.slf4j.LoggerFactory;
 
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.dmetasoul.lakesoul.DBUtils;
+import org.dmetasoul.lakesoul.AESEncryptUtil;
+import com.google.common.base.Preconditions;
 
 /**
  * Interpreter Launcher which use shell script to launch the interpreter process.
@@ -104,10 +107,10 @@ public class K8sStandardInterpreterLauncher extends InterpreterLauncher {
   @Override
   public InterpreterClient launchDirectly(InterpreterLaunchContext context) throws IOException {
     LOGGER.info("Launching Interpreter: {}", context.getInterpreterSettingGroup());
-
+    String workspace = context.getWorkSpace();
     return new K8sRemoteInterpreterProcess(
             client,
-            K8sUtils.getInterpreterNamespace(context.getProperties(), zConf),
+            workspace,
             new File(zConf.getK8sTemplatesDir(), "interpreter"),
             zConf.getK8sContainerImage(),
             context.getInterpreterGroupId(),
@@ -125,7 +128,7 @@ public class K8sStandardInterpreterLauncher extends InterpreterLauncher {
             zConf.getK8sTimeoutDuringPending());
   }
 
-  protected Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context) {
+  protected Map<String, String> buildEnvFromProperties(InterpreterLaunchContext context) throws IOException {
     Map<String, String> env = new HashMap<>();
     for (Object key : context.getProperties().keySet()) {
       if (RemoteInterpreterUtils.isEnvString((String) key)) {
@@ -139,7 +142,36 @@ public class K8sStandardInterpreterLauncher extends InterpreterLauncher {
       }
     }
     env.put("INTERPRETER_GROUP_ID", context.getInterpreterGroupId());
+    Map<String,String> pgEnvMap = getPostgreEnv(context);
+    env.putAll(pgEnvMap);
     return env;
   }
+
+  public Map<String, String> getPostgreEnv(InterpreterLaunchContext context) throws IOException {
+    String user = context.getUserName();
+    String password = null;
+    String realName = null;
+    try {
+      String encryptPassword = DBUtils.getPasswordByName(user);
+      realName = DBUtils.getRealNameByName(user);
+      password = AESEncryptUtil.decryptAES(encryptPassword);
+    } catch (Exception e) {
+      throw new IOException("Get user lakesoul meta db password Failed :" + e.getMessage() );
+    }
+    String workspace = context.getWorkSpace();
+
+    Map<String, String> envMap = new HashMap<>();
+    String pgUrl = zConf.getLakesoulMetaPGUrl();
+    String pgDriver = zConf.getLakesoulMetaPGDriver();
+
+    envMap.put("LAKESOUL_PG_URL", Preconditions.checkNotNull(pgUrl,"pgUrl is null"));
+    envMap.put("LAKESOUL_PG_DRIVER", Preconditions.checkNotNull(pgDriver,"pgDriver is null"));
+    envMap.put("LAKESOUL_PG_USERNAME", Preconditions.checkNotNull(user,"pg user is null"));
+    envMap.put("LAKESOUL_PG_PASSWORD", Preconditions.checkNotNull(password, "pg password is null"));
+    envMap.put("LAKESOUL_CURRENT_DOMAIN", Preconditions.checkNotNull(workspace, "pg domain is null"));
+
+    return envMap;
+  }
+
 
 }

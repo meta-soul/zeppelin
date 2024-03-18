@@ -62,6 +62,7 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
     // put Lakesoul PG conf to properties
     Map<String,String> pgEnvMap = getPostgreEnv(context);
     setupPropertiesForLakesoulPG(context, pgEnvMap);
+    setupPropertiesForK8S(context);
 
     String flinkExecutionMode = context.getProperties().getProperty("flink.execution.mode");
     if (!FLINK_EXECUTION_MODES.contains(flinkExecutionMode)) {
@@ -112,6 +113,15 @@ public class FlinkInterpreterLauncher extends StandardInterpreterLauncher {
       properties.put("containerized.master.env." + key, value);
       properties.put("containerized.taskmanager.env." + key, value);
     } );
+  }
+
+  /**Author dulei
+   * Desc: submit flink to user k8s namespace
+   **/
+  private void setupPropertiesForK8S(InterpreterLaunchContext context) {
+
+    context.getProperties().put("kubernetes.namespace", context.getWorkSpace());
+    context.getProperties().put("kubernetes.service-account", "lakesoul-dashboard-sa");
   }
 
   // do mapping between configuration of different execution modes.
