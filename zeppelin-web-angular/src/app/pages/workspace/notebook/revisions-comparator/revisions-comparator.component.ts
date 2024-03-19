@@ -66,9 +66,6 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.noteId}`;
     const newWindow = window.open(url, window.opener.name);
     newWindow.focus();
-    newWindow.addEventListener('load', function() {
-        window.opener.location.reload();
-    });
   }
   formatRevisionDate = function(unixTime) {
     const date = new Date(unixTime * 1000); // 将 UNIX 时间戳转换为毫秒

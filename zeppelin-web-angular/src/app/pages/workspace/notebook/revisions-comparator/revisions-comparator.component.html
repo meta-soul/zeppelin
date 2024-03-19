@@ -1,6 +1,11 @@
 <div class="revisions-comarator">
   <div>
     <h2>Revisions comparator</h2>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="getApproval(revision)"
+      >提交审批</button>
   </div>
   <nz-divider></nz-divider>
   <div class="revision-wrap">
@@ -12,22 +17,13 @@
         <thead>
           <tr>
             <th nzLeft>Revision name</th>
-            <th nzWidth="150px">Date</th>
-            <th nzRight nzWidth="100px">Operate</th>
+            <th nzWidth="200px">Date</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let revision of noteRevisions">
             <td>{{revision.message}}</td>
             <td>{{formatRevisionDate(revision.time)}}</td>
-            <td>
-              <button 
-                nz-button 
-                nzType="primary" 
-                [nzSize]="'small'" 
-                (click)="getApproval(revision)"
-                >提交审批</button>
-            </td>
           </tr>
         </tbody>
       </nz-table>

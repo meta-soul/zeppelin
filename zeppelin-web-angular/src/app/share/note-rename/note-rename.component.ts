@@ -15,6 +15,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 import { MessageService } from '@zeppelin/services/message.service';
+import { extractLastSegment } from '../../utility/workspace.js'
 
 @Component({
   selector: 'zeppelin-note-rename',
@@ -25,13 +26,18 @@ import { MessageService } from '@zeppelin/services/message.service';
 export class NoteRenameComponent implements OnInit {
   @Input() newName: string;
   @Input() id: string;
-
+  path:string;
   rename() {
+    this.newName = this.path + this.newName;
     this.messageService.noteRename(this.id, this.newName);
     this.nzModalRef.destroy();
   }
 
   constructor(private messageService: MessageService, private nzModalRef: NzModalRef) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const {part1,part2} = extractLastSegment(this.newName)
+    this.path = part1;
+    this.newName = part2;
+  }
 }

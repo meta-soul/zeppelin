@@ -19,7 +19,7 @@ import { InterpreterItem, MessageReceiveDataTypeMap, Note, OP } from '@zeppelin/
 import { TicketService } from '@zeppelin/services';
 import { MessageService } from '@zeppelin/services/message.service';
 import { NoteListService } from '@zeppelin/services/note-list.service';
-import { getCurWorkSpace } from '../../utility/workspace';
+import { getCurWorkSpace, extractLastSegment} from '../../utility/workspace';
 @Component({
   selector: 'zeppelin-note-create',
   templateUrl: './note-create.component.html',
@@ -107,19 +107,11 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
     super(messageService);
   }
 
-  extractLastSegment(path) {
-    const lastIndex = path.lastIndexOf('/');
-    if (lastIndex !== -1) {
-        return path.slice(lastIndex + 1);
-    }
-    return path;
-  }
-
   ngOnInit() {
     this.messageService.getInterpreterSettings();
     this.noteName = this.cloneNote ? this.cloneNoteName() : this.newNoteName(this.path);
     if (this.type === 'child') {
-      this.noteName = this.extractLastSegment(this.noteName)
+      this.noteName = extractLastSegment(this.noteName).part2;
     } 
   }
 }
