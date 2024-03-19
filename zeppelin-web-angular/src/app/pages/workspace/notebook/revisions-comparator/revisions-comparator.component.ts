@@ -64,7 +64,12 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
   }
   getApproval() {
     const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.noteId}`;
-    const newWindow = window.open(url, window.opener.name);
+    let newWindow;
+    if(window.opener && window.opener.name){
+      newWindow = window.open(url, window.opener.name);
+    }else{
+      newWindow = window.open(url,'_blank');
+    }
     newWindow.focus();
   }
   formatRevisionDate = function(unixTime) {
