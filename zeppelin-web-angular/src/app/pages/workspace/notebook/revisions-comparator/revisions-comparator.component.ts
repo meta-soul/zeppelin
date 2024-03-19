@@ -62,7 +62,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
       }
     );
   }
-  getApproval(val) {
+  getApproval() {
     const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.noteId}`;
     const newWindow = window.open(url, window.opener.name);
     newWindow.focus();
