@@ -19,7 +19,11 @@ export class RevisionDiffComponent implements OnChanges {
   @ViewChild('revisionDiffRef', { static: true }) revisionDiffRef!: ElementRef;
   @Input() diffValue: { preVersion: string; curVersion: string } = { preVersion: '', curVersion: '' };
   @Input() language = '';
-  @Input() opts: monaco.editor.IDiffEditorConstructionOptions;
+  @Input() opts: monaco.editor.IDiffEditorConstructionOptions = {
+    theme: 'vs-dark',
+    autoIndent: true,
+    readOnly:true,
+  };
   private editor: monaco.editor.IStandaloneDiffEditor | undefined;
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -29,7 +33,7 @@ export class RevisionDiffComponent implements OnChanges {
   }
   init(): void {
     const language = this.language || 'text/plain';
-    const opts = this.opts || { theme: 'vs-dark' };
+    const opts = this.opts;
     const originalModel = monaco.editor.createModel(this.diffValue.preVersion, language);
     const modifiedModel = monaco.editor.createModel(this.diffValue.curVersion, language);
     if (!this.editor) {

@@ -137,7 +137,7 @@ export class NotebookParagraphComponent extends ParagraphBase implements OnInit,
 
   blurEditor() {
     this.paragraph.focus = false;
-    (this.host.nativeElement as HTMLElement).focus();
+    // (this.host.nativeElement as HTMLElement).focus();
     this.saveParagraph();
     this.cdr.markForCheck();
   }
