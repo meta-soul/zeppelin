@@ -27,7 +27,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
   preRevisionOption: string;
   curRevisionOption: string;
   opts: {
-    theme: 'vs-dark';
+    theme: 'vs';
     automaticLayout: true;
     renderIndicators: true;
     ignoreTrimWhitespace: true;
@@ -62,13 +62,13 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
       }
     );
   }
-  getApproval() {
-    const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.noteId}`;
+  getApproval(revisionId) {
+    const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.noteId}&revisionId=${revisionId}`;
     let newWindow;
-    if(window.opener && window.opener.name){
+    if (window.opener && window.opener.name) {
       newWindow = window.open(url, window.opener.name);
-    }else{
-      newWindow = window.open(url,'_blank');
+    } else {
+      newWindow = window.open(url, '_blank');
     }
     newWindow.focus();
   }

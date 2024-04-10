@@ -20,9 +20,9 @@ export class RevisionDiffComponent implements OnChanges {
   @Input() diffValue: { preVersion: string; curVersion: string } = { preVersion: '', curVersion: '' };
   @Input() language = '';
   @Input() opts: monaco.editor.IDiffEditorConstructionOptions = {
-    theme: 'vs-dark',
+    theme: 'vs',
     autoIndent: true,
-    readOnly:true,
+    readOnly: true
   };
   private editor: monaco.editor.IStandaloneDiffEditor | undefined;
 

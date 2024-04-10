@@ -1,11 +1,6 @@
 <div class="revisions-comarator">
   <div>
-    <h2>Revisions comparator</h2>
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="getApproval()"
-      >提交审批</button>
+    <h2 style="font-weight: bold;color:rgba(0, 0, 0, 0.65)">版本对比</h2>
   </div>
   <nz-divider></nz-divider>
   <div class="revision-wrap">
@@ -16,24 +11,35 @@
         [nzScroll]="{y: '600px' }">
         <thead>
           <tr>
-            <th nzLeft>Revision name</th>
-            <th nzWidth="200px">Date</th>
+            <th nzLeft>版本名</th>
+            <th nzWidth="200px">提交时间</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let revision of noteRevisions">
             <td>{{revision.message}}</td>
             <td>{{formatRevisionDate(revision.time)}}</td>
+            <td>
+              <button 
+                nz-button 
+                nzType="primary" 
+                nzSize="small"
+                (click)="getApproval(revision.id)"
+                style="font-size: 12px;"
+                >去上线
+              </button>
+            </td>
           </tr>
         </tbody>
       </nz-table>
     </div>
     <div class="diff-wrap">
       <div class="select-wrap">
-        <nz-select [(ngModel)]="preRevisionOption" (ngModelChange)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'pre revision'" class="custom-select">
+        <nz-select [(ngModel)]="preRevisionOption" (ngModelChange)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'选择版本'" class="custom-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select> -->
-        <nz-select [(ngModel)]="curRevisionOption" (ngModelChange)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'cur revision'" class="custom-select">
+        <nz-select [(ngModel)]="curRevisionOption" (ngModelChange)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'选择版本'" class="custom-select">
           <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
         </nz-select>
       </div>
