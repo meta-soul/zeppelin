@@ -12,7 +12,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MessageListener, MessageListenersManager } from '@zeppelin/core';
-import { RevisionListItem } from '@zeppelin/sdk';
+import { Note, RevisionListItem } from '@zeppelin/sdk';
 import { MessageService, RevisionService } from '@zeppelin/services';
 @Component({
   selector: 'zeppelin-notebook-revisions-comparator',
@@ -22,7 +22,7 @@ import { MessageService, RevisionService } from '@zeppelin/services';
 })
 export class NotebookRevisionsComparatorComponent extends MessageListenersManager implements OnInit {
   @Input() noteRevisions: RevisionListItem[] = [];
-  noteId: string;
+  @Input() note: Note['note'];
   revisionId: string;
   preRevisionOption: string;
   curRevisionOption: string;
@@ -40,16 +40,13 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     private cdr: ChangeDetectorRef
   ) {
     super(messageService);
-    this.activatedRoute.params.subscribe(params => {
-      this.noteId = params.noteId;
-    });
   }
   diffValue = {
     preVersion: '',
     curVersion: ''
   };
   onOptionChange(val: string, version: string) {
-    this.revisionService.getRevisionNote(this.noteId, val).subscribe(
+    this.revisionService.getRevisionNote(this.note.id, val).subscribe(
       res => {
         this.diffValue = {
           ...this.diffValue,
@@ -63,7 +60,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     );
   }
   getApproval(revisionId) {
-    const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.noteId}&revisionId=${revisionId}`;
+    const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.note.id}&revisionId=${revisionId}`;
     let newWindow;
     if (window.opener && window.opener.name) {
       newWindow = window.open(url, window.opener.name);

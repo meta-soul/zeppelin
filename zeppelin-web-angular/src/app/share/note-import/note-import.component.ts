@@ -84,12 +84,12 @@ export class NoteImportComponent extends MessageListenersManager implements OnIn
         return;
       }
     }
-    const basePath = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/';
+    const basePath = getCurWorkSpace() + '/';
     if (result.paragraphs && result.paragraphs.length > 0) {
       if (!this.noteImportName) {
         this.noteImportName = result.name;
       }
-      result.name = basePath + this.noteImportName
+      result.name = basePath + this.noteImportName;
       this.messageService.importNote(result);
     } else if (result.cells && result.cells.length > 0) {
       // nbviewer notebook format

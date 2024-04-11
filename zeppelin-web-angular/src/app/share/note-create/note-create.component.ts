@@ -19,7 +19,7 @@ import { InterpreterItem, MessageReceiveDataTypeMap, Note, OP } from '@zeppelin/
 import { TicketService } from '@zeppelin/services';
 import { MessageService } from '@zeppelin/services/message.service';
 import { NoteListService } from '@zeppelin/services/note-list.service';
-import { getCurWorkSpace, extractLastSegment} from '../../utility/workspace';
+import { getCurWorkSpace, extractLastSegment } from '../../utility/workspace';
 @Component({
   selector: 'zeppelin-note-create',
   templateUrl: './note-create.component.html',
@@ -86,11 +86,11 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
   }
 
   createNote() {
-    let newNoteName = this.noteName
-    if(this.type === 'child'){
-      newNoteName = this.path + '/' + this.noteName
-    }else{
-      newNoteName = getCurWorkSpace() + '/' + this.ticketService.ticket.screenUsername + '/' + this.noteName;
+    let newNoteName = this.noteName;
+    if (this.type === 'child') {
+      newNoteName = this.path + '/' + this.noteName;
+    } else {
+      newNoteName = getCurWorkSpace() + '/' + this.noteName;
     }
     this.cloneNote
       ? this.messageService.cloneNote(this.cloneNote.id, newNoteName)
@@ -112,6 +112,6 @@ export class NoteCreateComponent extends MessageListenersManager implements OnIn
     this.noteName = this.cloneNote ? this.cloneNoteName() : this.newNoteName(this.path);
     if (this.type === 'child') {
       this.noteName = extractLastSegment(this.noteName).part2;
-    } 
+    }
   }
 }
