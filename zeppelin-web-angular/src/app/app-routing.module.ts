@@ -18,9 +18,13 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./pages/workspace/workspace.module').then(m => m.WorkspaceModule)
   },
+  // {
+  //   path: 'login',
+  //   loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule)
+  // },
   {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule)
+    redirectTo: '/' // 重定向到根路径
   }
 ];
 
