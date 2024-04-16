@@ -114,6 +114,19 @@ public class DBUtils {
 
     }
 
+    public static boolean isUserInWorkSpaceByName(String username, String workspace) {
+        QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
+        String query = "SELECT * FROM t_user u JOIN t_user_workspace_role uwr ON u.id = uwr.user_id JOIN t_workspace w ON uwr.workspace_id = w.id WHERE u.name = ? AND w.name = ?";
+        Object[] params = {username, workspace};
+        LOGGER.info("Start Query User {} is user in WorkSpace {}", username, workspace);
+        try {
+            Object[] result = queryRunner.query(query, new ArrayHandler(), params);
+            return result.length > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Query user role in workspace failed", e);
+        }
+    }
+
     public static boolean isAdminInWorkSpace(String name, String workspace) {
         QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
         String query = "SELECT role_type " +

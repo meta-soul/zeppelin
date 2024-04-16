@@ -357,8 +357,14 @@ public class NotebookService {
               .collect(Collectors.toList());
     } else {
       LOGGER.info("Listing notebook under workspace {} for user {}", workspace, userName);
-      notesInfo = notebook.getNotesInfo(
-              noteId -> authorizationService.isReader(noteId, context.getUserAndRoles()));
+      if (DBUtils.isUserInWorkSpaceByName(userName, workspace)) {
+        notesInfo = notebook.getNotesInfo().stream()
+              .filter(noteInfo -> noteInfo.getPath().startsWith(String.format("/%s/", workspace)))
+              .collect(Collectors.toList());
+      } else {
+        notesInfo = notebook.getNotesInfo(
+                  noteId -> authorizationService.isReader(noteId, context.getUserAndRoles()));
+      }
     }
     callback.onSuccess(notesInfo, context);
     return notesInfo;
@@ -1626,6 +1632,12 @@ public class NotebookService {
     Set<String> allowed = null;
     switch (permission) {
       case READER:
+        String userName = context.getAutheInfo().getUser();
+        String workspace = context.getAutheInfo().getWorkspace();
+        if (DBUtils.isAdminInWorkSpace(userName, workspace) || 
+            DBUtils.isUserInWorkSpaceByName(userName, workspace)) {
+          return true;
+        }
         isAllowed = authorizationService.isReader(noteId, context.getUserAndRoles());
         allowed = authorizationService.getReaders(noteId);
         break;
