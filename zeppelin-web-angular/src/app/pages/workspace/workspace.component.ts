@@ -30,6 +30,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject();
   private messageId = null;
   publishMode = false;
+  private reconnect() {
+    this.messageService.close();
+    this.messageService.connect();
+  }
 
   constructor(
     public messageService: MessageService,
@@ -49,8 +53,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
    */
   @HostListener('window:offline')
   onOffline() {
-    this.messageService.close();
-    this.messageService.connect();
+    this.reconnect()
+  }
+  /**
+   * 切换tab时重新连接
+   */
+  @HostListener('document:visibilitychange', ['$event'])
+  onVisibilityChange(event: Event) {
+      if (document.visibilityState === 'visible') {
+        this.reconnect()
+      }
   }
 
   setUpWebsocketReconnectMessage() {
