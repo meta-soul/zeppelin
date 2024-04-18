@@ -497,7 +497,7 @@ public class NotebookRestApi extends AbstractRestApi {
           String text = p.getText();
           LOGGER.info("Get note gragraph text is: {}", text);
           for (String sql : sqlSet) {
-            if (text.contains(sql)) {
+            if (text.startsWith(sql)) {
                 text = text.replace(sql, "");
             }
           }
