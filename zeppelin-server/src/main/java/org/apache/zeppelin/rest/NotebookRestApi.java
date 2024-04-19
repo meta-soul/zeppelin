@@ -482,12 +482,12 @@ public class NotebookRestApi extends AbstractRestApi {
     LOGGER.info("Get note {} by the revision {}", noteId, revisionId);
     Note noteRevision = notebookService.getNotebyRevision(noteId, revisionId, getServiceContext(workspace), new RestServiceCallback<>());
     List<String> sqlSet = new ArrayList<>();
-    sqlSet.add("%flink.bsql\n");
-    sqlSet.add("%flink.ssql\n");
-    sqlSet.add("%flink.sql\n");
-    sqlSet.add("%spark.sql\n");
-    sqlSet.add("%spark.ssql\n");
-    sqlSet.add("%sql\n");
+    sqlSet.add("%flink.bsql");
+    sqlSet.add("%flink.ssql");
+    sqlSet.add("%flink.sql");
+    sqlSet.add("%spark.sql");
+    sqlSet.add("%spark.ssql");
+    sqlSet.add("%sql");
     StringBuilder combinedText = new StringBuilder();
     for (Paragraph p : noteRevision.getParagraphs()){
       Map<String, Object> editorSetting = (Map<String, Object>) p.getConfig().get("editorSetting");
@@ -495,13 +495,19 @@ public class NotebookRestApi extends AbstractRestApi {
         Object languageObject = editorSetting.get("language");
         if (languageObject != null && languageObject.equals("sql")) {
           String text = p.getText();
+          String[] lines = text.split("\\n");
           LOGGER.info("Get note gragraph text is: {}", text);
-          for (String sql : sqlSet) {
-            if (text.startsWith(sql)) {
-                text = text.replace(sql, "");
+          for (String line : lines){
+            boolean isExist = false;
+            for (String sql : sqlSet) {
+              if (line.startsWith(sql)) {
+                isExist = true;
+              }
+            }
+            if (!isExist) {
+              combinedText.append(line).append("\n");
             }
           }
-          combinedText.append(text).append("\n");
         }
       }
     }
