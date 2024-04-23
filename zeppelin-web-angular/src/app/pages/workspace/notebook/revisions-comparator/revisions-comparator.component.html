@@ -4,7 +4,7 @@
   </div>
   <nz-divider></nz-divider>
   <div class="revision-wrap">
-    <div class="table-wrap">
+    <div class="table-wrap" [class.hid]="expand">
       <nz-table 
         [nzData]="noteRevisions"
         [nzShowPagination]="false"
@@ -34,14 +34,20 @@
         </tbody>
       </nz-table>
     </div>
-    <div class="diff-wrap">
-      <div class="select-wrap">
-        <nz-select [(ngModel)]="preRevisionOption" (ngModelChange)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'选择版本'" class="custom-select">
-          <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
-        </nz-select> -->
-        <nz-select [(ngModel)]="curRevisionOption" (ngModelChange)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'选择版本'" class="custom-select">
-          <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
-        </nz-select>
+    <div class="diff-wrap" [class.collapsed]="!expand" [class.expanded]="expand">
+      <div class="option">
+        <div (click)="handleExpand()" class="icon-fold">
+          <span *ngIf="!expand" nzTooltipTitle="展开" nzTooltipPlacement="top" nz-tooltip nz-icon nzType="menu-fold" nzTheme="outline"></span>
+          <span *ngIf="expand" nzTooltipTitle="恢复" nzTooltipPlacement="top" nz-tooltip nz-icon nzType="menu-unfold" nzTheme="outline"></span>
+        </div>
+        <div class="select-wrap">
+          <nz-select [(ngModel)]="preRevisionOption" (ngModelChange)="onOptionChange(preRevisionOption,'pre')" [nzPlaceHolder]="'选择版本'" class="custom-select">
+            <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
+          </nz-select> -->
+          <nz-select [(ngModel)]="curRevisionOption" (ngModelChange)="onOptionChange(curRevisionOption,'cur')" [nzPlaceHolder]="'选择版本'" class="custom-select">
+            <nz-option *ngFor="let option of noteRevisions" [nzValue]="option.id" [nzLabel]="option.message">{{option}}</nz-option>
+          </nz-select>
+        </div>
       </div>
       <zeppelin-revision-diff 
         [diffValue]="diffValue" 

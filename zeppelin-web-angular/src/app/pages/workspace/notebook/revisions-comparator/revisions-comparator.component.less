@@ -15,13 +15,21 @@
     display:flex;
     min-height:600px;
     .table-wrap{
-        width:30%;
+        width: 30%;
         margin-right:10px;
         border:2px #5089b5 solid;
         overflow: auto;
     }
+    .hid{
+        display: none;
+    }
+    .expanded {
+        width: 100%;
+    }
+    .collapsed {
+        width:70%;
+    }
     .diff-wrap{
-        flex:1;
         display:flex;
         flex-direction: column;
         .text-diff{
@@ -31,8 +39,16 @@
                 color:grey;
             }
         }
-        .select-wrap{
+        .option{
+            display:flex;
+            align-items: center;
             margin-bottom:10px;
+            .icon-fold{
+                font-size: 25px;
+                color: #5089b5;
+                margin-right:15px;
+                cursor:pointer;
+            }
         }
     }
     .custom-select{

@@ -22,7 +22,8 @@ export class RevisionDiffComponent implements OnChanges {
   @Input() opts: monaco.editor.IDiffEditorConstructionOptions = {
     theme: 'vs',
     autoIndent: true,
-    readOnly: true
+    readOnly: true,
+    automaticLayout: true,
   };
   private editor: monaco.editor.IStandaloneDiffEditor | undefined;
 
