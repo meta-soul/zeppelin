@@ -42,11 +42,11 @@
   <div class="user" *ngIf="ticketService.ticket.init">
     <a nz-dropdown class="status" [nzTrigger]="'click'" [nzDropdownMenu]="menu">
       <nz-badge [nzStatus]="connectStatus" [nzText]="ticketService.ticket.screenUsername"></nz-badge>
-      <!-- <i class="small-icon" nz-icon nzType="caret-down"></i> -->
+      <i class="small-icon" nz-icon nzType="caret-down"></i>
     </a>
-    <!-- <nz-dropdown-menu #menu="nzDropdownMenu">
+    <nz-dropdown-menu #menu="nzDropdownMenu">
       <ul nz-menu>
-        <li nz-menu-item (click)="about()">About Zeppelin</li>
+        <!-- <li nz-menu-item (click)="about()">About Zeppelin</li>
         <li nz-menu-divider></li>
         <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">
           <a [routerLink]="['/interpreter']">Interpreter</a>
@@ -66,15 +66,15 @@
        </li>
         <li nz-menu-item routerLinkActive="ant-dropdown-menu-item-selected">
           <a [routerLink]="['/configuration']">Configuration</a>
-        </li>
+        </li> -->
         <ng-container *ngIf="ticketService.ticket.principal !== 'anonymous'">
           <li nz-menu-divider></li>
           <li nz-menu-item (click)="logout()">Logout</li>
         </ng-container>
-        <li nz-menu-divider></li>
-        <li nz-menu-item><a href="/">Old Version</a></li>
+        <!-- <li nz-menu-divider></li>
+        <li nz-menu-item><a href="/">Old Version</a></li> -->
       </ul>
-    </nz-dropdown-menu> -->
+    </nz-dropdown-menu>
   </div>
   <p class="workspace">工作空间：<span>{{zeppelinWorkspace}}</span></p>
   <div class="search">
