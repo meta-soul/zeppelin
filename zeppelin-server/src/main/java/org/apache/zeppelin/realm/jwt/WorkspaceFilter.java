@@ -1,26 +1,14 @@
 package org.apache.zeppelin.realm.jwt;
 
-import com.google.common.base.Preconditions;
 import io.buji.pac4j.profile.ShiroProfileManager;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.realm.Realm;
-import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ThreadContext;
-import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
-import org.apache.zeppelin.oauth2.casdoor.CasdoorProfile;
 import org.dmetasoul.lakesoul.DBUtils;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Optional;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
