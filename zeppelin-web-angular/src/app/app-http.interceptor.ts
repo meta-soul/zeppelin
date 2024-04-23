@@ -27,9 +27,12 @@ export class AppHttpInterceptor implements HttpInterceptor {
   // tslint:disable-next-line:no-any
   intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let httpRequestUpdated = httpRequest.clone({ withCredentials: true });
+    // 添加 Workspace 请求头
+    httpRequestUpdated = httpRequest.clone({ setHeaders: { 'workspace': getCurWorkSpace() } });
     if (environment.production) {
-      httpRequestUpdated = httpRequest.clone({ setHeaders: { 'X-Requested-With': 'XMLHttpRequest' } });
+      httpRequestUpdated = httpRequestUpdated.clone({setHeaders: {'X-Requested-With': 'XMLHttpRequest'}});
     }
+
     const paramsWithWorkspace = httpRequestUpdated.params.append('workspace', getCurWorkSpace());
     httpRequestUpdated = httpRequestUpdated.clone({ params: paramsWithWorkspace });
 
