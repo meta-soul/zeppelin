@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Optional;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -54,7 +55,15 @@ public class WorkspaceFilter implements Filter {
         LOGGER.debug("Url Path is : {}", path );
         LOGGER.debug("Query String is {}", queryString);
 
-        String workspace = httpRequest.getParameter("workspace");
+        String workspace = null;
+        Cookie[] workspacCookies = httpRequest.getCookies();
+        for (Cookie cookie : workspacCookies) {
+            if (cookie.getName().equals("workspace")){
+                workspace = cookie.getValue();
+                break;
+            }
+        }
+        LOGGER.debug("workspace String is {}", workspace);
         boolean isInWorkspace = false;
         if(workspace != null && path.equals("/")){
             JEEContext context = new JEEContext((HttpServletRequest) request, (HttpServletResponse) response);
