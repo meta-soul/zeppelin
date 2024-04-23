@@ -10,18 +10,19 @@
  * limitations under the License.
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
 
 import { TicketService } from '@zeppelin/services';
+import { getCurWorkSpace } from './utility/workspace';
 
 @Component({
   selector: 'zeppelin-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.less']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   logout$ = this.ticketService.logout$;
   loading$ = this.router.events.pipe(
     filter(data => data instanceof NavigationEnd || data instanceof NavigationStart),
@@ -34,6 +35,15 @@ export class AppComponent {
       }
     })
   );
+  ngOnInit() {
+    this.setWorkspaceCookie();
+  }
+  private setWorkspaceCookie() {
+    var currentDate = new Date();
+    currentDate.setFullYear(currentDate.getFullYear() + 10);
+    var expirationDate = currentDate.toUTCString();
+    window.document.cookie = `workspace=${getCurWorkSpace()}; expires=${expirationDate}; path=/; secure`;
+  }
 
   constructor(private router: Router, private ticketService: TicketService) {}
 }
