@@ -10,7 +10,7 @@
  * limitations under the License.
  */
 
-import { ParagraphItem } from './message-paragraph.interface';
+import { ParagraphItem, DatasetType } from './message-paragraph.interface';
 
 interface ID {
   id: string;
@@ -132,6 +132,13 @@ export interface ParagraphMoved {
 
 export interface UpdateParagraph {
   paragraph: ParagraphItem;
+}
+export interface ParagraphUpdateOutputData {
+  data: string,
+  index: number,
+  noteId: string,
+  paragraphId: string,
+  type: DatasetType
 }
 
 export interface SaveNoteFormsSend {

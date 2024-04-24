@@ -46,6 +46,7 @@ import {
   SetNoteRevision,
   SetNoteRevisionStatus,
   UpdateParagraph,
+  ParagraphUpdateOutputData,
   UpdatePersonalizedMode
 } from './message-notebook.interface';
 import {
@@ -100,6 +101,7 @@ export interface MessageReceiveDataTypeMap {
   [OP.NEW_NOTE]: NoteRevision;
   [OP.SAVE_NOTE_FORMS]: SaveNoteFormsSend;
   [OP.PARAGRAPH]: UpdateParagraph;
+  [OP.PARAGRAPH_UPDATE_OUTPUT]: ParagraphUpdateOutputData;
   [OP.PATCH_PARAGRAPH]: PatchParagraphSend;
   [OP.PARAGRAPH_REMOVED]: ParagraphRemoved;
   [OP.EDITOR_SETTING]: EditorSettingReceived;

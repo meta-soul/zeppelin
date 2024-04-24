@@ -99,6 +99,33 @@ export abstract class ParagraphBase extends MessageListenersManager {
     }
   }
 
+  @MessageListener(OP.PARAGRAPH_UPDATE_OUTPUT)
+  paragraphUpdateOutput(data:MessageReceiveDataTypeMap[OP.PARAGRAPH_UPDATE_OUTPUT]) {
+    if (this.paragraph.id === data.paragraphId) {
+      if (!this.paragraph.results) {
+        this.paragraph.results = {};
+      }
+      if (!this.paragraph.results.msg) {
+        this.paragraph.results.msg = [];
+      }
+
+      let update = typeof this.paragraph.results.msg[data.index] !== 'undefined';
+
+      this.paragraph.results.msg[data.index] = {
+        data: data.data,
+        type: data.type,
+      };
+      if (update) {
+        const resultComponent = this.notebookParagraphResultComponents.toArray()[data.index];
+        if (resultComponent) {
+          resultComponent.updateResult(this.paragraph.config.results[data.index], this.paragraph.results.msg[data.index]);
+        }
+        this.cdr.markForCheck();
+      }
+    }
+  }
+
+
   @MessageListener(OP.PARAGRAPH)
   paragraphData(data: MessageReceiveDataTypeMap[OP.PARAGRAPH]) {
     const oldPara = this.paragraph;
