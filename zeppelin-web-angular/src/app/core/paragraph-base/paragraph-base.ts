@@ -116,10 +116,14 @@ export abstract class ParagraphBase extends MessageListenersManager {
         type: data.type,
       };
       if (update) {
+        const config = this.paragraph.config.results ? this.paragraph.config.results[data.index] : { graph: new GraphConfig() };
+        const result = this.paragraph.results.msg ? this.paragraph.results.msg[data.index] : new ParagraphIResultsMsgItem();
         const resultComponent = this.notebookParagraphResultComponents.toArray()[data.index];
         if (resultComponent) {
-          resultComponent.updateResult(this.paragraph.config.results[data.index], this.paragraph.results.msg[data.index]);
+          // resultComponent.updateResult(this.paragraph.config.results[data.index], this.paragraph.results.msg[data.index]);
+          resultComponent.updateResult(config, result);
         }
+        this.cdr.markForCheck();
       }
       this.cdr.markForCheck();
     }
