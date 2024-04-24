@@ -119,8 +119,8 @@ export abstract class ParagraphBase extends MessageListenersManager {
         const resultComponent = this.notebookParagraphResultComponents.toArray()[data.index];
         if (resultComponent) {
           resultComponent.updateResult(this.paragraph.config.results[data.index], this.paragraph.results.msg[data.index]);
+          this.cdr.markForCheck();
         }
-        this.cdr.markForCheck();
       }
     }
   }

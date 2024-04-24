@@ -11,7 +11,7 @@
  */
 
 import {interval, Observable, Subject, Subscription} from 'rxjs';
-import {delay, filter, map, mergeMap, retryWhen, take, tap} from 'rxjs/operators';
+import {delay, filter, map, mergeMap, retryWhen, take} from 'rxjs/operators';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {Ticket} from './interfaces/message-common.interface';
 import {
@@ -92,16 +92,13 @@ export class Message {
       openObserver: this.open$,
       closeObserver: this.close$
     });
-    console.log('----------------WebSocket reconnecting-----------------')
-    console.log('ws',this.ws)
     this.ws
       .pipe(
         // reconnect
         retryWhen(errors =>
           errors.pipe(
-            mergeMap((error,index) =>
+            mergeMap(() =>
               this.close$.pipe(
-                tap(() =>console.log(`WebSocket error:`, error,index)),
                 take(1),
                 delay(4000)
               )
@@ -120,7 +117,6 @@ export class Message {
   }
 
   close() {
-    console.log('-------------------close------------------')
     this.close$.next();
   }
 
