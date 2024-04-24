@@ -517,12 +517,12 @@ public class NotebookServer implements AngularObjectRegistryListener,
 
   @OnError
   public void onError(Session session, Throwable error) {
-    // if (session != null) {
-    //   NotebookSocket notebookSocket = sessionIdNotebookSocketMap.remove(session.getId());
-    //   if (notebookSocket != null) {
-    //     removeConnection(notebookSocket);
-    //   }
-    // }
+    if (session != null) {
+      NotebookSocket notebookSocket = sessionIdNotebookSocketMap.remove(session.getId());
+      if (notebookSocket != null) {
+        removeConnection(notebookSocket);
+      }
+    }
     if (error instanceof SocketTimeoutException) {
       LOG.warn("Socket Session to {} timed out", ServerUtils.getRemoteAddress(session));
       LOG.debug("SocketTimeoutException", error);
