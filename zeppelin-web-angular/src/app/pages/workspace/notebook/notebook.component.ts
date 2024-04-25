@@ -406,7 +406,7 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
   refreshNote() {
     this.messageService.connectedStatus$.pipe(takeUntil(this.destroy$)).subscribe(data => {
       if(data){
-        this.messageService.reloadAllNotesFromRepo();
+        this.messageService.reloadNote(this.note && this.note.id);
       }
     });
   }

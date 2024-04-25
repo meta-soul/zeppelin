@@ -22,6 +22,7 @@ import {
   GetInterpreterBindings,
   SaveInterpreterBindings,
   GetNode,
+  ReloadNote,
   ListRevision,
   ListRevisionHistory,
   MoveFolderToTrash,
@@ -124,6 +125,7 @@ export interface MessageSendDataTypeMap {
   [OP.EMPTY_TRASH]: undefined;
   [OP.RELOAD_NOTES_FROM_REPO]: undefined;
   [OP.GET_NOTE]: GetNode;
+  [OP.RELOAD_NOTE]: ReloadNote;
   [OP.NEW_NOTE]: NewNote;
   [OP.MOVE_NOTE_TO_TRASH]: MoveNoteToTrash;
   [OP.MOVE_FOLDER_TO_TRASH]: MoveFolderToTrash;

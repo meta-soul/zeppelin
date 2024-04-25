@@ -268,6 +268,10 @@ export class Message {
     this.send<OP.GET_NOTE>(OP.GET_NOTE, { id: noteId });
   }
 
+  reloadNote(noteId: string): void {
+    this.send<OP.RELOAD_NOTE>(OP.RELOAD_NOTE, { id: noteId });
+  }
+
   updateNote(noteId: string, noteName: string, noteConfig: NoteConfig): void {
     this.send<OP.NOTE_UPDATE>(OP.NOTE_UPDATE, { id: noteId, name: noteName, config: noteConfig });
   }

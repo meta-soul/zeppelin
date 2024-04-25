@@ -29,6 +29,13 @@ export enum OP {
   GET_NOTE = 'GET_NOTE',
 
   /**
+   * [c-s]
+   * client load note
+   * @param id note id
+   */
+  RELOAD_NOTE = 'RELOAD_NOTE',
+
+  /**
    * [s-c]
    * note info
    * @param note serialized SendNote object
