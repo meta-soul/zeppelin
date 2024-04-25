@@ -172,6 +172,7 @@ export class NotebookParagraphResultComponent implements OnInit, AfterViewInit, 
           this.cdr.markForCheck();
         }
       });
+      console.log('result.type',this.result)
   }
 
   exportFile(type: 'csv' | 'tsv'): void {
