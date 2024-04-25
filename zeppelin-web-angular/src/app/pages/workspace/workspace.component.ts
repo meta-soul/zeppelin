@@ -58,12 +58,12 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   /**
    * 切换tab时重新连接
    */
-  @HostListener('document:visibilitychange', ['$event'])
-  onVisibilityChange(event: Event) {
-      if (document.visibilityState === 'visible') {
-        this.reconnect()
-      }
-  }
+  // @HostListener('document:visibilitychange', ['$event'])
+  // onVisibilityChange(event: Event) {
+  //     if (document.visibilityState === 'visible') {
+  //       this.reconnect()
+  //     }
+  // }
 
   setUpWebsocketReconnectMessage() {
     this.messageService.connectedStatus$.pipe(takeUntil(this.destroy$)).subscribe(data => {
