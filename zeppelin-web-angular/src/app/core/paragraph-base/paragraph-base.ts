@@ -123,7 +123,6 @@ export abstract class ParagraphBase extends MessageListenersManager {
         }
         this.cdr.markForCheck();
       }
-      // this.cdr.markForCheck();
     }
   }
 

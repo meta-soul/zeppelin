@@ -366,6 +366,7 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
   }
 
   ngOnInit() {
+    this.refreshNote()
     this.activatedRoute.queryParamMap
       .pipe(
         startWith(this.activatedRoute.snapshot.queryParamMap),
@@ -401,6 +402,15 @@ export class NotebookComponent extends MessageListenersManager implements OnInit
       });
     }
   }
+  
+  refreshNote() {
+    this.messageService.connectedStatus$.pipe(takeUntil(this.destroy$)).subscribe(data => {
+      if(data){
+        this.messageService.reloadAllNotesFromRepo();
+      }
+    });
+  }
+
 
   ngOnDestroy(): void {
     super.ngOnDestroy();
