@@ -106,6 +106,7 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
       realName = DBUtils.getRealNameByName(user);
       password = AESEncryptUtil.decryptAES(encryptPassword);
     } catch (Exception e) {
+      LOGGER.error("GetPostgreEnv failed {}, {}, {}", user, password, realName, e);
       throw new IOException("Get user lakesoul meta db password Failed :" + e.getMessage() );
     }
     String workspace = context.getWorkSpace();

@@ -74,6 +74,7 @@ public class RemoteInterpreter extends Interpreter {
     super(properties);
     this.sessionId = sessionId;
     this.className = className;
+    LOGGER.info("RemoteInterpreter created for user {}", userName);
     this.setUserName(userName);
   }
 
@@ -118,6 +119,7 @@ public class RemoteInterpreter extends Interpreter {
         // The why we we create all the interpreter of the session is because some interpreter
         // depends on other interpreter. e.g. PySparkInterpreter depends on SparkInterpreter.
         // also see method Interpreter.getInterpreterInTheSameSessionByClassName
+        LOGGER.info("RemoteInterpreter opened for user {}, workspace {}, sessionId {}", getUserName(), getWorkSpace(), sessionId);
         for (Interpreter interpreter : getInterpreterGroup()
                                         .getOrCreateSession(this.getUserName(), this.getWorkSpace(), sessionId)) {
           try {
