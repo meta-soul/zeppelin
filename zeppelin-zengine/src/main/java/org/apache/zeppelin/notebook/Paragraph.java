@@ -238,7 +238,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   }
 
   public Interpreter getBindedInterpreter() throws InterpreterNotFoundException {
-    LOGGER.info("getBindedInterpreter from stack", new Throwable());
     ExecutionContext executionContext = note.getExecutionContext();
     executionContext.setUser(getAuthenticationInfo().getUser());
     executionContext.setWorkSpace(getAuthenticationInfo().getWorkspace());
