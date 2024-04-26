@@ -430,11 +430,11 @@ public class InterpreterSetting {
     String key;
     if (option.isExistingProcess()) {
       key = Constants.EXISTING_PROCESS;
-    } else if (option.perNoteScoped() && option.perUserScoped()) {
+    } else if (option.perNoteScopedOrIsolated() && option.perUserScopedOrIsolated()) {
       key = executionContext.getUser() + ":" + executionContext.getNoteId();
-    } else if (option.perUserScoped()) {
+    } else if (option.perUserScopedOrIsolated()) {
       key = executionContext.getUser();
-    } else if (option.perNoteScoped()) {
+    } else if (option.perNoteScopedOrIsolated()) {
       key = executionContext.getNoteId();
     } else {
       key = SHARED_SESSION;

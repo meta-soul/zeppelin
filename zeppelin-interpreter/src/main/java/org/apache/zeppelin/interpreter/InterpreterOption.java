@@ -147,6 +147,14 @@ public class InterpreterOption {
     return SCOPED.equals(perNote);
   }
 
+  public boolean perNoteScopedOrIsolated() {
+    return perNoteScoped() || perNoteIsolated();
+  }
+
+  public boolean perUserScopedOrIsolated() {
+    return perUserScoped() || perUserIsolated();
+  }
+
   public boolean perNoteIsolated() {
     return ISOLATED.equals(perNote);
   }
