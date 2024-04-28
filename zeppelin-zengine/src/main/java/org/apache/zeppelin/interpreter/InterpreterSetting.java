@@ -430,11 +430,11 @@ public class InterpreterSetting {
     String key;
     if (option.isExistingProcess()) {
       key = Constants.EXISTING_PROCESS;
-    } else if (option.perNoteScoped() && option.perUserScoped()) {
+    } else if (option.perNoteScopedOrIsolated() && option.perUserScopedOrIsolated()) {
       key = executionContext.getUser() + ":" + executionContext.getNoteId();
-    } else if (option.perUserScoped()) {
+    } else if (option.perUserScopedOrIsolated()) {
       key = executionContext.getUser();
-    } else if (option.perNoteScoped()) {
+    } else if (option.perNoteScopedOrIsolated()) {
       key = executionContext.getNoteId();
     } else {
       key = SHARED_SESSION;
@@ -859,8 +859,8 @@ public class InterpreterSetting {
       } else {
         interpreters.add(interpreter);
       }
-      LOGGER.info("Interpreter {} created for user: {}, sessionId: {}",
-              interpreter.getClassName(), user, sessionId);
+      LOGGER.info("Interpreter {} created for user: {}, workspace {}, sessionId: {}",
+              interpreter.getClassName(), workSpace, user, sessionId);
     }
 
     // TODO(zjffdu) this kind of hardcode is ugly. For now SessionConfInterpreter is used
@@ -911,6 +911,7 @@ public class InterpreterSetting {
     ManagedInterpreterGroup interpreterGroup = getOrCreateInterpreterGroup(executionContext);
     Preconditions.checkNotNull(interpreterGroup, "No InterpreterGroup existed for {}", executionContext);
     String sessionId = getInterpreterSessionId(executionContext);
+    LOGGER.info("getOrCreateSession sessionId is {}, executionContext {}", sessionId, executionContext);
     return interpreterGroup.getOrCreateSession(executionContext.getUser(), executionContext.getWorkSpace(), sessionId);
   }
 

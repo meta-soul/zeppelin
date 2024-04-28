@@ -103,6 +103,7 @@ public class ExecutionContext {
   public String toString() {
     return "ExecutionContext{" +
             "user='" + user + '\'' +
+            ", workspace='" + workSpace + '\'' +
             ", noteId='" + noteId + '\'' +
             ", interpreterGroupId='" + interpreterGroupId + '\'' +
             ", defaultInterpreterGroup='" + defaultInterpreterGroup + '\'' +

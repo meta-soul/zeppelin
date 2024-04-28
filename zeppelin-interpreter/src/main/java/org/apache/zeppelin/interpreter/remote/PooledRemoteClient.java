@@ -112,6 +112,8 @@ public class PooledRemoteClient<T extends TServiceClient> implements AutoCloseab
       } catch (Exception e1) {
         // thrift framework exception (maybe due to network issue), need to retry
         broken = true;
+        errorCause = e1.getMessage();
+        LOGGER.error("Exception occurred during remote call", e1);
         continue;
       } finally {
         if (client != null) {

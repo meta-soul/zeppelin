@@ -99,13 +99,15 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
 
   public Map<String, String> getPostgreEnv(InterpreterLaunchContext context) throws IOException {
     String user = context.getUserName();
+    String encryptPassword = null;
     String password = null;
     String realName = null;
     try {
-      String encryptPassword = DBUtils.getPasswordByName(user);
+      encryptPassword = DBUtils.getPasswordByName(user);
       realName = DBUtils.getRealNameByName(user);
       password = AESEncryptUtil.decryptAES(encryptPassword);
     } catch (Exception e) {
+      LOGGER.debug("GetPostgreEnv failed {}, {}, {}", user, encryptPassword, realName, e);
       throw new IOException("Get user lakesoul meta db password Failed :" + e.getMessage() );
     }
     String workspace = context.getWorkSpace();
