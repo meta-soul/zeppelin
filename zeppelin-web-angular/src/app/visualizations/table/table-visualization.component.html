@@ -38,7 +38,8 @@
           nzSize="small"
           nzShowSizeChanger
           [nzData]="rows"
-          [nzFooter]="aggregatesFooter">
+          [nzFooter]="aggregatesFooter"
+          [nzScroll]="{ x: '100%'}">
   <thead>
   <tr>
     <th *ngFor="let col of columns"
