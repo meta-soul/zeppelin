@@ -135,6 +135,7 @@ public class ConnectionManager {
   public void addUserConnection(String user, NotebookSocket conn) {
     LOGGER.debug("Add user connection {} for user: {}", conn, user);
     conn.setUser(user);
+    LOGGER.debug("Get user socketMap {}", userSocketMap);
     if (userSocketMap.containsKey(user)) {
       userSocketMap.get(user).add(conn);
     } else {
@@ -157,6 +158,7 @@ public class ConnectionManager {
     String associatedNoteId = null;
     synchronized (noteSocketMap) {
       for (Entry<String, List<NotebookSocket>> noteSocketMapEntry : noteSocketMap.entrySet()) {
+        LOGGER.debug("socket is: {}, note socket mpa key is {}, and value is {}", socket, noteSocketMapEntry.getKey(), noteSocketMapEntry.getValue());
         if (noteSocketMapEntry.getValue().contains(socket)) {
           associatedNoteId = noteSocketMapEntry.getKey();
         }
@@ -191,6 +193,7 @@ public class ConnectionManager {
     if (collaborativeStatusNew) {
       HashSet<String> userList = new HashSet<>();
       for (NotebookSocket noteSocket : socketList) {
+        LOGGER.debug("current note socket user is {}", noteSocket.getUser());
         userList.add(noteSocket.getUser());
       }
       message.put("users", userList);
@@ -302,6 +305,7 @@ public class ConnectionManager {
   public Set<String> getConnectedUsers() {
     Set<String> connectedUsers = new HashSet<>();
     for (NotebookSocket notebookSocket : connectedSockets) {
+      LOGGER.debug("getConnectedUsers is: {}", notebookSocket.getUser());
       connectedUsers.add(notebookSocket.getUser());
     }
     return connectedUsers;
@@ -333,6 +337,7 @@ public class ConnectionManager {
       return;
     }
 
+    LOGGER.debug("user is {}, and useSocketMap is: {}", user, userSocketMap);
     if (!userSocketMap.containsKey(user)) {
       LOGGER.warn("Failed to send unicast. user {} that is not in connections map", user);
       return;
