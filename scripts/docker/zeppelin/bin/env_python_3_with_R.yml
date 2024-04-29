@@ -22,7 +22,7 @@ dependencies:
   - altair
   - vega_datasets
   - plotly
-  - pillow==10.2.0
+  - pillow==10.3.0
   - pyarrow==14.0.0
   - pip
   - pip:
