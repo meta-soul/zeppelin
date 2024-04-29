@@ -255,11 +255,15 @@ public class NotebookServer implements AngularObjectRegistryListener,
 
     LOG.info("Open connection to {} with Session: {}, config: {}", ServerUtils.getRemoteAddress(session), session, endpointConfig.getUserProperties().keySet());
 
+    LOG.debug("open new session id: {}", session.getId());
+
     Map<String, Object> headers = endpointConfig.getUserProperties();
     String origin = String.valueOf(headers.get(CorsUtils.HEADER_ORIGIN));
     if (checkOrigin(origin)) {
       NotebookSocket notebookSocket = sessionIdNotebookSocketMap
           .computeIfAbsent(session.getId(), unused -> new NotebookSocket(session, headers));
+      
+      LOG.debug("open new notebookSocket is: {}", notebookSocket);
       onOpen(notebookSocket);
     } else {
       LOG.error("Websocket request is not allowed by {} settings. Origin: {}", ZEPPELIN_ALLOWED_ORIGINS,
@@ -274,7 +278,9 @@ public class NotebookServer implements AngularObjectRegistryListener,
 
   @OnMessage
   public void onMessage(Session session, String msg) {
+    LOG.debug("session is {} and id is {}, and sessionIdNotebookSocketMap is {}", session, session.getId(),sessionIdNotebookSocketMap);
     NotebookSocket conn = sessionIdNotebookSocketMap.get(session.getId());
+    LOG.debug("conn is {}", conn);
     onMessage(conn, msg);
   }
 
@@ -286,7 +292,8 @@ public class NotebookServer implements AngularObjectRegistryListener,
             ", RECEIVE PRINCIPAL: " + receivedMessage.principal +
             ", RECEIVE TICKET: " + receivedMessage.ticket +
             ", RECEIVE ROLES: " + receivedMessage.roles +
-            ", RECEIVE DATA: " + receivedMessage.data);
+            ", RECEIVE DATA: " + receivedMessage.data + 
+            ", RECEIVE WORKSPACE: " + receivedMessage.workspace);
       }
       if (LOG.isTraceEnabled()) {
         LOG.trace("RECEIVE MSG = " + receivedMessage);
@@ -929,6 +936,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
     if (noteId == null) {
       return;
     }
+    LOG.debug("reload note socket is: {}, and note id is: {}", conn, noteId);
     getNotebookService().getNote(noteId, true, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
@@ -1668,6 +1676,7 @@ public class NotebookServer implements AngularObjectRegistryListener,
                             Message fromMessage) throws IOException {
     String paragraphId = (String) fromMessage.get("id");
     String noteId = connectionManager.getAssociatedNoteId(conn);
+    LOG.debug("current run paragrapg's noteId is {}", noteId);
     String text = (String) fromMessage.get("paragraph");
     String title = (String) fromMessage.get("title");
     Map<String, Object> params = (Map<String, Object>) fromMessage.get("params");

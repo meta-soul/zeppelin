@@ -565,11 +565,14 @@ public class NotebookService {
                               ServiceCallback<Paragraph> callback) throws IOException {
 
 
+    LOGGER.info("start run paragraph");
     if (note == null) {
+      LOGGER.info("note is null");
       return false;
     }
     LOGGER.info("Start to run paragraph: {} of note: {}, user is {}, workspace is {}", paragraphId, note.getId(), context.getAutheInfo().getUser(), context.getAutheInfo().getWorkspace());
     if (!checkPermission(note.getId(), Permission.RUNNER, Message.OP.RUN_PARAGRAPH, context, callback)) {
+      LOGGER.info("paragraphId Permission error");
       return false;
     }
 
@@ -577,10 +580,12 @@ public class NotebookService {
     Paragraph p = note.getParagraph(paragraphId);
     if (p == null) {
       callback.onFailure(new ParagraphNotFoundException(paragraphId), context);
+      LOGGER.info("paragraphId is null");
       return false;
     }
     if (failIfDisabled && !p.isEnabled()) {
       callback.onFailure(new IOException("paragraph is disabled."), context);
+      LOGGER.info("paragraphId is fail");
       return false;
     }
     p.setText(text);
@@ -607,9 +612,12 @@ public class NotebookService {
     }
 
     try {
+      LOGGER.info("saveNote");
       notebook.saveNote(note, context.getAutheInfo());
+      LOGGER.info("run Note");
       note.run(p.getId(), sessionId, blocking, context.getAutheInfo().getUser());
       callback.onSuccess(p, context);
+      LOGGER.info("run Note sucess");
       return true;
     } catch (Exception ex) {
       LOGGER.error("Exception from run", ex);
