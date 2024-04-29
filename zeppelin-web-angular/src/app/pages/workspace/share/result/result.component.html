@@ -59,7 +59,6 @@
   <ng-container [ngSwitch]="result?.type">
     <div *ngSwitchCase="datasetType.HTML"
          class="inner-html"
-         zeppelinMathJax
          zeppelinRunScripts
          [scriptsContent]="innerHTML"
          [innerHTML]="innerHTML"></div>

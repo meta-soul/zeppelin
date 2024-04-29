@@ -42,7 +42,6 @@ import { AboutZeppelinComponent } from '@zeppelin/share/about-zeppelin/about-zep
 import { CodeEditorModule } from '@zeppelin/share/code-editor';
 import { FolderRenameComponent } from '@zeppelin/share/folder-rename/folder-rename.component';
 import { HeaderComponent } from '@zeppelin/share/header/header.component';
-import { MathJaxDirective } from '@zeppelin/share/math-jax/math-jax.directive';
 import { NodeListComponent } from '@zeppelin/share/node-list/node-list.component';
 import { NoteCreateComponent } from '@zeppelin/share/note-create/note-create.component';
 import { NoteImportComponent } from '@zeppelin/share/note-import/note-import.component';
@@ -75,9 +74,9 @@ const EXPORT_LIST = [
 const PIPES = [HumanizeBytesPipe];
 
 @NgModule({
-  declarations: [MODAL_LIST, EXPORT_LIST, PIPES, MathJaxDirective, RunScriptsDirective, ExternalLinkDirective],
+  declarations: [MODAL_LIST, EXPORT_LIST, PIPES, RunScriptsDirective, ExternalLinkDirective],
   entryComponents: [MODAL_LIST],
-  exports: [EXPORT_LIST, PIPES, MathJaxDirective, RunScriptsDirective, ExternalLinkDirective, CodeEditorModule],
+  exports: [EXPORT_LIST, PIPES, RunScriptsDirective, ExternalLinkDirective, CodeEditorModule],
   imports: [
     FormsModule,
     CommonModule,

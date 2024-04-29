@@ -53,11 +53,6 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/mathjax",
-                "output": "/"
-              },
-              {
-                "glob": "**/*",
                 "input": "./node_modules/@ant-design/icons-angular/src/inline-svg/",
                 "output": "/assets/"
               },
@@ -83,7 +78,6 @@
               ]
             },
             "scripts": [
-              "node_modules/mathjax/MathJax.js",
               "node_modules/systemjs/dist/s.js",
               "node_modules/systemjs/dist/extras/amd.js",
               "node_modules/systemjs/dist/extras/named-register.js",
