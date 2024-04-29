@@ -42,3 +42,18 @@
     }
   }
 });
+
+/* 自定义滚动条样式 */
+::ng-deep .ant-table-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::ng-deep .ant-table-body::-webkit-scrollbar-thumb {
+  background-color: #bab9b9;
+  border-radius: 5px;
+}
+
+::ng-deep .ant-table-body::-webkit-scrollbar-thumb:hover {
+  background-color: #878787;
+}
