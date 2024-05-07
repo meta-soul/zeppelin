@@ -92,7 +92,7 @@ export class Message {
       openObserver: this.open$,
       closeObserver: this.close$
     });
-    console.log('----------------WebSocket reconnecting-----------------')
+    console.log('----------------WebSocket connecting-----------------')
     console.log('ws',this.ws)
     this.ws
       .pipe(
@@ -122,6 +122,7 @@ export class Message {
   close() {
     console.log('-------------------close------------------')
     this.close$.next();
+    this.destroy()
   }
 
   opened(): Observable<Event> {
@@ -190,7 +191,9 @@ export class Message {
   }
 
   destroy(): void {
-    this.ws.complete();
+    if(this.ws){
+      this.ws.complete();
+    }
     this.ws = null;
   }
 
