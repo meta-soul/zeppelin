@@ -119,6 +119,7 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
     envMap.put("LAKESOUL_PG_URL", Preconditions.checkNotNull(pgUrl,"pgUrl is null"));
     envMap.put("LAKESOUL_PG_DRIVER", Preconditions.checkNotNull(pgDriver,"pgDriver is null"));
     envMap.put("LAKESOUL_PG_USERNAME", Preconditions.checkNotNull(realName,"pg user is null"));
+    envMap.put("HADOOP_USER_NAME", Preconditions.checkNotNull(realName,"hadoop user is null"));
     envMap.put("LAKESOUL_PG_PASSWORD", Preconditions.checkNotNull(password, "pg password is null"));
     envMap.put("LAKESOUL_CURRENT_DOMAIN", Preconditions.checkNotNull(workspace, "pg domain is null"));
 
