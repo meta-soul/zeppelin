@@ -47,7 +47,7 @@ export class Message {
   private ticket: Ticket;
   private uniqueClientId = Math.random().toString(36).substring(2, 7);
   private lastMsgIdSeqSent = 0;
-
+  private connecting = false;
   constructor() {
     this.open$.subscribe(() => {
       this.connectedStatus = true;
@@ -87,11 +87,13 @@ export class Message {
   }
 
   connect() {
+    this.destroy();
     this.ws = webSocket({
       url: this.wsUrl,
       openObserver: this.open$,
       closeObserver: this.close$
     });
+    this.connecting = true;
     console.log('----------------WebSocket connecting-----------------')
     console.log('ws',this.ws)
     this.ws
@@ -113,6 +115,27 @@ export class Message {
         console.log('Receive:', e);
         this.received$.next(this.interceptReceived(e));
       });
+
+      this.opened().subscribe(() => {
+        console.log('WebSocket连接已建立...');
+        this.connecting = false;
+      });
+
+      this.closed()
+      .pipe(take(1))
+      .subscribe(() => {
+        console.log('WebSocket连接断开...');
+        this.reconnect();
+      });
+  }
+
+  reconnect() {
+    console.log('this.connecting',this.connecting)
+    if (this.connecting) {
+      return;
+    }
+    console.log('WebSocket正在重连...');
+    this.connect();
   }
 
   ping() {
@@ -122,7 +145,6 @@ export class Message {
   close() {
     console.log('-------------------close------------------')
     this.close$.next();
-    this.destroy()
   }
 
   opened(): Observable<Event> {
@@ -191,6 +213,7 @@ export class Message {
   }
 
   destroy(): void {
+    console.log('关闭上一个ws',this.ws)
     if(this.ws){
       this.ws.complete();
     }
