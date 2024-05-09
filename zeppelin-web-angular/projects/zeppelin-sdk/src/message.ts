@@ -47,7 +47,6 @@ export class Message {
   private ticket: Ticket;
   private uniqueClientId = Math.random().toString(36).substring(2, 7);
   private lastMsgIdSeqSent = 0;
-  private connecting = false;
   constructor() {
     this.open$.subscribe(() => {
       this.connectedStatus = true;
@@ -93,49 +92,22 @@ export class Message {
       openObserver: this.open$,
       closeObserver: this.close$
     });
-    this.connecting = true;
     console.log('----------------WebSocket connecting-----------------')
     console.log('ws',this.ws)
     this.ws
-      .pipe(
-        // reconnect
-        retryWhen(errors =>
-          errors.pipe(
-            mergeMap((error,index) =>
-              this.close$.pipe(
-                tap(() =>console.log(`WebSocket error:`, error,index)),
-                take(1),
-                delay(4000)
-              )
-            )
-          )
-        )
-      )
-      .subscribe((e: WebSocketMessage<keyof MessageReceiveDataTypeMap>) => {
-        console.log('Receive:', e);
-        this.received$.next(this.interceptReceived(e));
+      .subscribe({
+        next:(e: WebSocketMessage<keyof MessageReceiveDataTypeMap>) => {
+          console.log('Receive:', e);
+          this.received$.next(this.interceptReceived(e));
+        },
+        error:(error) => {
+          console.error('WebSocket error:', error);
+          this.close();
+        },
+        complete: () => {
+          console.log('WebSocket connection closed.')
+        }
       });
-
-      this.opened().subscribe(() => {
-        console.log('WebSocket连接已建立...');
-        this.connecting = false;
-      });
-
-      this.closed()
-      .pipe(take(1))
-      .subscribe(() => {
-        console.log('WebSocket连接断开...');
-        this.reconnect();
-      });
-  }
-
-  reconnect() {
-    console.log('this.connecting',this.connecting)
-    if (this.connecting) {
-      return;
-    }
-    console.log('WebSocket正在重连...');
-    this.connect();
   }
 
   ping() {
@@ -145,6 +117,9 @@ export class Message {
   close() {
     console.log('-------------------close------------------')
     this.close$.next();
+    setTimeout(() => {
+      this.connect();
+    }, 4000);  
   }
 
   opened(): Observable<Event> {
