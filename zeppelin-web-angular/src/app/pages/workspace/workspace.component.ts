@@ -53,7 +53,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
    */
   @HostListener('window:offline')
   onOffline() {
-    this.messageService.close();
+    this.reconnect()
   }
   /**
    * 切换tab时重新连接
