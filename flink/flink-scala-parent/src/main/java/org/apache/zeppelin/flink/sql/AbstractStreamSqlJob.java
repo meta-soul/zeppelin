@@ -100,7 +100,7 @@ public abstract class AbstractStreamSqlJob {
                 || timestampType.getKind() == TimestampKind.ROWTIME) {
           TimestampType newTimestampType = new TimestampType(
                   timestampType.isNullable(),
-                  timestampType.getKind(),
+                  TimestampKind.REGULAR,
                   timestampType.getPrecision());
           dataType = new AtomicDataType(newTimestampType, dataType.getConversionClass());
         }
