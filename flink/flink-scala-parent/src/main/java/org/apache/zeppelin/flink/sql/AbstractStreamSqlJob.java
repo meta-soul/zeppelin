@@ -102,7 +102,7 @@ public abstract class AbstractStreamSqlJob {
                   timestampType.isNullable(),
                   timestampType.getKind(),
                   timestampType.getPrecision());
-          dataType = new AtomicDataType(timestampType, dataType.getConversionClass());
+          dataType = new AtomicDataType(newTimestampType, dataType.getConversionClass());
         }
       }
       builder.field(schema.getFieldNames()[i], dataType);
