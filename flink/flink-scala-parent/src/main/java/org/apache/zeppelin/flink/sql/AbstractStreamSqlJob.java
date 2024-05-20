@@ -33,6 +33,7 @@ import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.sinks.RetractStreamTableSink;
 import org.apache.flink.table.types.AtomicDataType;
 import org.apache.flink.table.types.DataType;
+import org.apache.flink.table.types.logical.LocalZonedTimestampType;
 import org.apache.flink.table.types.logical.TimestampKind;
 import org.apache.flink.table.types.logical.TimestampType;
 import org.apache.flink.types.Row;
@@ -94,16 +95,13 @@ public abstract class AbstractStreamSqlJob {
     final TableSchema.Builder builder = TableSchema.builder();
     for (int i = 0; i < schema.getFieldCount(); i++) {
       DataType dataType = schema.getFieldDataType(i).get();
-      if (dataType.getLogicalType() instanceof TimestampType) {
-        TimestampType timestampType = (TimestampType) dataType.getLogicalType();
-        if (timestampType.getKind() == TimestampKind.PROCTIME
-                || timestampType.getKind() == TimestampKind.ROWTIME) {
-          TimestampType newTimestampType = new TimestampType(
-                  timestampType.isNullable(),
-                  TimestampKind.REGULAR,
-                  timestampType.getPrecision());
-          dataType = new AtomicDataType(newTimestampType, dataType.getConversionClass());
-        }
+      if (dataType.getLogicalType() instanceof LocalZonedTimestampType) {
+        LocalZonedTimestampType timestampType = (LocalZonedTimestampType) dataType.getLogicalType();
+        LocalZonedTimestampType newTimestampType = new LocalZonedTimestampType(
+                timestampType.isNullable(),
+                TimestampKind.REGULAR,
+                timestampType.getPrecision());
+        dataType = new AtomicDataType(newTimestampType, java.sql.Timestamp.class);
       }
       builder.field(schema.getFieldNames()[i], dataType);
     }
@@ -145,7 +143,7 @@ public abstract class AbstractStreamSqlJob {
               serializer);
       // create table sink
       // pass binding address and port such that sink knows where to send to
-      LOGGER.debug("Collecting data at address: {}:{}",
+      LOGGER.info("Collecting data at address: {}:{}",
         iterator.getBindAddress(), iterator.getPort());
       RetractStreamTableSink collectTableSink =
               (RetractStreamTableSink) flinkShims.getCollectStreamTableSink(iterator.getBindAddress(), iterator.getPort(), serializer);
