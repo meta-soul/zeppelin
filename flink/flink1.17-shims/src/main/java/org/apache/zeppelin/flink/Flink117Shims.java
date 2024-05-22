@@ -31,6 +31,9 @@ import org.apache.flink.client.cli.CustomCommandLine;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.ExecutionOptions;
 import org.apache.flink.configuration.ReadableConfig;
+import org.apache.flink.kubernetes.kubeclient.Endpoint;
+import org.apache.flink.kubernetes.kubeclient.FlinkKubeClient;
+import org.apache.flink.kubernetes.kubeclient.FlinkKubeClientFactory;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironmentFactory;
 import org.apache.flink.table.api.*;
@@ -74,7 +77,11 @@ import java.net.URL;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
+
+import static org.apache.flink.kubernetes.configuration.KubernetesConfigOptions.CLUSTER_ID;
+import static org.apache.flink.kubernetes.configuration.KubernetesConfigOptions.NAMESPACE;
 
 
 /**
@@ -395,5 +402,13 @@ public class Flink117Shims extends FlinkShims {
         } else {
             return streamSqlInterpreter.runSqlList(st, context);
         }
+    }
+
+    @Override
+    public K8sInfo getK8sInfo(Object conf) {
+        Configuration configuration = (Configuration) conf;
+        String clusterId = configuration.getString(CLUSTER_ID);
+        String namespace = configuration.getString(NAMESPACE);
+        return new K8sInfo(clusterId, namespace);
     }
 }

@@ -314,8 +314,13 @@ abstract class FlinkScalaInterpreter(val properties: Properties,
             this.jmWebUrl = "http://localhost:" + HadoopUtils.getFlinkRestPort(yarnAppId)
             this.displayedJMWebUrl = getDisplayedJMWebUrl(yarnAppId)
           } else if (ExecutionMode.isK8sApplicationMode(mode)) {
-            LOGGER.info("Use FlinkCluster in kubernetes-application mode")
-            this.jmWebUrl = "http://localhost:" + configuration.getInteger("rest.port", 8081)
+            val k8sInfo = this.flinkShims.getK8sInfo(configuration)
+            LOGGER.info(s"Use FlinkCluster in kubernetes-application mode: ${k8sInfo.namespace}/${k8sInfo.clusterId}")
+            val baseUrl = properties.getProperty("zeppelin.flink.uiWebUrl", "http://localhost") match {
+              case "" => "http://localhost"
+              case s => s
+            }
+            this.jmWebUrl = s"$baseUrl/${k8sInfo.namespace}/${k8sInfo.clusterId}/"
             this.displayedJMWebUrl = this.jmWebUrl
           } else {
             LOGGER.info("Use FlinkCluster in remote mode")

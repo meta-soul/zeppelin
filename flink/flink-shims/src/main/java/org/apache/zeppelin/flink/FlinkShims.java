@@ -183,4 +183,18 @@ public abstract class FlinkShims {
   public abstract Object createOldPlannerEnvSettingBuilder();
 
   public abstract InterpreterResult runSqlList(String st, InterpreterContext context, boolean isBatch);
+
+  public static class K8sInfo {
+    public String clusterId;
+    public String namespace;
+
+    public K8sInfo(String clusterId, String namespace) {
+      this.clusterId = clusterId;
+      this.namespace = namespace;
+    }
+  }
+
+  public K8sInfo getK8sInfo(Object configuration) {
+    return null;
+  }
 }
