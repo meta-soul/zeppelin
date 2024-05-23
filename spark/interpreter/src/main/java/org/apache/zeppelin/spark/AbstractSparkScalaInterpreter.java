@@ -215,6 +215,7 @@ public abstract class AbstractSparkScalaInterpreter {
     getUserFiles().forEach(file -> sc.addFile(file));
     if (sc.uiWebUrl().isDefined()) {
       sparkUrl = sc.uiWebUrl().get();
+      LOGGER.info("Spark url: {}, driver host: {}", sparkUrl, sc.conf().get("spark.driver.host"));
     }
     sqlContext = sparkSession.sqlContext();
 
@@ -254,6 +255,7 @@ public abstract class AbstractSparkScalaInterpreter {
     } else {
       useYarnProxyURLIfNeeded();
     }
+    LOGGER.info("Spark URL after init: " + sparkUrl);
     InterpreterContext.get().getIntpEventClient().sendWebUrlInfo(this.sparkUrl);
   }
 
