@@ -62,7 +62,7 @@ public class DBUtils {
     public static String getPasswordByName(String name) throws SQLException {
         QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
         // Query the user table and return a list of User objects
-        String query = "SELECT pg_password FROM t_user where name = ?";
+        String query = "SELECT pg_password FROM t_user where lower(name) = lower(?)";
         Object[] params = {name};
         LOGGER.info("Start Query User {} Lakesoul Password ....", name);
         String password = queryRunner.query(query, new ScalarHandler<>(),params);
@@ -77,7 +77,7 @@ public class DBUtils {
     public static String getRealNameByName(String name) throws IOException {
         QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
         // Query the user table and return a list of User objects
-        String query = "SELECT extra FROM t_user where name = ?";
+        String query = "SELECT extra FROM t_user where lower(name) = lower(?)";
         Object[] params = {name};
         LOGGER.info("Start Query Lakesoul Real UserName {} ....", name);
         String extra = null;
@@ -116,7 +116,7 @@ public class DBUtils {
 
     public static boolean isUserInWorkSpaceByName(String username, String workspace) {
         QueryRunner queryRunner = new QueryRunner(DBUtils.getDs());
-        String query = "SELECT * FROM t_user u JOIN t_user_workspace_role uwr ON u.id = uwr.user_id JOIN t_workspace w ON uwr.workspace_id = w.id WHERE u.name = ? AND w.name = ?";
+        String query = "SELECT * FROM t_user u JOIN t_user_workspace_role uwr ON u.id = uwr.user_id JOIN t_workspace w ON uwr.workspace_id = w.id WHERE lower(u.name) = lower(?) AND lower(w.name) = lower(?)";
         Object[] params = {username, workspace};
         LOGGER.info("Start Query User {} is user in WorkSpace {}", username, workspace);
         try {
@@ -134,8 +134,8 @@ public class DBUtils {
                 "INNER JOIN t_role tr ON tuwr.role_id = tr.id " +
                 "INNER JOIN t_user tu ON tuwr.user_id = tu.id " +
                 "INNER JOIN t_workspace tw ON tuwr.workspace_id = tw.id " +
-                "WHERE tu.name = ? " +
-                "AND tw.name = ?";
+                "WHERE lower(tu.name) = lower(?) " +
+                "AND lower(tw.name) = lower(?)";
         Object[] params = {name, workspace};
         try {
             int result = queryRunner.query(query, rs -> rs.next() ? rs.getInt(1) : -1, params);
