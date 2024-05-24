@@ -187,10 +187,12 @@ public abstract class FlinkShims {
   public static class K8sInfo {
     public String clusterId;
     public String namespace;
+    public String port;
 
-    public K8sInfo(String clusterId, String namespace) {
+    public K8sInfo(String clusterId, String namespace, String port) {
       this.clusterId = clusterId;
       this.namespace = namespace;
+      this.port = port;
     }
   }
 

@@ -315,12 +315,13 @@ abstract class FlinkScalaInterpreter(val properties: Properties,
             this.displayedJMWebUrl = getDisplayedJMWebUrl(yarnAppId)
           } else if (ExecutionMode.isK8sApplicationMode(mode)) {
             val k8sInfo = this.flinkShims.getK8sInfo(configuration)
-            LOGGER.info(s"Use FlinkCluster in kubernetes-application mode: ${k8sInfo.namespace}/${k8sInfo.clusterId}")
+            LOGGER.info(s"Use FlinkCluster in kubernetes-application mode: " +
+              s"${k8sInfo.namespace}/${k8sInfo.clusterId}/${k8sInfo.port}")
             val baseUrl = properties.getProperty("zeppelin.flink.uiWebUrl", "http://localhost") match {
               case "" => "http://localhost"
               case s => s
             }
-            this.jmWebUrl = s"$baseUrl/${k8sInfo.namespace}/${k8sInfo.clusterId}/"
+            this.jmWebUrl = s"$baseUrl/${k8sInfo.namespace}/${k8sInfo.clusterId}-rest/${k8sInfo.port}/"
             this.displayedJMWebUrl = this.jmWebUrl
           } else {
             LOGGER.info("Use FlinkCluster in remote mode")

@@ -74,6 +74,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.flink.configuration.RestOptions.BIND_PORT;
 import static org.apache.flink.kubernetes.configuration.KubernetesConfigOptions.CLUSTER_ID;
 import static org.apache.flink.kubernetes.configuration.KubernetesConfigOptions.NAMESPACE;
 
@@ -403,6 +404,7 @@ public class Flink117Shims extends FlinkShims {
         Configuration configuration = (Configuration) conf;
         String clusterId = configuration.getString(CLUSTER_ID);
         String namespace = configuration.getString(NAMESPACE);
-        return new K8sInfo(clusterId, namespace);
+        String port = configuration.getString(BIND_PORT);
+        return new K8sInfo(clusterId, namespace, port);
     }
 }
