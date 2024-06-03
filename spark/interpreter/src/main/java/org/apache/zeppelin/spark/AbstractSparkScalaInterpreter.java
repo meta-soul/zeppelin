@@ -323,7 +323,9 @@ public abstract class AbstractSparkScalaInterpreter {
         String serviceName = hostComponents[0];
         String namespace = hostComponents[1];
         int port = uri.getPort();
-        this.sparkUrl = String.format("%s/%s/%s/%s/", webUiUrl, namespace, serviceName, port);
+        String urlPrefix = String.format("%s/%s/%s/%s", webUiUrl, namespace, serviceName, port);
+        this.sparkUrl = urlPrefix + "/";
+        System.setProperty("spark.ui.proxyBase", urlPrefix);
       }
     }
   }
