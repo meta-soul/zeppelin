@@ -321,8 +321,8 @@ abstract class FlinkScalaInterpreter(val properties: Properties,
               case "" => "http://localhost"
               case s => s
             }
-            this.jmWebUrl = s"$baseUrl/${k8sInfo.namespace}/${k8sInfo.clusterId}-rest/${k8sInfo.port}/"
-            this.displayedJMWebUrl = this.jmWebUrl
+            this.jmWebUrl = s"http://localhost:${configuration.getInteger("rest.port", 8081)}"
+            this.displayedJMWebUrl = s"$baseUrl/${k8sInfo.namespace}/${k8sInfo.clusterId}-rest/${k8sInfo.port}/"
           } else {
             LOGGER.info("Use FlinkCluster in remote mode")
             this.jmWebUrl = "http://" + config.host.get + ":" + config.port.get
