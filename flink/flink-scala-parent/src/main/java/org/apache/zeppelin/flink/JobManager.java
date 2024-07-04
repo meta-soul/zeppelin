@@ -104,7 +104,7 @@ public class JobManager {
   public void sendFlinkJobUrl(InterpreterContext context) {
     JobClient jobClient = jobs.get(context.getParagraphId());
     if (jobClient != null) {
-      String jobUrl = displayedFlinkWebUrl + "#/job/" + jobClient.getJobID();
+      String jobUrl = displayedFlinkWebUrl;
       Map<String, String> infos = new HashMap<>();
       infos.put("jobUrl", jobUrl);
       infos.put("label", "FLINK JOB");

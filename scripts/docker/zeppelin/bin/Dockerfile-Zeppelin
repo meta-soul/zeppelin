@@ -44,7 +44,7 @@ RUN  \
     rm lib/python3.9/site-packages/pandas/tests/io/pytables/test_read.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/excel/test_readers.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/test_common.py && \
-    pip install h5py -i https://repo.huaweicloud.com/repository/pypi/simple &&\
+    pip install h5py pyhdfs -i https://repo.huaweicloud.com/repository/pypi/simple &&\
     pip cache purge
 
 RUN \
