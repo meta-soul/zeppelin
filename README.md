@@ -8,7 +8,7 @@
 注：如果是全新的环境，要先本地编译安装 maven 依赖：
 ```shell
 wget -O rlang/target/spark-2.4.6-bin-without-hadoop.tgz https://archive.apache.org/dist/spark/spark-2.4.6/spark-2.4.6-bin-without-hadoop.tgz
-mvn install -DskipTests -Pbuild-distr -Pscala-2.12 -Pspark-3.3 -Phadoop3 -Pspark-scala-2.12 -Pflink-117  -Pweb-angular  -pl zeppelin-jupyter,kotlin,rlang,zeppelin-plugins/launcher/docker -am -Dmaven.gitcommitid.skip=true -Dcheckstyle.skip
+mvn package -DskipTests -Pbuild-distr -Pscala-2.12 -Pspark-3.3 -Phadoop3 -Pspark-scala-2.12 -Pflink-117  -Pweb-angular  -pl '!groovy,!submarine,!livy,!hbase,!file,!sparql,!cassandra,!alluxio,!elasticsearch,!influxdb,!kotlin,!bigquery,!mongodb,!zeppelin-plugins/launcher/cluster,!zeppelin-plugins/launcher/docker,!zeppelin-plugins/notebookrepo/azure,!zeppelin-plugins/notebookrepo/gcs,!zeppelin-plugins/notebookrepo/mongo,!zeppelin-plugins/notebookrepo/s3,!neo4j,!rlang,!spark/scala-2.11,!spark/scala-2.13,!zeppelin-jupyter,!jdbc' -am -Dmaven.gitcommitid.skip=true -Dcheckstyle.skip
 ```
 
 )
@@ -16,7 +16,8 @@ mvn install -DskipTests -Pbuild-distr -Pscala-2.12 -Pspark-3.3 -Phadoop3 -Pspark
 然后执行 Zeppelin 编译，这里屏蔽了大部分无用的解释器：
 
 ```shell
-mvn package -DskipTests -Pbuild-distr -Pscala-2.12 -Pspark-3.3 -Phadoop3 -Pspark-scala-2.12 -Pflink-117  -Pweb-angular  -pl '!groovy,!submarine,!livy,!hbase,!file,!sparql,!cassandra,!alluxio,!elasticsearch,!influxdb,!kotlin,!bigquery,!mongodb,!zeppelin-plugins/launcher/docker,!zeppelin-plugins/notebookrepo/azure,!zeppelin-plugins/notebookrepo/gcs,!zeppelin-plugins/notebookrepo/mongo,!zeppelin-plugins/notebookrepo/s3,!neo4j,!rlang,!spark/scala-2.11,!spark/scala-2.13,!zeppelin-jupyter,!jdbc' -am -Dmaven.gitcommitid.skip=true -Dcheckstyle.skip
+mvn clean package -DskipTests -Pbuild-distr -Pscala-2.12 -Pspark-3.3 -Phadoop3 -Pspark-scala-2.12 -Pflink-117  -Pweb-angular  -pl '!groovy,!submarine,!livy,!hbase,!file,!sparql,!cassandra,!alluxio,!elasticsearch,!influxdb,!kotlin,!bigquery,!mongodb,!zeppelin-plugins/launcher/docker,!zeppelin-plugins/launcher/cluster,!zeppelin-plugins/notebookrepo/azure,!zeppelin-plugins/notebookrepo/gcs,!zeppelin-plugins/notebookrepo/mongo,!zeppelin-plugins/notebookrepo/s3,!neo4j,!rlang,!spark/scala-2.11,!spark/scala-2.13,!zeppelin
+-jupyter,!jdbc' -am -Dmaven.gitcommitid.skip=true -Dcheckstyle.skip
 ```
 2.进入打包脚本目录
 cd scripts/docker/zeppelin/bin
