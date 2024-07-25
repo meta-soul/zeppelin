@@ -24,12 +24,17 @@ import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
+import org.apache.flink.configuration.ExecutionOptions;
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment;
 import org.apache.flink.streaming.experimental.SocketStreamIterator;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.sinks.RetractStreamTableSink;
+import org.apache.flink.table.types.AtomicDataType;
+import org.apache.flink.table.types.DataType;
+import org.apache.flink.table.types.logical.LocalZonedTimestampType;
+import org.apache.flink.table.types.logical.TimestampKind;
 import org.apache.flink.types.Row;
 import org.apache.zeppelin.flink.FlinkShims;
 import org.apache.zeppelin.flink.JobManager;
@@ -88,14 +93,16 @@ public abstract class AbstractStreamSqlJob {
   private static TableSchema removeTimeAttributes(FlinkShims flinkShims, TableSchema schema) {
     final TableSchema.Builder builder = TableSchema.builder();
     for (int i = 0; i < schema.getFieldCount(); i++) {
-      final TypeInformation<?> type = schema.getFieldTypes()[i];
-      final TypeInformation<?> convertedType;
-      if (flinkShims.isTimeIndicatorType(type)) {
-        convertedType = Types.SQL_TIMESTAMP;
-      } else {
-        convertedType = type;
+      DataType dataType = schema.getFieldDataType(i).get();
+      if (dataType.getLogicalType() instanceof LocalZonedTimestampType) {
+        LocalZonedTimestampType timestampType = (LocalZonedTimestampType) dataType.getLogicalType();
+        LocalZonedTimestampType newTimestampType = new LocalZonedTimestampType(
+                timestampType.isNullable(),
+                TimestampKind.REGULAR,
+                timestampType.getPrecision());
+        dataType = new AtomicDataType(newTimestampType, java.sql.Timestamp.class);
       }
-      builder.field(schema.getFieldNames()[i], convertedType);
+      builder.field(schema.getFieldNames()[i], dataType);
     }
     return builder.build();
   }
@@ -103,6 +110,9 @@ public abstract class AbstractStreamSqlJob {
   protected abstract String getType();
 
   public String run(String st) throws IOException {
+    LOGGER.info("senv mode {}, stenv mode: {}",
+            senv.getConfig().getExecutionMode(),
+            stenv.getConfig().get(ExecutionOptions.RUNTIME_MODE));
     this.table = stenv.sqlQuery(st);
     String tableName = "UnnamedTable_" +
             "_" + SQL_INDEX.getAndIncrement();
@@ -132,7 +142,7 @@ public abstract class AbstractStreamSqlJob {
               serializer);
       // create table sink
       // pass binding address and port such that sink knows where to send to
-      LOGGER.debug("Collecting data at address: {}:{}",
+      LOGGER.info("Collecting data at address: {}:{}",
         iterator.getBindAddress(), iterator.getPort());
       RetractStreamTableSink collectTableSink =
               (RetractStreamTableSink) flinkShims.getCollectStreamTableSink(iterator.getBindAddress(), iterator.getPort(), serializer);

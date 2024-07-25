@@ -100,12 +100,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <relocations>
-                        <relocation>
-                            <pattern>okio</pattern>
-                            <shadedPattern>org.apache.zeppelin.shaded.okio</shadedPattern>
-                        </relocation>
-                    </relocations>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>

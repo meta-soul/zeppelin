@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -215,6 +216,7 @@ public abstract class AbstractSparkScalaInterpreter {
     getUserFiles().forEach(file -> sc.addFile(file));
     if (sc.uiWebUrl().isDefined()) {
       sparkUrl = sc.uiWebUrl().get();
+      LOGGER.info("Spark url: {}, driver host: {}", sparkUrl, sc.conf().get("spark.driver.host"));
     }
     sqlContext = sparkSession.sqlContext();
 
@@ -250,10 +252,15 @@ public abstract class AbstractSparkScalaInterpreter {
   private void initAndSendSparkWebUrl() {
     String webUiUrl = properties.getProperty("zeppelin.spark.uiWebUrl");
     if (!StringUtils.isBlank(webUiUrl)) {
-      this.sparkUrl = webUiUrl.replace("{{applicationId}}", sc.applicationId());
+      if (isYarnMaster()) {
+        this.sparkUrl = webUiUrl.replace("{{applicationId}}", sc.applicationId());
+      } else {
+        getK8sUrl(webUiUrl);
+      }
     } else {
       useYarnProxyURLIfNeeded();
     }
+    LOGGER.info("Spark URL after init: " + sparkUrl);
     InterpreterContext.get().getIntpEventClient().sendWebUrlInfo(this.sparkUrl);
   }
 
@@ -279,7 +286,7 @@ public abstract class AbstractSparkScalaInterpreter {
 
   private void useYarnProxyURLIfNeeded() {
     if (Boolean.parseBoolean(properties.getProperty("spark.webui.yarn.useProxy", "false"))) {
-      if (getSparkMaster().startsWith("yarn")) {
+      if (isYarnMaster()) {
         String appId = sc.applicationId();
         YarnClient yarnClient = YarnClient.createYarnClient();
         YarnConfiguration yarnConf = new YarnConfiguration();
@@ -296,6 +303,29 @@ public abstract class AbstractSparkScalaInterpreter {
         } catch (YarnException | IOException e) {
           LOGGER.error("Fail to get yarn app report", e);
         }
+      }
+    }
+  }
+
+  private boolean isYarnMaster() {
+    return getSparkMaster().startsWith("yarn");
+  }
+
+  private boolean isK8sMaster() {
+    return getSparkMaster().contains("k8s");
+  }
+
+  private void getK8sUrl(String webUiUrl) {
+    if (isK8sMaster()) {
+      URI uri = URI.create(this.sparkUrl);
+      String[] hostComponents = uri.getHost().split("\\.");
+      if (hostComponents.length == 3 && hostComponents[2].equals("svc")) {
+        String serviceName = hostComponents[0];
+        String namespace = hostComponents[1];
+        int port = uri.getPort();
+        String urlPrefix = String.format("%s/%s/%s/%s", webUiUrl, namespace, serviceName, port);
+        this.sparkUrl = urlPrefix + "/";
+        System.setProperty("spark.ui.proxyBase", urlPrefix);
       }
     }
   }

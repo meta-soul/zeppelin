@@ -37,13 +37,16 @@ RUN  \
     find . -type f -name "package-lock.json" -delete && \
     find . -type f -name "*CMakeLists.txt" -delete && \
     find . -type f -name "requirements.txt" -delete && \
+    pip uninstall statsmodels -y && \
     pip uninstall bokeh -y && \
     rm lib/python3.9/site-packages/IPython/testing/plugin/pytest_ipdoctest.py && \
     rm lib/python3.9/site-packages/debugpy/_vendored/pydevd/_pydev_runfiles/pydev_runfiles_pytest2.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/sas/test_sas7bdat.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/pytables/test_read.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/excel/test_readers.py && \
-    rm lib/python3.9/site-packages/pandas/tests/io/test_common.py
+    rm lib/python3.9/site-packages/pandas/tests/io/test_common.py && \
+    pip install h5py pyhdfs -i https://repo.huaweicloud.com/repository/pypi/simple && \
+    pip cache purge
 
 RUN \
     groupadd -g 60000 lakesoul && useradd -u 60000 -g lakesoul -G sudo -m -s /bin/bash lakesoul && \

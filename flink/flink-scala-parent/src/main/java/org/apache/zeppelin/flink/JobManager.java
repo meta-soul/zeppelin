@@ -25,7 +25,6 @@ import org.apache.flink.api.common.JobID;
 import org.apache.flink.core.execution.JobClient;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +104,7 @@ public class JobManager {
   public void sendFlinkJobUrl(InterpreterContext context) {
     JobClient jobClient = jobs.get(context.getParagraphId());
     if (jobClient != null) {
-      String jobUrl = displayedFlinkWebUrl + "#/job/" + jobClient.getJobID();
+      String jobUrl = displayedFlinkWebUrl;
       Map<String, String> infos = new HashMap<>();
       infos.put("jobUrl", jobUrl);
       infos.put("label", "FLINK JOB");
@@ -264,7 +263,7 @@ public class JobManager {
                   .asJson().getBody();
           if (rootNode.getObject().has("latest")) {
             kong.unirest.json.JSONObject latestObject = rootNode.getObject().getJSONObject("latest");
-            if (latestObject.has("completed") && latestObject.get("completed") instanceof JSONObject) {
+            if (latestObject.has("completed") && latestObject.get("completed") instanceof kong.unirest.json.JSONObject) {
               kong.unirest.json.JSONObject completedObject = latestObject.getJSONObject("completed");
               if (completedObject.has("external_path")) {
                 String checkpointPath = completedObject.getString("external_path");

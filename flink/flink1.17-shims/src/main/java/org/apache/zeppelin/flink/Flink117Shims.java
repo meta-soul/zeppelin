@@ -23,7 +23,6 @@ import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.flink.api.common.RuntimeExecutionMode;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.client.cli.CliFrontend;
@@ -53,7 +52,6 @@ import org.apache.flink.table.functions.ScalarFunction;
 import org.apache.flink.table.functions.TableAggregateFunction;
 import org.apache.flink.table.functions.TableFunction;
 import org.apache.flink.table.module.ModuleManager;
-import org.apache.flink.table.planner.calcite.FlinkTypeFactory;
 import org.apache.flink.table.resource.ResourceManager;
 import org.apache.flink.table.sinks.TableSink;
 import org.apache.flink.table.typeutils.TimeIndicatorTypeInfo;
@@ -75,6 +73,10 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+
+import static org.apache.flink.configuration.RestOptions.BIND_PORT;
+import static org.apache.flink.kubernetes.configuration.KubernetesConfigOptions.CLUSTER_ID;
+import static org.apache.flink.kubernetes.configuration.KubernetesConfigOptions.NAMESPACE;
 
 
 /**
@@ -395,5 +397,14 @@ public class Flink117Shims extends FlinkShims {
         } else {
             return streamSqlInterpreter.runSqlList(st, context);
         }
+    }
+
+    @Override
+    public K8sInfo getK8sInfo(Object conf) {
+        Configuration configuration = (Configuration) conf;
+        String clusterId = configuration.getString(CLUSTER_ID);
+        String namespace = configuration.getString(NAMESPACE);
+        String port = configuration.getString(BIND_PORT);
+        return new K8sInfo(clusterId, namespace, port);
     }
 }
