@@ -79,9 +79,9 @@
           </a>
             <span class="operation">
               <ng-container *ngIf="!node.origin.isTrash;else trashFileTpl">
-                <a nz-tooltip nzTitle="Rename note">
+                <!-- <a nz-tooltip nzTitle="Rename note">
                   <i nz-icon nzType="edit" (click)="renameNote(node.origin.id,node.origin.path,node.origin.name)"></i>
-                </a>
+                </a> -->
                 <a nz-tooltip nzTitle="Clear output">
                   <i nz-icon
                      nzType="fire"
