@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 LABEL maintainer="Apache Software Foundation <dev@zeppelin.apache.org>"
 
@@ -26,13 +26,13 @@ ENV LOG_TAG="[ZEPPELIN_${Z_VERSION}]:" \
     LC_ALL=en_US.UTF-8 \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 \
     ZEPPELIN_ADDR="0.0.0.0"
-RUN sed -i "s@http://.*archive.ubuntu.com@http://repo.huaweicloud.com@g" /etc/apt/sources.list && \
-    sed -i "s@http://.*security.ubuntu.com@http://repo.huaweicloud.com@g" /etc/apt/sources.list && \
+RUN sed -i "s@http://.*archive.ubuntu.com@http://mirrors.huaweicloud.com@g" /etc/apt/sources.list && \
+    sed -i "s@http://.*security.ubuntu.com@http://mirrors.huaweicloud.com@g" /etc/apt/sources.list && \
     apt-get update
 RUN echo "$LOG_TAG install basic packages" && \
     apt-get -y update && \
     # Switch back to install JRE instead of JDK when moving to JDK9 or later.
-    DEBIAN_FRONTEND=noninteractive apt-get install -y locales language-pack-en tini openjdk-8-jdk-headless wget unzip zip sudo && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y locales language-pack-en tini openjdk-8-jdk-headless wget unzip zip bzip2 sudo && \
     /usr/bin/wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest | tar -xvj bin/micromamba && \
     # Cleanup
     rm -rf /var/lib/apt/lists/* && \
@@ -70,7 +70,6 @@ COPY env_python_3_with_R.yml /env_python_3_with_R.yml
 RUN set -ex && \
     micromamba create -y -p /opt/conda -f env_python_3_with_R.yml && \
     micromamba clean -ay
-
 
 ENV PATH /opt/conda/envs/python_3_with_R/bin:/opt/conda/bin:$PATH
 
