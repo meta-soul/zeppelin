@@ -350,42 +350,54 @@ public class NotebookServer implements AngularObjectRegistryListener,
           break;
         case RELOAD_NOTE:
           reloadNote(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case NEW_NOTE:
           createNote(conn, context, receivedMessage);
           break;
         case DEL_NOTE:
           deleteNote(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case REMOVE_FOLDER:
           removeFolder(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case MOVE_NOTE_TO_TRASH:
           moveNoteToTrash(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case MOVE_FOLDER_TO_TRASH:
           moveFolderToTrash(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case EMPTY_TRASH:
           emptyTrash(conn, context);
+          listNotesInfo(conn, context);
           break;
         case RESTORE_FOLDER:
           restoreFolder(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case RESTORE_NOTE:
           restoreNote(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case RESTORE_ALL:
           restoreAll(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case CLONE_NOTE:
           cloneNote(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case IMPORT_NOTE:
           importNote(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case CONVERT_NOTE_NBFORMAT:
           convertNote(conn, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case COMMIT_PARAGRAPH:
           updateParagraph(conn, context, receivedMessage);
@@ -425,9 +437,11 @@ public class NotebookServer implements AngularObjectRegistryListener,
           break;
         case NOTE_RENAME:
           renameNote(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case FOLDER_RENAME:
           renameFolder(conn, context, receivedMessage);
+          listNotesInfo(conn, context);
           break;
         case UPDATE_PERSONALIZED_MODE:
           updatePersonalizedMode(conn, context, receivedMessage);

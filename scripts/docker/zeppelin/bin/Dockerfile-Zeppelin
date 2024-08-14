@@ -1,4 +1,4 @@
-FROM swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin-base:v0.0.3
+FROM swr.cn-southwest-2.myhuaweicloud.com/dmetasoul-repo/zeppelin-base:v0.0.5
 
 ENV Z_VERSION="0.11.0-SNAPSHOT"
 
@@ -10,12 +10,12 @@ ENV LOG_TAG="[ZEPPELIN_${Z_VERSION}]:" \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 \
     ZEPPELIN_ADDR="0.0.0.0"
 USER root
-COPY zeppelin-${Z_VERSION}.tar.gz  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz
+COPY ./zeppelin-${Z_VERSION}  $ZEPPELIN_HOME
 RUN echo "$LOG_TAG Download Zeppelin binary" && \
-    mkdir -p ${ZEPPELIN_HOME} && \
+#    mkdir -p ${ZEPPELIN_HOME} && \
     # wget -nv -O /tmp/zeppelin-${Z_VERSION}-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-${Z_VERSION}/zeppelin-${Z_VERSION}-bin-all.tgz && \
-    tar --strip-components=1 -zxvf  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz -C ${ZEPPELIN_HOME} && \
-    rm -f /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
+#    tar --strip-components=1 -zxvf  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz -C ${ZEPPELIN_HOME} && \
+#    rm -f /tmp/zeppelin-${Z_VERSION}-bin-all.tgz && \
     chown -R root:root ${ZEPPELIN_HOME} && \
     mkdir -p ${ZEPPELIN_HOME}/logs ${ZEPPELIN_HOME}/run ${ZEPPELIN_HOME}/webapps && \
     # Allow process to edit /etc/passwd, to create a user entry for zeppelin
@@ -45,6 +45,7 @@ RUN  \
     rm lib/python3.9/site-packages/pandas/tests/io/pytables/test_read.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/excel/test_readers.py && \
     rm lib/python3.9/site-packages/pandas/tests/io/test_common.py && \
+    rm lib/python3.9/ensurepip/_bundled/*.whl && \
     pip install h5py pyhdfs -i https://repo.huaweicloud.com/repository/pypi/simple && \
     pip cache purge
 

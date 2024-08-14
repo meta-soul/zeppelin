@@ -367,8 +367,10 @@ public class NotebookService {
       LOGGER.info("Listing notebook under workspace {} for user {}", workspace, userName);
       if (DBUtils.isUserInWorkSpaceByName(userName, workspace)) {
         notesInfo = notebook.getNotesInfo().stream()
-              .filter(noteInfo -> noteInfo.getPath().startsWith(String.format("/%s/", workspace)))
+              .filter(noteInfo -> noteInfo.getPath().startsWith(String.format("/%s/", workspace)) ||
+              noteInfo.getPath().startsWith(String.format("/~Trash/%s/", workspace)))
               .collect(Collectors.toList());
+        
       } else {
         notesInfo = notebook.getNotesInfo(
                   noteId -> authorizationService.isReader(noteId, context.getUserAndRoles()));
