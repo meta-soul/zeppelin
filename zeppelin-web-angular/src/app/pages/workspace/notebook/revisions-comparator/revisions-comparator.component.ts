@@ -61,7 +61,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     );
   }
   getApproval(revisionId) {
-    const url = `${window.location.origin}/#/home/tasks/pending-approval?noteId=${this.note.id}&revisionId=${revisionId}`;
+    const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.note.id}&revisionId=${revisionId}`;
     let newWindow;
     if (window.opener && window.opener.name) {
       newWindow = window.open(url, window.opener.name);
