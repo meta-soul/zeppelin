@@ -26,7 +26,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
   revisionId: string;
   preRevisionOption: string;
   curRevisionOption: string;
-  expand:boolean = false;
+  expand: boolean = false;
   opts: {
     theme: 'vs';
     automaticLayout: true;
@@ -61,7 +61,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     );
   }
   getApproval(revisionId) {
-    const url = `${window.location.origin}/#/home/taskPublishing?noteId=${this.note.id}&revisionId=${revisionId}`;
+    const url = `${window.location.origin}/#/home/tasks/pending-approval?noteId=${this.note.id}&revisionId=${revisionId}`;
     let newWindow;
     if (window.opener && window.opener.name) {
       newWindow = window.open(url, window.opener.name);
@@ -70,8 +70,8 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     }
     newWindow.focus();
   }
-  handleExpand(){
-    this.expand = !this.expand
+  handleExpand() {
+    this.expand = !this.expand;
   }
   formatRevisionDate = function(unixTime) {
     const date = new Date(unixTime * 1000); // 将 UNIX 时间戳转换为毫秒
