@@ -26,7 +26,7 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
   revisionId: string;
   preRevisionOption: string;
   curRevisionOption: string;
-  expand:boolean = false;
+  expand: boolean = false;
   opts: {
     theme: 'vs';
     automaticLayout: true;
@@ -70,8 +70,8 @@ export class NotebookRevisionsComparatorComponent extends MessageListenersManage
     }
     newWindow.focus();
   }
-  handleExpand(){
-    this.expand = !this.expand
+  handleExpand() {
+    this.expand = !this.expand;
   }
   formatRevisionDate = function(unixTime) {
     const date = new Date(unixTime * 1000); // 将 UNIX 时间戳转换为毫秒
