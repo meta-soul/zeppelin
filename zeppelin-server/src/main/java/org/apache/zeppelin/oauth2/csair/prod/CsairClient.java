@@ -13,6 +13,10 @@ import org.slf4j.LoggerFactory;
  */
 public class CsairClient extends OAuth20Client {
     private static  final Logger LOGGER = LoggerFactory.getLogger(CsairClient.class);
+    private String authUrl;
+    private String tokenUrl;
+    private String profileUrl;
+
     public CsairClient(){
 
     }
@@ -25,12 +29,39 @@ public class CsairClient extends OAuth20Client {
     @Override
     protected void clientInit() {
         LOGGER.debug("Casair init Start");
-        configuration.setApi(CsairApi.instance());
+        configuration.setApi(new CsairApi(authUrl, tokenUrl));
         configuration.setWithState(false);
-        configuration.setProfileDefinition(new CsairProfileDefinition());
+        CsairProfileDefinition profileDefinition = new CsairProfileDefinition();
+        profileDefinition.setProfileUrl(profileUrl);
+        configuration.setProfileDefinition(profileDefinition);
 
         defaultProfileCreator(new CsairProfileCreator(configuration, this));
         super.clientInit();
     }
+
+    public String getAuthUrl() {
+        return authUrl;
+    }
+
+    public void setAuthUrl(String authUrl) {
+        this.authUrl = authUrl;
+    }
+
+    public String getTokenUrl() {
+        return tokenUrl;
+    }
+
+    public void setTokenUrl(String tokenUrl) {
+        this.tokenUrl = tokenUrl;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
 
 }

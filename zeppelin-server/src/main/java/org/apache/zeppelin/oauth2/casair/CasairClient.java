@@ -13,6 +13,13 @@ import org.slf4j.LoggerFactory;
  */
 public class CasairClient extends OAuth20Client {
     private static  final Logger LOGGER = LoggerFactory.getLogger(CasairClient.class);
+
+    private String authUrl;
+    private String tokenUrl;
+    private String profileUrl;
+
+
+
     public CasairClient(){
 
     }
@@ -25,12 +32,38 @@ public class CasairClient extends OAuth20Client {
     @Override
     protected void clientInit() {
         LOGGER.debug("Casair init Start");
-        configuration.setApi(CasairApi.instance());
+        configuration.setApi(new CasairApi(authUrl, tokenUrl));
         configuration.setWithState(false);
-        configuration.setProfileDefinition(new CasairProfileDefinition());
+        CasairProfileDefinition profileDefinition = new CasairProfileDefinition();
+        profileDefinition.setProfileUrl(profileUrl);
+        configuration.setProfileDefinition(profileDefinition);
 
         defaultProfileCreator(new CasairProfileCreator(configuration, this));
         super.clientInit();
+    }
+
+    public String getAuthUrl() {
+        return authUrl;
+    }
+
+    public void setAuthUrl(String authUrl) {
+        this.authUrl = authUrl;
+    }
+
+    public String getTokenUrl() {
+        return tokenUrl;
+    }
+
+    public void setTokenUrl(String tokenUrl) {
+        this.tokenUrl = tokenUrl;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 
 }

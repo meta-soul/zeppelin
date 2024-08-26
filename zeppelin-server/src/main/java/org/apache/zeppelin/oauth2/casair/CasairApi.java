@@ -17,25 +17,23 @@ import java.io.OutputStream;
  */
 public class CasairApi extends DefaultApi20 {
     private static  final Logger LOGGER = LoggerFactory.getLogger(CasairApi.class);
-    public static final String AUTHORIZE_ENDPOINT_URL = "https://deviam.csair.com/idp/oauth2/authorize";
 
-    public static final String TOKEN_ENDPOINT_URL = "https://deviam.csair.com/idp/oauth2/getToken";
+    protected final String authUrl;
+    protected final String tokenUrl;
 
-    private static class InstanceHolder {
-        private static final CasairApi INSTANCE = new CasairApi();
+    public CasairApi(final String authUrl, final String tokenUrl){
+        this.authUrl = authUrl;
+        this.tokenUrl = tokenUrl;
     }
 
-    public static CasairApi instance(){
-        return CasairApi.InstanceHolder.INSTANCE;
-    }
     @Override
     public String getAccessTokenEndpoint() {
-        return TOKEN_ENDPOINT_URL;
+        return tokenUrl;
     }
 
     @Override
     protected String getAuthorizationBaseUrl() {
-        return AUTHORIZE_ENDPOINT_URL;
+        return authUrl;
     }
 
     @Override

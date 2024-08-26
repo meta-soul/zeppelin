@@ -38,6 +38,9 @@ public class CasdoorProfileDefinition extends OAuth20ProfileDefinition<CasdoorPr
 
     public static final String GROUPS = "groups";
 
+    private String profileUrl;
+
+
     public CasdoorProfileDefinition(){
         super(x-> new CasdoorProfile());
         Arrays.stream(new String[]{
@@ -52,7 +55,7 @@ public class CasdoorProfileDefinition extends OAuth20ProfileDefinition<CasdoorPr
 
     @Override
     public String getProfileUrl(OAuth2AccessToken oAuth2AccessToken, OAuth20Configuration oAuth20Configuration) {
-        return "http://192.168.25.34:8000/api/userinfo";
+        return this.getProfileUrl();
     }
 
 
@@ -74,5 +77,13 @@ public class CasdoorProfileDefinition extends OAuth20ProfileDefinition<CasdoorPr
         }
         LOGGER.debug("Extract UserProfile from userinfo is {}", profile.toString());
         return profile;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 }

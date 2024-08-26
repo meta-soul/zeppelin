@@ -14,24 +14,21 @@ import org.slf4j.LoggerFactory;
 public class CasdoorApi extends DefaultApi20 {
     private static  final Logger LOGGER = LoggerFactory.getLogger(CasdoorApi.class);
 
-    public static final String AUTHORIZE_ENDPOINT_URL = "https://lakesoul-demo.dmetasoul.com/casdoor/login/oauth/authorize";
+    protected final String authUrl;
+    protected final String tokenUrl;
 
-    public static final String TOKEN_ENDPOINT_URL = "http://192.168.25.34:8000/api/login/oauth/access_token";
-
-    private static class InstanceHolder {
-        private static final CasdoorApi INSTANCE = new CasdoorApi();
+    public CasdoorApi(final String authUrl, final String tokenUrl){
+        this.authUrl = authUrl;
+        this.tokenUrl = tokenUrl;
     }
 
-    public static CasdoorApi instance(){
-        return InstanceHolder.INSTANCE;
-    }
     @Override
     public String getAccessTokenEndpoint() {
-        return TOKEN_ENDPOINT_URL;
+        return tokenUrl;
     }
 
     @Override
     protected String getAuthorizationBaseUrl() {
-        return AUTHORIZE_ENDPOINT_URL;
+        return authUrl;
     }
 }

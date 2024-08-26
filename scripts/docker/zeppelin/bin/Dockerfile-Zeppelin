@@ -10,8 +10,13 @@ ENV LOG_TAG="[ZEPPELIN_${Z_VERSION}]:" \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 \
     ZEPPELIN_ADDR="0.0.0.0"
 USER root
+
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get clean
+
 COPY ./zeppelin-${Z_VERSION}  $ZEPPELIN_HOME
-RUN echo "$LOG_TAG Download Zeppelin binary" && \
+RUN echo "$LOG_TAG COPY Zeppelin binary" && \
 #    mkdir -p ${ZEPPELIN_HOME} && \
     # wget -nv -O /tmp/zeppelin-${Z_VERSION}-bin-all.tgz https://archive.apache.org/dist/zeppelin/zeppelin-${Z_VERSION}/zeppelin-${Z_VERSION}-bin-all.tgz && \
 #    tar --strip-components=1 -zxvf  /tmp/zeppelin-${Z_VERSION}-bin-all.tgz -C ${ZEPPELIN_HOME} && \

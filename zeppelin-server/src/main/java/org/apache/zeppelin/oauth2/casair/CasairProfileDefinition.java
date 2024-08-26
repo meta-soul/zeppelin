@@ -31,6 +31,16 @@ public class CasairProfileDefinition extends OAuth20ProfileDefinition<CasairProf
     public static final String DISPLAYNAME = "displayName";
     public static final String SPROLELIST = "spRoleList";
 
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    private String profileUrl;
+
     public CasairProfileDefinition(){
         super(x-> new CasairProfile());
         Arrays.stream(new String[]{
@@ -43,7 +53,7 @@ public class CasairProfileDefinition extends OAuth20ProfileDefinition<CasairProf
     }
     @Override
     public String getProfileUrl(OAuth2AccessToken oAuth2AccessToken, OAuth20Configuration oAuth20Configuration) {
-        return "https://deviam.csair.com/idp/oauth2/getUserInfo";
+        return this.getProfileUrl();
     }
 
     @Override

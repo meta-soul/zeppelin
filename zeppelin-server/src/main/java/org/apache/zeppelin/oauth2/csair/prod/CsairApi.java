@@ -17,25 +17,21 @@ import java.io.OutputStream;
  */
 public class CsairApi extends DefaultApi20 {
     private static  final Logger LOGGER = LoggerFactory.getLogger(CsairApi.class);
-    public static final String AUTHORIZE_ENDPOINT_URL = "https://iam.csair.com/idp/oauth2/authorize";
+    protected final String authUrl;
+    protected final String tokenUrl;
 
-    public static final String TOKEN_ENDPOINT_URL = "https://iam.csair.com/idp/oauth2/getToken";
-
-    private static class InstanceHolder {
-        private static final CsairApi INSTANCE = new CsairApi();
-    }
-
-    public static CsairApi instance(){
-        return InstanceHolder.INSTANCE;
+    public CsairApi(final String authUrl, final String tokenUrl){
+        this.authUrl = authUrl;
+        this.tokenUrl = tokenUrl;
     }
     @Override
     public String getAccessTokenEndpoint() {
-        return TOKEN_ENDPOINT_URL;
+        return tokenUrl;
     }
 
     @Override
     protected String getAuthorizationBaseUrl() {
-        return AUTHORIZE_ENDPOINT_URL;
+        return authUrl;
     }
 
     @Override
